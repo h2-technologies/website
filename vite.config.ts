@@ -3,10 +3,8 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [sveltekit()],
-	server: {
-		allowedHosts: ".h2technologiesllc.com",
-	},
+	server: {},
 	preview: {
-                allowedHosts: [".h2technologiesllc.com"],
-        },
+		allowedHosts: [".h2technologiesllc.com"],
+	},
 });
