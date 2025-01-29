@@ -31,7 +31,7 @@
       </ul>
       <h2 class="pt-1">Contact Us</h2>
       <p>Email: <a href="mailto:sales@h2technologiesllc.com" class="underline text-blue-500">info@h2technologiesllc.com</a></p>
-      <p>Phone: <a href="tel:5672610762" class="underline text-blue-500">(567) 261-076</a></p>
+      <p>Phone: <a href="tel:5672610762" class="underline text-blue-500">(567) 261-0762</a></p>
     </div>
   </div>
 </div>
