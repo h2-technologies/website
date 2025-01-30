@@ -5,7 +5,7 @@ services:
     container_name: h2-website
     environment:
       NODE_ENV: production
-      PORT: "3000"
+      PORT: "3700"
       HOST: "0.0.0.0"
     ports:
       - "3700:3700"
