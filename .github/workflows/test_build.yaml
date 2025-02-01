@@ -1,0 +1,26 @@
+name: Test Build
+
+on:
+    push:
+        branches:
+            - '**'
+    pull_request:
+        branches:
+            - '**'
+    workflow_dispatch:
+
+jobs:
+    test_build:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest]
+        steps:
+            - name: Setup
+              uses: actions/checkout@v2
+            - name: Install PNPM
+              run: npm install -g pnpm
+            - name: Install Dependencies
+              run: pnpm install
+            - name: Build
+              run: pnpm build
