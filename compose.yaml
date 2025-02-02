@@ -2,10 +2,10 @@ services:
   website:
     build:
       context: .
-    container_name: h2-website
+    container_name: h2-website-dev
     environment:
       NODE_ENV: production
-      PORT: "3000"
+      PORT: "3100"
       HOST: "0.0.0.0"
     ports:
-      - "3000:3000"
+      - "3100:3100"
