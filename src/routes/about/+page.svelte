@@ -1,18 +1,24 @@
 <header class="bg-zinc-800 text-white py-8 px-0 text-center font-bold">
     <h1>About Us</h1>
 </header>
+
+<!--This is a placeholder image replace with a static image eventually-->
+<div class="px-4">
+    <img src="https://picsum.photos/2000/400" alt="About Us" class="w-full h-auto">
+</div>
 <div class="p-8">
     <div class="bg-white p-8 rounded-[5px] shadow-lg">
         <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sapien nunc, auctor sit amet purus interdum, hendrerit elementum dui. Donec fermentum pharetra enim, a lobortis massa congue eu. Sed sollicitudin mi ac lectus tristique, ut porta enim rhoncus. In mi tellus, dapibus sit amet viverra dictum, tempor a leo. Vestibulum mauris mi, dignissim et luctus ac, pulvinar non nisi. Maecenas viverra elit ligula, sed maximus nisl finibus in. Suspendisse libero mi, iaculis a vulputate sit amet, congue nec libero. Etiam sit amet tincidunt leo. Curabitur convallis, lorem eu aliquam bibendum, lectus nulla ullamcorper libero, id euismod lorem mauris nec quam. Etiam non posuere nulla, eu bibendum ante. Donec porttitor turpis ut elit tempus, non sagittis erat feugiat. Mauris ipsum lectus, tristique at finibus ut, imperdiet malesuada quam.
-            
-            Suspendisse nec hendrerit metus. Aliquam gravida massa gravida nisi vulputate, vel convallis ante ultrices. Duis pharetra scelerisque dolor, posuere faucibus urna finibus ac. Nunc dignissim elementum lorem, eu finibus dolor vulputate in. Nam sodales a felis vel fermentum. Pellentesque quis eleifend lorem, vitae dignissim magna. Nunc posuere odio turpis.
-            
-            Nulla ac magna ac ante commodo fringilla eget et risus. Vivamus faucibus ullamcorper nulla. Proin mi libero, congue eu est aliquam, elementum vestibulum odio. Etiam eu congue tortor. Vivamus vel leo fringilla, ultrices risus in, cursus massa. Pellentesque eu dictum nulla, id elementum elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed iaculis massa vel consectetur fringilla. Donec dignissim dui eget lorem commodo congue ut vel nisi. Mauris lectus ante, congue varius quam et, pretium dictum odio. Cras sed nisi ullamcorper, sodales elit quis, maximus lorem.
-            
-            Maecenas faucibus nisi nec neque ultrices porta. In ullamcorper sapien eget diam malesuada, eleifend faucibus metus lobortis. Donec elementum ligula a eros consequat, et euismod orci bibendum. Nam imperdiet semper elit, vitae molestie purus ornare sit amet. Duis a orci a elit sodales bibendum. Curabitur pellentesque sapien eu dolor efficitur, quis pulvinar libero porttitor. Integer at nisi arcu. Quisque euismod quam est, at pellentesque lectus consectetur sit amet. Morbi feugiat porttitor ipsum, nec suscipit mi molestie at. Aliquam feugiat condimentum nisi eu tempor. Maecenas pretium ornare tincidunt. Etiam eget orci at ex vulputate scelerisque eget vel orci. Proin aliquam auctor dui, ac eleifend nulla maximus in.
-            
-            In ornare auctor neque, in dictum arcu vehicula ut. Curabitur congue sem arcu. Nam nulla turpis, interdum id nulla et, faucibus elementum erat. Proin commodo sapien sit amet risus varius, id tristique est lobortis. Morbi imperdiet eget ligula ut vehicula. Nulla eleifend diam metus, eu rutrum sapien volutpat quis. Aenean pellentesque elementum mauris ut tristique. Curabitur vulputate laoreet vestibulum. Etiam ac lacus quis mauris pharetra vestibulum. Nullam mollis sem neque, et tincidunt leo hendrerit et. Integer euismod aliquet enim, eget efficitur metus. Pellentesque sed nunc scelerisque, convallis massa ac, efficitur enim. Pellentesque convallis nulla congue neque suscipit, nec dignissim risus ullamcorper. In lacinia eu nunc ut tristique. Mauris quis lorem vel mauris porttitor sodales. Integer ornare vehicula pretium. 
+            H2 Technologies stands at the forefront of innovation, delivering next-generation technology solutions to businesses of all sizes. Our areas of expertise—software development, IT consulting, cloud solutions, and cybersecurity—enable us to craft comprehensive strategies that elevate our clients’ operational efficiency, enhance their digital presence, and secure their critical information. Our team of dedicated professionals is passionate about leveraging cutting-edge tools and industry best practices to help clients navigate the rapidly evolving tech landscape.
+        </p>
+    </div>
+</div>
+
+<div class="p-8">
+    <h2 class="text-2xl font-bold mb-4">Our Mission</h2>
+    <div class="bg-white p-8 rounded-[5px] shadow-lg">
+        <p>
+            At H2 Technologies, our mission is to empower organizations through adaptable, forward-thinking technology solutions that foster sustainable growth and drive long-term success. We are committed to delivering personalized service, ensuring the highest level of integrity, and maintaining unwavering attention to detail in everything we do. By cultivating a culture of continuous innovation and collaboration, we aim to become a trusted partner—enabling clients to confidently embrace the digital future
         </p>
     </div>
 </div>
