@@ -3,8 +3,10 @@
 </header>
 
 <!--This is a placeholder image replace with a static image eventually-->
-<div class="px-4">
-    <img src="https://picsum.photos/2000/400" alt="About Us" class="w-full h-auto">
+<div class="px-8 flex">
+    <img src="doingbusnessstock.png" alt="About Us" class="w-2/5 h-1/3 m-auto" />
+    <img src="teamworkstock.png" alt="About Us" class="w-2/5 h-1/3 m-auto" />
+    <img src="whiteboardstock.png" alt="About Us" class="w-2/5 h-1/3 m-auto" />
 </div>
 <div class="p-8">
     <div class="p-8">
