@@ -2,6 +2,19 @@
   <title>H2 Technologies</title>
 </svelte:head>
 
+<!--add a navbar-->
+<nav class="bg-zinc-800 text-white p-4">
+  <div class="container mr-1 w-fit flex justify-between items-center">
+  <img src="/logo.png" alt="H2 Technologies Logo" class="h-8 inline-block mr-4">
+  <ul class="flex space-x-4 justify-self-end">
+    <li><a href="/" class="hover:underline">Home</a></li>
+    <li><a href="/about" class="hover:underline">About</a></li>
+    <li><a href="/services" class="hover:underline">Services</a></li>
+    <li><a href="/contact" class="hover:underline">Contact</a></li>
+  </ul>
+  </div>
+</nav>
+
 <div class="bg-neutral-100 m-0 p-0">
   <header class="bg-zinc-800 text-white py-8 px-0 text-center font-bold">
     <h1>Welcome to H2 Technologies</h1>
