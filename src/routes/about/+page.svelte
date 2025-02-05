@@ -1,4 +1,9 @@
-<header class="bg-zinc-800 px-0 py-8 text-center font-bold text-white">
+<svelte:head>
+    <title>H2 Technologies</title>
+</svelte:head>
+
+
+<header class="bg-base-200 px-0 py-8 text-center font-bold ">
 	<h1>About Us</h1>
 </header>
 
@@ -8,10 +13,10 @@
 	<img src="teamworkstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
 	<img src="whiteboardstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
 </div>
-<div class="p-8">
-	<div class="p-8">
-		<div class="rounded-[5px] bg-white p-8 shadow-lg">
-			<h2>About Us</h2>
+<div class="p-4">
+	<div class="p-8 bg-base-200 rounded-xl">
+		<h2>About Us</h2>
+		<div class="rounded-xl bg-base-300 p-8 shadow-lg">	
 			<p>
 				H2 Technologies is a leading provider of innovative tech solutions. We specialize in
 				software development, IT consulting, and cutting-edge technology services.
@@ -46,10 +51,10 @@
 	</div>
 </div>
 
-<div class="p-8">
-	<div class="p-8">
+<div class="p-4 mb-2">
+	<div class="p-8 bg-base-200 rounded-xl">
 		<h2 class="mb-4 text-2xl font-bold">Our Mission</h2>
-		<div class="rounded-[5px] bg-white p-8 shadow-lg">
+		<div class="rounded-xl bg-base-300 p-8 shadow-lg">
 			<p>
 				At H2 Technologies, our mission is to empower organizations through adaptable,
 				forward-thinking technology solutions that foster sustainable growth and drive long-term
