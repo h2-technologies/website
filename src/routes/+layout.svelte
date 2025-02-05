@@ -22,6 +22,8 @@
 
 {@render children()}
 
-<footer class="bg-zinc-800 text-white fixed w-full bottom-0 text-center py-4">
+<footer class="bg-zinc-800 text-white fixed w-full bottom-0 text-center py-4 flex justify-center">
+	<a href="" class="hover:underline px-8">Privacy Policy</a>
 	<p>&copy; 2024 H2 Technologies. All rights reserved.</p>
+	<a href="/commitment" class="hover:underline px-8">Commitment message</a>
 </footer>
