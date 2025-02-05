@@ -12,6 +12,8 @@ RUN apk add --no-cache sudo
 
 RUN npm i -g pnpm
 
+RUN pnpm add -D daisyui@latest
+
 RUN pnpm i
 
 RUN pnpm build
