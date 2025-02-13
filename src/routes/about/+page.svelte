@@ -11,7 +11,6 @@
 <div class="flex px-8">
 	<img src="doingbusnessstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
 	<img src="teamworkstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
-	<img src="whiteboardstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
 </div>
 <div class="p-4">
 	<div class="p-8 bg-base-200 rounded-xl">
@@ -25,20 +24,6 @@
 			<ul class="ml-5 block list-disc">
 				<li class="ml-5">Software Development</li>
 				<li class="ml-5">IT Consulting</li>
-				<li class="ml-5">Cloud Solutions</li>
-				<li class="ml-5">Cybersecurity</li>
-				<li class="ml-5">
-					<div class="flex">
-						<p class="pr-1 text-red-700">Coming Soon:</p>
-						<p>Google Workspace Administration</p>
-					</div>
-				</li>
-				<li class="ml-5">
-					<div class="flex">
-						<p class="pr-1 text-red-700">Coming Soon:</p>
-						<p>Microsoft Entra Administration</p>
-					</div>
-				</li>
 			</ul>
 			<h2 class="pt-1">Contact Us</h2>
 			<p>
