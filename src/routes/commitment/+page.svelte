@@ -7,7 +7,7 @@
 </header>
 
 <!--This is a placeholder image replace with a static image eventually-->
-<div class="flex px-8">
+<div class="flex px-8" id="pictures">
 	<img src="doingbusnessstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
 	<img src="teamworkstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
 	<img src="whiteboardstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
