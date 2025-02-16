@@ -8,12 +8,12 @@
 
 <div class="bg-slate-300 h-screen w-screen min-w-fit">
 	<Analytics />
-	
+
 	<div>
 		<Navbar />
 	</div>
 
-	<main class="font-roboto flex-col items-center justify-center text-center">
+	<main class="font-roboto flex-col items-center justify-center text-center text-slate-800">
 		{@render children()}
 	</main>
 

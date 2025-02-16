@@ -16,6 +16,7 @@
     <NavLi class="text-lg font-roboto" href="/">Home</NavLi>
     <NavLi class="text-lg font-roboto" href="/about">About</NavLi>
     <NavLi class="text-lg font-roboto" href="/commitment">Commitment</NavLi>
+    <NavLi class="text-lg font-roboto" href="/contact">Contact</NavLi>
   </NavUl>
 
 </Navbar>
