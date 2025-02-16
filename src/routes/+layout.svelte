@@ -1,27 +1,25 @@
 <script lang="ts">
 	import '../app.css';
 	import Analytics from "$lib/components/analytics.svelte";
+	import Navbar from '$lib/components/Navbar.svelte';
 	let { children } = $props();
 
 </script>
 
-<Analytics />
-<!--add a navbar-->
-<nav class="bg-base-300 p-4">
-	<div class="container mr-1 w-fit flex justify-between items-center">
-	<img src="/logo.png" alt="H2 Technologies Logo" class="h-8 inline-block mr-4">
-	<ul class="flex space-x-4 justify-self-end">
-		<li><a href="/" class="hover:underline">Home</a></li>
-		<li><a href="/about" class="hover:underline">About</a></li>
-		<li><a href="/commitment" class="hover:underline">Commitment</a></li>
-	</ul>
+<div class="bg-slate-300 h-screen w-screen min-w-fit">
+	<Analytics />
+
+	<div>
+		<Navbar />
 	</div>
-</nav>
 
-{@render children()}
+	<main class="font-roboto flex-col items-center justify-center text-center text-slate-800">
+		{@render children()}
+	</main>
 
-<footer class="bg-base-300 fixed w-full bottom-0 text-center py-4 flex justify-center">
-	<a href="/privacy" class="hover:underline px-8">Privacy Policy</a>
-	<p>&copy; 2024 H2 Technologies. All rights reserved.</p>
-	<a href="/commitment" class="hover:underline px-8">Commitment message</a>
-</footer>
+	<footer class="fixed w-full bottom-0 text-center py-4 flex justify-center bg-base-300">
+		<a href="/privacy" class="hover:underline px-8">Privacy Policy</a>
+		<p>&copy; {new Date().getFullYear()} H2 Technologies. All rights reserved.</p>
+		<a href="/commitment" class="hover:underline px-8">Commitment message</a>
+	</footer>
+</div>
