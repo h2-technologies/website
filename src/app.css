@@ -2,16 +2,33 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+body {
+  height: 100vh;
+}
 
 @layer base {
-  body {
-    font-family: Arial, sans-serif;
-  }
   h1 {
     font-size: 2em;
   }
   h2 {
     font-size: 1.5em;
     font-weight: 700;
+  }
+  @font-face {
+    font-family: 'Roboto Condensed';
+    src: url('/fonts/Roboto_Condensed-Regular.ttf');
+    font-weight: regular;
+    font-display: swap;
+  }
+}
+
+@layer utilities {
+  .no-scrolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
