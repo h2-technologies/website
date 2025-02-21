@@ -6,6 +6,12 @@
 	<h1>Commitment</h1>
 </header>
 
+<!--This is a placeholder image replace with a static image eventually-->
+<div class="flex px-8" id="pictures">
+	<img src="doingbusnessstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
+	<img src="teamworkstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
+	<img src="whiteboardstock.png" alt="About Us" class="m-auto h-1/3 w-2/5" />
+</div>
 <div class="text-center">
 	<div class="flex jusity-center items-center rounded-md m-2">
 		<img src="doingbusnessstock.png" alt="About Us" class="h-1/3 w-2/5" />
