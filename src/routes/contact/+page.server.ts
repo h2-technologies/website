@@ -7,7 +7,7 @@ export const actions: Actions = {
     const message = formData.get('message')?.toString();
     const name = formData.get('name')?.toString();
 
-    await fetch("https://chat.googleapis.com/v1/spaces/AAAAMpMBOZY/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=DN6sPO4l76201IGpD-VmGyAISjQZWhQHkVlRvjTQhd4", {
+    await fetch("https://chat.googleapis.com/v1/spaces/AAAAMpMBOZY/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=2gkFuU4X3uOKfZopyblDj4UKbHDPW2AuCXGm07uXqds", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
