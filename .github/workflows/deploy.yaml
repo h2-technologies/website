@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, nginx]
+    runs-on: [self-hosted, linode]
     steps:
       - name: Setup
         uses: actions/checkout@v2
