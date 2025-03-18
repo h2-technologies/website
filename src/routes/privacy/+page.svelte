@@ -3,16 +3,16 @@
 </svelte:head>
 
 <div class="bg-base-100 m-0 p-0">
-    <header class="bg-base-200 py-8 px-0 text-center font-bold">
+    <header class="bg-slate-300 py-8 px-0 text-center text-cyan-700 font-bold">
         <h1>Privacy Policy</h1>
     </header>
 </div>
-<div class="p-4">
-	<div class="p-8 bg-base-200 mb-2 rounded-xl">
+<div class=" pb-16 text-slate-200 bg-slate-300">
+	<div class="p-8 bg-base-100 mb-2 rounded-xl">
         <div class="card bg-base-300 mb-2 w-full shadow-xl">
             <div class="card-body flex flex-col items-center">
                 <h2 class="card-title ">H2 Technologies LLC Website Privacy Notice</h2>
-                <p>Effective Date: [Date - e.g., October 26, 2023]</p>
+                <p>Effective Date: October 26, 2023</p>
                 <p>H2 Technologies LLC ("we," "us," or "our") is committed to protecting the privacy of visitors to our website (the "Site").
                 This Privacy Notice explains how we collect, use, and protect your information when you visit our Site.
                 </p>
@@ -23,7 +23,7 @@
             <div class="card-body flex flex-col items-center">
                 <h2 class="card-title ">Information We Collect</h2>
                 <p>We use Google Analytics to analyze website traffic and improve user experience. Google Analytics uses cookies to collect anonymous information about your visit, such as:</p>
-                <ul class="list-disc pl-5">
+                <ul class="list-disc pl-5 text-left">
                     <li>Pages visited</li>
                     <li>Time spent on pages</li>
                     <li>Referring website</li>
@@ -45,7 +45,7 @@
             <div class="card-body flex flex-col items-center">
                 <h2 class="card-title ">How We Use Your Information</h2>
                 <p>The information collected through Google Analytics is used to understand how visitors interact with our Site. This helps us:</p>
-                <ul class="list-disc pl-5">
+                <ul class="list-disc text-left pl-5">
                     <li>Improve the Site's content and design</li>
                     <li>Identify popular pages and areas for improvement</li>
                     <li>Understand user demographics and interests</li>
@@ -63,7 +63,7 @@
             <div class="card-body flex flex-col items-center">
                 <h2 class="card-title ">Contacting Us</h2>
                 <p>We encourage you to contact us with any questions or concerns. You can reach us via:</p>
-                <ul class="list-disc pl-5">
+                <ul class="list-disc text-left pl-5">
                     <li>Email: admin@h2technologiesllc.com</li>
                     <li>Phone: 567-261-0762</li>
                 </ul>
@@ -84,7 +84,7 @@
         <div class="card bg-base-300 mb-2 w-full shadow-xl">
             <div class="card-body flex flex-col items-center">
                 <h2 class="card-title ">Children's Privacy</h2>
-                <p>Our Site is not intended for children under the age of 13. We do not knowingly collect personal information from2 children under 13.</p>
+                <p>Our Site is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13.</p>
             </div> 
         </div>
         <div class="card bg-base-300 mb-2 w-full shadow-xl">
@@ -100,3 +100,4 @@
         </div>
     </div>
 </div>
+
