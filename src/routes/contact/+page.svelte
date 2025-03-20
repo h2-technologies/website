@@ -16,19 +16,19 @@
     <div class="py-3 text-center">
       <label class="text-xl font-bold" for="name">Name:</label>
       <br>
-      <input type="text" name="name" id="name" use:validators={[required]} class="w-[90%]">
+      <input type="text" name="name" id="name" use:validators={[required]} class="w-[90%] rounded-lg">
     </div>
     <div class="py-3 text-center">
       <label class="text-xl font-bold" for="email">Email:</label>
       <br>
-      <input type="email" name="email" id="email" use:validators={[email, required]} class="w-[90%]">
+      <input type="email" name="email" id="email" use:validators={[email, required]} class="w-[90%] rounded-lg">
     </div>
     <div class="py-3 text-center">
       <label class="text-xl font-bold" for="message">Message:</label>
-      <textarea name="message" id="message" rows="10" cols="30" use:validators={[required]} class="w-[90%]"></textarea>
+      <textarea name="message" id="message" rows="10" cols="30" use:validators={[required]} class="w-[90%] rounded-lg"></textarea>
     </div>
     <div class="py-3 text-center">
-      <button disabled={!$form.valid} type="submit" class="bg-emerald-500 text-white w-28 h-10 text-xl">Submit</button>
+      <button disabled={!$form.valid} type="submit" class="bg-cyan-700 text-white w-28 h-10 text-xl rounded-lg">Submit</button>
     </div>
   </form>
 </div>

@@ -13,7 +13,7 @@
 	<div class="p-9 rounded-xl">
 		<h2 class="mb-4 text-2xl text-cyan-700 font-bold text-center">Who We Are</h2>
 		<div class="flex flex-wrap justify-center">
-			<div class="text-center text-amber-600 outline rounded-lg p-5 mr-8 w-64 outline-cyan-700">
+			<div class="text-center text-amber-600 outline rounded-lg p-5 md:mr-8 lg:mr-8 sm:mb-8 w-64 outline-cyan-700">
 				<img src="/austin.jpg" alt="Austin Hadley" class="w-24 h-24 mx-auto rounded-full mb-1 outline outline-cyan-700"/>
 				<div class="my-5">
 					<h3 class="text-2xl font-bold">Austin Hadley</h3>
@@ -29,7 +29,7 @@
 					</a>
 				</div>
 			</div>
-			<div class="text-center text-amber-600 outline rounded-lg p-5 mr-8 w-64 outline-cyan-700">
+			<div class="text-center text-amber-600 outline rounded-lg p-5 md:mr-8 lg:mr-8 sm:mb-8 w-64 outline-cyan-700">
 				<img src="/samuel.jpg" alt="Austin Hadley" class="w-24 h-24 mx-auto rounded-full mb-1 outline outline-cyan-700"/>
 				<div class="my-5">
 					<h3 class="text-2xl font-bold">Samuel Valencia</h3>
@@ -45,7 +45,7 @@
 					</a>
 				</div>
 			</div>
-			<div class="text-center text-amber-600 outline rounded-lg p-5 mr-8 w-64 outline-cyan-700">
+			<div class="text-center text-amber-600 outline rounded-lg p-5 md:mr-8 lg:mr-8 sm:mb-8 w-64 outline-cyan-700">
 				<Icon icon="mdi:person" class="text-slate-800 w-24 h-24 mx-auto rounded-full mb-1 outline outline-cyan-700"/>
 				<div class="my-5">
 					<h3 class="text-2xl font-bold">Eric Doepke</h3>
@@ -61,7 +61,7 @@
 					</a>
 				</div>
 			</div>
-			<div class="text-center text-amber-600 outline rounded-lg p-5 w-64 outline-cyan-700">
+			<div class="text-center text-amber-600 outline rounded-lg p-5 sm:mb-8 w-64 outline-cyan-700">
 				<Icon icon="mdi:person" class="text-slate-800 w-24 h-24 mx-auto rounded-full mb-1 outline outline-cyan-700"/>
 				<div class="my-5">
 					<h3 class="text-2xl font-bold">Joshua Lambert</h3>
