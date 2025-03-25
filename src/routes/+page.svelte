@@ -6,8 +6,6 @@
   <div class="flex w-full">
   </div>
   <header class="py-8 px-0 text-center font-bold text-slate-300 text-2xl">
-    <img
-    <h1>Welcome to H2 Technologies</h1>
   </header>
 </div>
 

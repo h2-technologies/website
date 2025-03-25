@@ -12,7 +12,7 @@
   <h1 class="text-xl">If you'd like to get in touch, please fill out this form and we will reach out.</h1>
 </div>
 <div>
-  <form use:form method="POST" class="w-[500px] mx-auto my-0 border-neutral-300 border-[1px] border-solid">
+  <form use:form method="POST" class="w-screen h-fit mx-auto my-0 border-neutral-300 border-[1px] border-solid">
     <div class="py-3 text-center">
       <label class="text-xl font-bold" for="name">Name:</label>
       <br>
@@ -28,7 +28,7 @@
       <textarea name="message" id="message" rows="10" cols="30" use:validators={[required]} class="w-[90%] rounded-lg"></textarea>
     </div>
     <div class="py-3 text-center">
-      <button disabled={!$form.valid} type="submit" class="bg-cyan-700 text-white w-28 h-10 text-xl rounded-lg">Submit</button>
+      <button disabled={!$form.valid} type="submit" class="bg-cyan-700 text-white w-28 h-10 text-xl mb-24 rounded-lg">Submit</button>
     </div>
   </form>
 </div>

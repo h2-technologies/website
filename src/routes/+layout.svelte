@@ -6,7 +6,7 @@
 
 </script>
 
-<div class="bg-slate-300 h-screen w-screen min-w-fit">
+<div class="bg-slate-300 h-fit w-screen min-w-fit">
 	<Analytics />
 	<div>
 		<Navbar />

@@ -16,7 +16,7 @@
   <NavUl {activeUrl}>
     <NavLi class="text-2xl font-nunito" href="/">Home</NavLi>
     <NavLi class="text-2xl font-nunito" href="/about">About</NavLi>
-    <NavLi class="text-2xl font-nunito" href="/commitment">Commitment</NavLi>
+    <NavLi class="text-2xl font-nunito" href="/commitment">Services</NavLi>
     <NavLi class="text-2xl font-nunito" href="/contact">Contact</NavLi>
   </NavUl>
 
