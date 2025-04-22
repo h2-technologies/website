@@ -40,6 +40,7 @@
 	},
 	"dependencies": {
 		"@iconify/svelte": "^4.2.0",
+		"@prisma/client": "6.3.1",
 		"prisma": "^6.3.1",
 		"surrealdb": "^1.1.0",
 		"svelte-use-form": "^2.10.0"

@@ -6,7 +6,7 @@
 
 </script>
 
-<div class="bg-slate-300 h-screen w-screen min-w-fit">
+<div class="h-screen w-screen min-w-fit">
 	<Analytics />
 	<div>
 		<Navbar />
@@ -16,8 +16,7 @@
 		{@render children()}
 	</main>
 
-	<footer class="fixed w-full bottom-0 text-start p-4 justify-center bg-slate-800 text-slate-100 text-md">
-		<a href="/privacy" class="hover:underline ">Privacy Policy</a>
+	<footer class="w-full bottom-0 text-start p-4 justify-center bg-slate-800 text-slate-100 text-md">
 		<p>&copy;{new Date().getFullYear()} H2 Technologies. All rights reserved.</p>
 	</footer>
 </div>
