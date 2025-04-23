@@ -1,6 +1,11 @@
 <script lang="ts">
+	import { enhance } from "$app/forms";
+  import { useForm } from "svelte-use-form";
+
+  const form = useForm();
+
   // Form data structure
-  let formData = {
+  let formData = $state({
     fullName: "",
     email: "",
     phone: "",
@@ -18,13 +23,13 @@
     endDate: "",
     budget: "",
     existingSystems: "",
-    files: [],
+    files: [] as File[],
     numEmployees: "",
     numLocations: "",
     networkInfrastructure: "",
     securityRequirements: "",
     complianceRequirements: "",
-  };
+  });
 </script>
 
 <svelte:head>
@@ -41,7 +46,7 @@
     will be kept confidential.
   </p>
 
-  <form enctype="multipart/form-data" class="space-y-6" method="POST">
+  <form use:form use:enhance enctype="multipart/form-data" class="space-y-6" method="POST">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label for="fullName" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -50,6 +55,7 @@
         <input
           id="fullName"
           type="text"
+          name="fullName"
           bind:value={formData.fullName}
           required
           placeholder="John Doe"
@@ -63,6 +69,7 @@
         <input
           id="email"
           type="email"
+          name="email"
           bind:value={formData.email}
           required
           placeholder="john.doe@example.com"
@@ -76,6 +83,7 @@
         <input
           id="phone"
           type="tel"
+          name="phone"
           bind:value={formData.phone}
           placeholder="123-456-7890"
           class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
@@ -88,6 +96,7 @@
         <input
           id="companyName"
           type="text"
+          name="companyName"
           bind:value={formData.companyName}
           placeholder="Acme Corp"
           class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
@@ -102,6 +111,7 @@
       <select
         id="serviceCategory"
         bind:value={formData.serviceCategory}
+        name="serviceCategory"
         required
         class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
       >
@@ -121,6 +131,7 @@
       <input
         id="projectTitle"
         type="text"
+        name="projectTitle"
         bind:value={formData.projectTitle}
         required
         placeholder="New Website Design"
@@ -134,6 +145,7 @@
       >
       <textarea
         id="projectDescription"
+        name="projectDescription"
         bind:value={formData.projectDescription}
         required
         placeholder="Describe your project in detail..."
@@ -147,6 +159,7 @@
       >
       <textarea
         id="projectGoals"
+        name="projectGoals"
         bind:value={formData.projectGoals}
         placeholder="Describe your project goals..."
         class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-h-[120px]"
@@ -159,6 +172,7 @@
       >
       <textarea
         id="targetAudience"
+        name="targetAudience"
         bind:value={formData.targetAudience}
         placeholder="Who is the target audience?..."
         class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-h-[120px]"
@@ -171,6 +185,7 @@
       >
       <textarea
         id="keyFeatures"
+        name="keyFeatures"
         bind:value={formData.keyFeatures}
         placeholder="List the key features of your project..."
         class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-h-[120px]"
@@ -184,6 +199,7 @@
         >
         <textarea
           id="devRequirements"
+          name="devRequirements"
           bind:value={formData.devRequirements}
           placeholder="Preferred languages, platforms, CMS, etc."
           class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-h-[120px]"
@@ -198,6 +214,7 @@
         >
         <textarea
           id="workspaceRequirements"
+          name="workspaceRequirements"
           bind:value={formData.workspaceRequirements}
           placeholder="Number of users, specific apps needed..."
           class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-h-[120px]"
@@ -213,6 +230,7 @@
           >
           <input
             id="numEmployees"
+            name="numEmployees"
             type="number"
             bind:value={formData.numEmployees}
             placeholder="e.g., 100"
@@ -226,6 +244,7 @@
           <input
             id="numLocations"
             type="number"
+            name="numLocations"
             bind:value={formData.numLocations}
             placeholder="e.g., 5"
             class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
@@ -238,6 +257,7 @@
         >
         <textarea
           id="networkInfrastructure"
+          name="networkInfrastructure"
           bind:value={formData.networkInfrastructure}
           placeholder="Describe your current network setup..."
           class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-h-[120px]"
@@ -249,6 +269,7 @@
         >
         <textarea
           id="securityRequirements"
+          name="securityRequirements"
           bind:value={formData.securityRequirements}
           placeholder="Firewall, VPN, intrusion prevention, etc."
           class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-h-[120px]"
@@ -260,6 +281,7 @@
         >
         <textarea
           id="complianceRequirements"
+          name="complianceRequirements"
           bind:value={formData.complianceRequirements}
           placeholder="HIPAA, PCI DSS, etc."
           class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-h-[120px]"
@@ -275,6 +297,7 @@
         <input
           id="startDate"
           type="date"
+          name="startDate"
           bind:value={formData.startDate}
           class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
         />
@@ -286,6 +309,7 @@
         <input
           id="endDate"
           type="date"
+          name="endDate"
           bind:value={formData.endDate}
           class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
         />
@@ -298,6 +322,7 @@
       >
       <input
         id="budget"
+        name="budget"
         type="text"
         bind:value={formData.budget}
         placeholder="$10,000 - $20,000"
@@ -311,6 +336,7 @@
       >
       <textarea
         id="existingSystems"
+        name="existingSystems"
         bind:value={formData.existingSystems}
         placeholder="Describe any systems that need to be integrated with..."
         class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-h-[120px]"
@@ -324,6 +350,7 @@
       <input
         id="files"
         type="file"
+        name="files"
         multiple
         class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
       />

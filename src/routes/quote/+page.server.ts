@@ -1,12 +1,13 @@
-import { fail, redirect } from "@sveltejs/kit";
 import { prisma } from '$lib/db';
 
 import type { Actions } from "./$types";
 
 export const actions: Actions = {
-  default: async ({ request, locals }) => {
+  default: async ({ request }) => {
 
     const formData = await request.formData();
+
+    console.log(Object.fromEntries(formData));
     
     const file: File = formData.get('files') as File;
     const fullName = formData.get('fullName') as string;
@@ -32,6 +33,32 @@ export const actions: Actions = {
     const networkInfrastructure = formData.get('networkInfrastructure') as string;
     const securityRequirements = formData.get('securityRequirements') as string;
     const complianceRequirements = formData.get('complianceRequirements') as string;
+
+    //log every var to console
+    console.log("fullName", fullName);
+    console.log("email", email);
+    console.log("phone", phone);
+    console.log("companyName", companyName);
+    console.log("serviceCategory", serviceCategory);
+    console.log("projectTitle", projectTitle);
+    console.log("projectDescription", projectDescription);
+    console.log("projectGoals", projectGoals);
+    console.log("targetAudience", targetAudience);
+    console.log("keyFeatures", keyFeatures);
+    console.log("devRequirements", devRequirements);
+    console.log("workspaceRequirements", workspaceRequirements);
+    console.log("fortinetRequirements", fortinetRequirements);
+    console.log("startDate", startDate);
+    console.log("endDate", endDate);
+    console.log("budget", budget);
+    console.log("existingSystems", existingSystems);
+    console.log("files", files);
+    console.log("numEmployees", numEmployees);
+    console.log("numLocations", numLocations);
+    console.log("networkInfrastructure", networkInfrastructure);
+    console.log("securityRequirements", securityRequirements);
+    console.log("complianceRequirements", complianceRequirements);
+    console.log("file", file);
 
     //TODO: Implement upload thing
     
