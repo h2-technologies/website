@@ -1,3 +1,4 @@
+import { GOOGLE_CHAT_WEBHOOK } from '$env/static/private';
 import { prisma } from '$lib/db';
 
 import type { Actions } from "./$types";
@@ -8,6 +9,8 @@ export const actions: Actions = {
     const formData = await request.formData();
 
     console.log(Object.fromEntries(formData));
+
+    const fileIds: string[] = [];
     
     const files = formData.getAll('files') as File[];
     const fullName = formData.get('fullName') as string;
@@ -33,12 +36,55 @@ export const actions: Actions = {
     const securityRequirements = formData.get('securityRequirements') as string;
     const complianceRequirements = formData.get('complianceRequirements') as string;
 
-    //TODO: Implement upload thing
+    if (files.length > 0) {
+      for (const file of files) {
+        const fileId = crypto.randomUUID();
+        //TODO: Upload file to GCS
+
+        fileIds.push(fileId);
+      }
+    }
     
     //TODO: Insert to DB
+    await prisma.quote.create({
+      data: {
+        fullName,
+        email,
+        phone,
+        company: companyName,
+        serviceCategory,
+        projectTitle,
+        projectDescription,
+        projectGoals,
+        targetAudience,
+        keyFeatures,
+        devRequirements,
+        workspaceRequirements,
+        fortinetRequirements,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        budget: parseFloat(budget),
+        existingSystems,
+        numEmployees: parseInt(numEmployees),
+        numLocations: parseInt(numLocations),
+        networkInfrastructure,
+        securityRequirements,
+        complianceRequirements,
+        files: fileIds.join(',')
+      }
+    })
 
-    //TODO: Send google chat webhook
+    await fetch(GOOGLE_CHAT_WEBHOOK, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: `Hello! ${fullName} submitted a quote request.`
+      })
+    })
 
-    //TODO: Send OK Status
+    //TODO: Send user to success page
+    
   }
 }
