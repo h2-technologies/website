@@ -1,6 +1,5 @@
 import { GOOGLE_CHAT_WEBHOOK } from '$env/static/private';
 import { prisma } from '$lib/db';
-import { storage } from '$lib/storage';
 
 import type { Actions } from "./$types";
 
@@ -40,8 +39,7 @@ export const actions: Actions = {
     if (files.length > 0) {
       for (const file of files) {
         const fileId = crypto.randomUUID();
-        //TODO: Upload file to GCS
-        let buckets = await storage.getBuckets();
+        
         console.log(buckets);
         fileIds.push(fileId);
       }
