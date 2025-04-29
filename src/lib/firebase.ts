@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getStorage } from "firebase/storage";
 import { FIREBASE_API_KEY, FIREBASE_APP_ID } from "$env/static/private";
 
 const firebaseConfig = {
@@ -12,5 +12,5 @@ const firebaseConfig = {
   measurementId: FIREBASE_APP_ID
 }
 
-export const firebase = initializeApp(firebaseConfig);
-const analytics = getAnalytics(firebase);
+const firebase = initializeApp(firebaseConfig);
+export const storage = getStorage(firebase);

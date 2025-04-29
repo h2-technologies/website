@@ -1,5 +1,7 @@
 import { GOOGLE_CHAT_WEBHOOK } from '$env/static/private';
 import { prisma } from '$lib/db';
+import { storage } from '$lib/firebase';
+import { ref, uploadBytes } from 'firebase/storage';
 
 import type { Actions } from "./$types";
 
@@ -36,15 +38,7 @@ export const actions: Actions = {
     const securityRequirements = formData.get('securityRequirements') as string;
     const complianceRequirements = formData.get('complianceRequirements') as string;
 
-    if (files.length > 0) {
-      for (const file of files) {
-        const fileId = crypto.randomUUID();
-        
-        console.log(buckets);
-        fileIds.push(fileId);
-      }
-    }
-    await prisma.quote.create({
+    const data = await prisma.quote.create({
       data: {
         fullName,
         email,
@@ -68,9 +62,30 @@ export const actions: Actions = {
         networkInfrastructure,
         securityRequirements,
         complianceRequirements,
+        files: ""
+      }
+    })
+
+    if (files.length > 0) {
+      for (const file of files) {
+        const fileId = crypto.randomUUID();
+        const fileRef = ref(storage, `${data.id}/${fileId}`);
+        //eslint-disable-next-line
+        uploadBytes(fileRef, file).then((_) => {
+          fileIds.push(fileId);
+        });
+      }
+    }
+
+    await prisma.quote.update({
+      where: {
+        id: data.id
+      },
+      data: {
         files: fileIds.join(',')
       }
     })
+    
 
     await fetch(GOOGLE_CHAT_WEBHOOK, {
       method: 'POST',
