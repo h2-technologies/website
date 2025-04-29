@@ -1,10 +1,13 @@
 <script lang="ts">
+	import Icon from "@iconify/svelte";
+
   const services = [
     {
       title: 'Software & Website Development',
       description:
         'Custom software solutions tailored to your unique business needs, from web applications to enterprise platforms. We design and develop user-friendly and scalable websites.',
-      icon: '/icon-development.svg', //  Replace with your actual icon paths
+      type: 'icon',
+      icon: 'material-symbols:code-blocks', //  Replace with your actual icon paths
       link: '/services/development',
     },
     {
@@ -12,6 +15,7 @@
       description:
         'Enhance collaboration and productivity with Google Workspace. We offer seamless sales, expert administration, and ongoing support to maximize your team\'s efficiency.',
       icon: '/google.png', // Replace with your actual icon paths
+      type: 'png',
       link: '/services/google-workspace',
     },
     {
@@ -19,8 +23,16 @@
       description:
         'Secure your digital infrastructure with industry-leading Fortinet hardware. We provide consultation, sales, and implementation of robust security solutions.',
       icon: '/fortinet.png', // Replace with your actual icon paths
+      type: 'png',
       link: '/services/fortinet',
     },
+    {
+      title: "1Password",
+      description: "Secure your passwords and sensitive data with 1Password. We offer consultation, sales, and implementation of this industry-leading password management solution.",
+      icon: '/1password.png', // Replace with your actual icon paths
+      type: 'png',
+      link: '/services/1password',
+    }
   ];
 </script>
 
@@ -62,7 +74,11 @@ class="hero bg-[url(/herobackground.jpg)] bg-cover bg-center backdrop-blur-sm fl
       {#each services as service}
         <div class="service-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-transform transform hover:scale-105">
           <div class="service-icon mb-4">
-            <img src={service.icon} alt={service.title} class="w-12 h-12 mx-auto" />
+            {#if service.type == "png"}
+              <img src={service.icon} alt={service.title} class="w-12 h-12 mx-auto" />
+            {:else}
+              <Icon icon={service.icon} class="w-[2rem] h-[2rem] mx-auto bg-white rounded-md" />
+            {/if}
           </div>
           <h3 class="service-title text-xl font-semibold text-gray-900 dark:text-white mb-2">{service.title}</h3>
           <p class="service-description text-gray-600 dark:text-gray-300 mb-4">{service.description}</p>

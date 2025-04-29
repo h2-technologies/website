@@ -4,13 +4,12 @@ import { storage } from '$lib/firebase';
 import { ref, uploadBytes } from 'firebase/storage';
 
 import type { Actions } from "./$types";
+import { redirect } from '@sveltejs/kit';
 
 export const actions: Actions = {
   default: async ({ request }) => {
 
     const formData = await request.formData();
-
-    console.log(Object.fromEntries(formData));
 
     const fileIds: string[] = [];
     
@@ -98,6 +97,7 @@ export const actions: Actions = {
     })
 
     //TODO: Send user to success page
+    redirect(303, '/quote/success');
     
   }
 }
