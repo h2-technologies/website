@@ -25,7 +25,7 @@
     </div>
     <div class="py-3 text-center">
       <label class="text-xl font-bold" for="message">Message:</label>
-      <textarea name="message" id="message" rows="10" cols="30" use:validators={[required]} class="w-[90%]"></textarea>
+      <textarea name="message" id="message" rows="10" cols="30" maxlength="300" use:validators={[required]} class="w-[90%]"></textarea>
     </div>
     <div class="py-3 text-center">
       <button disabled={!$form.valid} type="submit" class="bg-emerald-500 text-white w-28 h-10 text-xl">Submit</button>
