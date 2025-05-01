@@ -35,3 +35,8 @@ model Quote {
 
   @@map("quotes")
 }
+
+model ContactRequest {
+  
+  @@map("contact_requests")
+}

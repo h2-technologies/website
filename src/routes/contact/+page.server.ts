@@ -1,3 +1,4 @@
+import { GOOGLE_CHAT_WEBHOOK } from "$env/static/private";
 import type { Actions } from "@sveltejs/kit";
 
 export const actions: Actions = {
@@ -7,7 +8,7 @@ export const actions: Actions = {
     const message = formData.get('message')?.toString();
     const name = formData.get('name')?.toString();
 
-    await fetch("https://chat.googleapis.com/v1/spaces/AAAAMpMBOZY/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=2gkFuU4X3uOKfZopyblDj4UKbHDPW2AuCXGm07uXqds", {
+    await fetch(GOOGLE_CHAT_WEBHOOK, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

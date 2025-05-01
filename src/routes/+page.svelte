@@ -25,13 +25,6 @@
       icon: '/fortinet.png', // Replace with your actual icon paths
       type: 'png',
       link: '/services/fortinet',
-    },
-    {
-      title: "1Password",
-      description: "Secure your passwords and sensitive data with 1Password. We offer consultation, sales, and implementation of this industry-leading password management solution.",
-      icon: '/1password.png', // Replace with your actual icon paths
-      type: 'png',
-      link: '/services/1password',
     }
   ];
 </script>
