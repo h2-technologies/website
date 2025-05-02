@@ -14,7 +14,7 @@
         'User-friendly design',
         'Ongoing maintenance and support',
       ],
-      image: '/service-development.jpg', // Replace with your actual image path
+      image: 'material-symbols:code-blocks', // Replace with your actual image path
     },
     {
       title: 'Google Workspace',
@@ -29,7 +29,7 @@
         'Ongoing administration and support',
         'Optimization of workflows',
       ],
-      image: '/service-google-workspace.jpg', // Replace with your actual image path
+      image: '/google.png', // Replace with your actual image path
     },
     {
       title: 'Fortinet Equipment',
@@ -44,7 +44,7 @@
         'Endpoint security',
         'Ongoing security monitoring and support',
       ],
-      image: '/service-fortinet.jpg', // Replace with your actual image path
+      image: '/fortinet.png', // Replace with your actual image path
     },
   ];
 </script>

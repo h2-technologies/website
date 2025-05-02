@@ -37,6 +37,31 @@ model Quote {
 }
 
 model ContactRequest {
-  
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  clientId  String?  @map("client_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   @@map("contact_requests")
+  @@index([clientId], name: "idx_contact_requests_client_id")
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String
+  address   String
+  city      String
+  state     String
+  zip       String
+  country   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("clients")
 }
