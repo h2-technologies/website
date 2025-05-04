@@ -100,19 +100,13 @@
 			</h2>
 			<div class="social-links flex gap-4">
 				<a
-					href="#"
+					href="https://www.facebook.com/profile.php?id=61572878831678"
 					class="text-blue-500 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
 				>
 					Facebook
 				</a>
 				<a
-					href="#"
-					class="text-blue-500 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-				>
-					Twitter
-				</a>
-				<a
-					href="#"
+					href="https://www.linkedin.com/company/h2technologiesllc"
 					class="text-blue-500 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
 				>
 					LinkedIn
