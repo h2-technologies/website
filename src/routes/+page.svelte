@@ -45,12 +45,6 @@ class="hero bg-[url(/herobackground.jpg)] bg-cover bg-center backdrop-blur-sm fl
     </p>
     <div class="hero-buttons flex flex-wrap justify-center gap-4">
       <a
-        href="/services"
-        class="primary-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition-transform transform hover:translate-y-[-2px] shadow-lg hover:shadow-xl"
-      >
-        Explore Our Services
-      </a>
-      <a
         href="/contact"
         class="primary-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition-transform transform hover:translate-y-[-2px] shadow-lg hover:shadow-xl"
       >

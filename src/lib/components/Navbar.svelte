@@ -2,7 +2,6 @@
   export let logo = '/whitelogo.png'; // Default logo path
   export let navLinks = [
     { text: 'Home', href: '/' },
-    { text: 'Services', href: '/services' },
     { text: 'About', href: '/about' },
     { text: 'Contact', href: '/contact' },
   ];
