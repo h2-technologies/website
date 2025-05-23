@@ -20,6 +20,11 @@ export default ts.config(
 				...globals.browser,
 				...globals.node
 			}
+		},
+		rules: {
+			"no-unused-vars": ["error", {
+				"varsIgnorePattern": "_"
+			}]
 		}
 	},
 	{
@@ -29,6 +34,18 @@ export default ts.config(
 			parserOptions: {
 				parser: ts.parser
 			}
+		},
+		rules: {
+			"no-unused-vars": ["error", {
+				"varsIgnorePattern": "_"
+			}]
+		}
+	},
+	{
+		rules: {
+			"no-unused-vars": ["error", {
+				"varsIgnorePattern": "_"
+			}]
 		}
 	}
 );
