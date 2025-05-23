@@ -13,3 +13,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Deploy
         run: docker compose up --build -d
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+      FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+      FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
+      GOOGLE_CHAT_WEBHOOK: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
