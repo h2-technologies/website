@@ -1,4 +1,5 @@
 import { Icon } from "@iconify-icon/react";
+import { Metadata } from "next";
 import Head from "next/head";
 
 //Constant with our services
@@ -26,13 +27,13 @@ const services = [
   }
 ]
 
+export const metadata: Metadata = {
+  title: "H2 Technologies"
+}
+
 export default function Page() {
   return (
     <div>
-      <Head>
-        <title>H2 Technologies</title>
-      </Head>
-
       <section
         className="hero bg-[url(/herobackground.jpg)] bg-cover bg-center backdrop-blur-sm flex items-center justify-center"
       >
