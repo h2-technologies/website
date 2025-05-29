@@ -1,3 +1,22 @@
 @import "tailwindcss";
+/*
 @plugin "flowbite-react/plugin/tailwindcss";
 @source "../.flowbite-react/class-list.json";
+*/
+
+@layer base {
+  * {
+    font: var(--font-roboto);
+  }
+
+  @font-face {
+    font-family: 'Roboto Condensed';
+    src: url('/fonts/Roboto_Condensed-Regular.ttf');
+    font-weight: regular;
+    font-display: swap;
+  }
+}
+
+@theme {
+  --font-roboto: "Roboto Condensed";
+}

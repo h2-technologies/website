@@ -1,4 +1,5 @@
 import { Icon } from "@iconify-icon/react";
+import { Metadata } from "next";
 
 const teamMembers = [
   {
@@ -32,6 +33,10 @@ const clients = [
   { name: 'Bandit Machine', logo: '/clients/bandit-machine.png' }
 ];
 
+export const metadata: Metadata = {
+  title: "About Us | H2 Technologies",
+}
+
 export default function AboutPage() {
   return (
     <main className="about-us-page">
@@ -43,7 +48,7 @@ export default function AboutPage() {
         </div>
       </header>
 
-      <section className="company-overview py-16">
+      <section className="company-overview py-16 dark:bg-[#1e2329]">
         <div className="container mx-auto space-y-8">
           <h2 className="text-3xl font-semibold text-gray-800 dark:text-white">
             Company Overview
@@ -141,7 +146,7 @@ export default function AboutPage() {
       </section>
       {
         teamMembers && teamMembers.length > 0 ?
-          <section className="our-team py-16">
+          <section className="our-team py-16 bg-[#1e2329]">
             <div className="container mx-auto space-y-8">
               <h2 className="text-3xl font-semibold text-gray-800 dark:text-white text-center">
                 Meet Our Team
@@ -187,7 +192,7 @@ export default function AboutPage() {
         : null
       }
 
-      <section className="contact-information py-16">
+      <section className="contact-information py-16 bg-[#1e2329]">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-semibold text-gray-800 dark:text-white mb-4">
             Get in Touch
