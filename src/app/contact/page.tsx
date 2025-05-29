@@ -1,5 +1,7 @@
+import Form from 'next/form'
 import { Metadata } from "next"
 import { Icon } from "@iconify-icon/react"
+import { sendContactData } from './actions'
 
 export const metadata: Metadata = {
   title: "Contact Us | H2 Technologies",
@@ -19,7 +21,7 @@ export default function ContactPage() {
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="contact-htmlForm">
-          <form method="POST" className="space-y-6">
+          <Form action={sendContactData} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >Name</label
@@ -66,7 +68,7 @@ export default function ContactPage() {
             >
               Send Message
             </button>
-          </form>
+          </Form>
         </div>
 
         <div className="contact-info">

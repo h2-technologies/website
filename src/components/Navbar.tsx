@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const logo = '/whitelogo.png'; //Default logo path
+import logo from '@/public/whitelogo.png';
+
 const navLinks = [
   { text: 'Home', href: '/' },
   { text: 'About', href: '/about' },
@@ -14,7 +15,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="logo">
           <Link href="/" className="flex items-center">
-            <Image src={logo} alt="Company Logo" className="h-8 mr-2" />
+            <Image src={logo} alt="Company Logo" className="h-8 mr-2" width={35} height={2000} />
             <span className="font-bold text-xl text-gray-800 dark:text-white">H2 Technologies</span>
           </Link>
         </div>
