@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "flowbite-react patch && flowbite-react register"
+    "postinstall": "flowbite-react patch && flowbite-react register && prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -30,6 +30,7 @@
     "@types/react": "19.1.6",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "prisma": "^6.8.2"
   }
 }

@@ -1,47 +1,53 @@
-import { useState } from "react";
+'use client'
 
-const [formData, setFormData] = useState({
-  fullName: "",
-  email: "",
-  phone: "",
-  companyName: "",
-  serviceCategory: "",
-  projectTitle: "",
-  projectDescription: "",
-  projectGoals: "",
-  targetAudience: "",
-  keyFeatures: "",
-  devRequirements: "",
-  workspaceRequirements: "",
-  fortinetRequirements: "",
-  startDate: "",
-  endDate: "",
-  budget: "",
-  existingSystems: "",
-  files: [], // Storing File objects directly
-  numEmployees: "",
-  numLocations: "",
-  networkInfrastructure: "",
-  securityRequirements: "",
-  complianceRequirements: "",
-});
+import { FormEvent, FormEventHandler, useState } from "react";
+import { handleQuoteForm } from "./actions";
+import Form from "next/form";
 
-function handleChange(event) {
-  const { name, value, type, files } = event.target;
-  if (type === 'file') {
-    setFormData(prevData => ({
-      ...prevData,
-      files: Array.from(files) // Convert FileList to an array of File objects
-    }))
-  } else {
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }))
+export default function QuotePage() {
+  //@ts-ignore - No clue what this type is 
+  function handleChange(event) {
+    console.log(typeof event);
+    const { name, value, type, files } = event.target;
+    if (type === 'file') {
+      setFormData(prevData => ({
+        ...prevData,
+        files: Array.from(files) // Convert FileList to an array of File objects
+      }))
+    } else {
+      setFormData(prevData => ({
+        ...prevData,
+        [name]: value
+      }))
+    }
   }
-}
 
-export function QuotePage() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    companyName: "",
+    serviceCategory: "",
+    projectTitle: "",
+    projectDescription: "",
+    projectGoals: "",
+    targetAudience: "",
+    keyFeatures: "",
+    devRequirements: "",
+    workspaceRequirements: "",
+    fortinetRequirements: "",
+    startDate: "",
+    endDate: "",
+    budget: "",
+    existingSystems: "",
+    files: [], // Storing File objects directly
+    numEmployees: "",
+    numLocations: "",
+    networkInfrastructure: "",
+    securityRequirements: "",
+    complianceRequirements: "",
+  });
+
   return (
     <div className="container mx-auto px-4 py-8 font-inter">
 
@@ -54,7 +60,7 @@ export function QuotePage() {
         will be kept confidential.
       </p>
 
-      <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-6">
+      <Form action={handleQuoteForm} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -241,7 +247,7 @@ export function QuotePage() {
         )}
 
         {formData.serviceCategory === "Fortinet Equipment" && (
-          <>
+          <div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="numEmployees" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -311,7 +317,7 @@ export function QuotePage() {
                 className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-h-[120px]"
               ></textarea>
             </div>
-          </>
+          </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -403,7 +409,7 @@ export function QuotePage() {
         <button type="submit" className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-md transition-colors duration-300">
           Submit Quote Request
         </button>
-      </form>
+      </Form>
       <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
           Need More Assistance?
