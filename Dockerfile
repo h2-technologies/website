@@ -8,8 +8,6 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN apk add --no-cache sudo
-
 RUN npm i -g pnpm
 
 RUN pnpm i

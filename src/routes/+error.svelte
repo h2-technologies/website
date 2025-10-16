@@ -7,8 +7,8 @@
 </svelte:head>
 
 
-<div class="hero min-h-screen bg-slate-300 text-slate-200">
-    <div class="hero-content text-center bg-base-300 p-10 rounded-xl shadow-xl">
+<div class="min-h-screen bg-slate-300 text-slate-200">
+    <div class="text-center bg-base-300 p-10 rounded-xl shadow-xl">
         <div class="max-w-md">
             <h1 class="text-5xl font-bold">404</h1>
             <h2 class="py-6">Oops! The page you're looking for doesn't exist.</h2>
