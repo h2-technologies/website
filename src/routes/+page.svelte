@@ -52,12 +52,12 @@
   </div>
 </section>
 
-<section class="services-overview py-16 bg-gray-100 dark:bg-gray-900">
+<section class="services-overview py-16 bg-gray-100 dark:bg-gray-800">
   <div class="container mx-auto text-center">
     <h2 class="section-title text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-8">Our Services</h2>
     <div class="service-grid grid grid-cols-1 md:grid-cols-3 gap-8">
       {#each services as service}
-        <div class="service-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-transform transform hover:scale-105">
+        <div class="service-card bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 transition-transform transform hover:scale-105">
           <div class="service-icon mb-4">
             {#if service.type == "png"}
               <img src={service.icon} alt={service.title} class="w-12 h-12 mx-auto" />

@@ -40,53 +40,100 @@
   <h2 class="text-3xl font-semibold pb-2">
     Values
   </h2>
-  <ul class="list-disc list-inside text-xl">
-    <li><strong>Innovation:</strong> We embrace change and continuously seek new ways to solve problems.</li>
-    <li><strong>Customer-Centricity:</strong> Our customers are at the heart of everything we do.</li>
-    <li><strong>Integrity:</strong> We conduct our business with honesty and transparency.</li>
-    <li><strong>Collaboration:</strong> We believe in the power of teamwork and open communication.</li>
-    <li><strong>Excellence:</strong> We strive for the highest standards in all our services and solutions.</li>
-  </ul>
+  <div class="flex justify-center align-middle items-center">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+      <div class="bg-white dark:bg-gray-800 h-52 w-72 rounded-xl">
+        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
+          Innovation
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300 pt-8">
+          We embrace necessary change and relentlessly seek novel approaches to solve complex problems.
+        </p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 h-52 w-72 rounded-xl">
+        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
+          Customer Centricity
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300 pt-8">
+          We put our customers at the heart of everything we do.
+        </p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 h-52 w-72 rounded-xl">
+        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
+          Integrity
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300 pt-8">
+          We conduct our business with honesty and transparency.
+        </p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 h-52 w-72 rounded-xl">
+        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
+          Collaboration
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300 pt-8">
+          We believe in the power of teamwork and open communication.
+        </p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 h-52 w-72 rounded-xl">
+        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
+          Excellence
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300 pt-8">
+          We strive for the highest standards in all our services and solutions.
+        </p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 h-52 w-72 rounded-xl">
+        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
+          Adaptability
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300 pt-8">
+          We embrace change and continuously seek new ways to solve problems.
+        </p>
+      </div>
+
+    </div>
+  </div>
 </div>
 
-<!--TODO: Make these cards function a little better-->
-<div class="text-gray-800 dark:text-white bg-white dark:bg-gray-800 py-2 lg:px-4 md:pr-7 md:pl-4">
+<div class="text-gray-800 dark:text-white bg-white dark:bg-gray-800 py-2">
   <h2 class="text-3xl font-semibold py-2">
     What We Do
   </h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
-    <div class="bg-gray-100 dark:bg-gray-900 h-52 w-72 rounded-xl">
-      <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
-        Software and Website Development
-      </h3>
-      <p class="text-gray-600 dark:text-gray-300">
-        We create custom software solutions and websites tailored to your business needs.
-      </p>
-    </div>
-    <div class="bg-gray-100 dark:bg-gray-900 h-52 w-72 rounded-xl">
-      <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
-        Google Workspace Solutions
-      </h3>
-      <p class="text-gray-600 dark:text-gray-300">
-        We provide tailored Google Workspace solutions to enhance your business's productivity and collaboration.
-      </p>
-    </div>
-    <div class="bg-gray-100 dark:bg-gray-900 h-52 w-72 rounded-xl">
-      <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
-        Fortinet Equipment and Security Solutions
-      </h3>
-      <p class="text-gray-600 dark:text-gray-300">
-        We provide Fortinet equipment and security solutions to protect your business from cyber threats while powering day to day operations.
-      </p>
+  <div class="flex justify-center align-middle items-center">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+      <div class="bg-gray-100 dark:bg-gray-900 h-52 w-72 rounded-xl">
+        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
+          Software and Website Development
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300">
+          We create custom software solutions and websites tailored to your business needs.
+        </p>
+      </div>
+      <div class="bg-gray-100 dark:bg-gray-900 h-52 w-72 rounded-xl ">
+        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
+          Google Workspace Solutions
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300 pt-8"> <!--TODO: Make this not bodged-->
+          We provide tailored Google Workspace solutions to enhance your business's productivity and collaboration.
+        </p>
+      </div>
+      <div class="bg-gray-100 dark:bg-gray-900 h-52 w-72 rounded-xl">
+        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
+          Fortinet Equipment and Security Solutions
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300">
+          We provide Fortinet equipment and security solutions to protect your business from cyber threats while powering day to day operations.
+        </p>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 py-2 px-4">
-  <h2 class="text-3xl font-semibold text-gray-800 dark:text-white text-center">
+  <h2 class="text-3xl font-semibold text-gray-800 dark:text-white text-center mb-2 pt-4">
     Our Clients
   </h2>
-  <div class="flex flex-wrap justify-center gap-8">
+  <div class="flex flex-wrap justify-center gap-8 pt-2 pb-4">
     {#each clients as client}
       <div class="client-logo">
         <img
@@ -99,20 +146,15 @@
   </div>
 </div>
 
-<section class="contact-information py-16">
-  <div class="container mx-auto text-center">
-    <h2 class="text-3xl font-semibold text-gray-800 dark:text-white mb-4">
-      Get in Touch
-    </h2>
-    <p class="text-gray-600 dark:text-gray-300 mb-8">
-      We'd love to hear from you. Contact us today to learn more about how we
-      can help your business.
-    </p>
-    <a
-      href="/contact"
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-md transition-colors duration-300"
-    >
-      Contact Us
-    </a>
-  </div>
-</section>
+<div class="bg-white dark:bg-gray-800 py-2 px-4 pb-8">
+  <h2 class="text-3xl font-semibold text-gray-800 dark:text-white mb-4">
+    Get in Touch
+  </h2>
+  <p class="text-gray-600 dark:text-gray-300 mb-8">
+    We'd love to hear from you. Contact us today to learn more about how we
+    can help your business.
+  </p>
+  <a href="/contact" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-md transition-colors duration-300">
+    Contact Us
+  </a>
+</div>

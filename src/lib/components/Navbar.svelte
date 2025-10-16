@@ -26,7 +26,7 @@
       <p class="text-white text-xl">Technologies</p>
     {/if}
   </NavBrand>
-  <div class="flex md:order-2">
+  <div class="flex md:order-2 pl-20">
     <Button size="md" href="/login">Login</Button>
   </div>
   <NavHamburger />
