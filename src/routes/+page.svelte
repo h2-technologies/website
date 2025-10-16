@@ -33,11 +33,9 @@
   <title>H2 Technologies</title>
 </svelte:head>
 
-<section
-class="hero bg-[url(/herobackground.jpg)] bg-cover bg-center backdrop-blur-sm flex items-center justify-center"
->
-  <div class="hero-content text-center max-w-3xl">
-    <h1 class="hero-headline text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-6">
+<section class="bg-[url(/herobackground.jpg)] bg-cover bg-center backdrop-blur-sm flex items-center justify-center">
+  <div class="text-center max-w-3xl py-6">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-6">
       Empowering Your Business with Innovative Technology Solutions
     </h1>
     <p class="hero-description text-lg sm:text-xl text-white mb-8 sm:mb-12 leading-relaxed">
@@ -46,7 +44,7 @@ class="hero bg-[url(/herobackground.jpg)] bg-cover bg-center backdrop-blur-sm fl
     <div class="hero-buttons flex flex-wrap justify-center gap-4">
       <a
         href="/contact"
-        class="primary-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition-transform transform hover:translate-y-[-2px] shadow-lg hover:shadow-xl"
+        class="primary-button bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-md transition-transform transform hover:translate-y-[-2px] shadow-lg hover:shadow-xl"
       >
         Get a Free Consulation
       </a>

@@ -3,14 +3,9 @@
   import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, Button } from "flowbite-svelte";
 	import { onMount } from "svelte";
 
-  let activeUrl = $state(page.url.pathname);
-  $effect(() => {
-    activeUrl = page.url.pathname;
-  })
+  let activeUrl = $derived(page.url.pathname);
 
-  // svelte-ignore non_reactive_update
   let logo: string = $state("");
-  // svelte-ignore non_reactive_update
   let size: number = $state(0);
 
   onMount(() => {
@@ -24,7 +19,7 @@
   })
 </script>
 
-<Navbar color="none" class="bg-white dark:bg-gray-900">
+<Navbar color="none" class="sticky start-0 top-0 z-20 w-full bg-white dark:bg-gray-900">
   <NavBrand href="/">
     <img src={logo} class={`w-${size}`} alt="H2 Technologies Logo" />
     {#if size < 20}
@@ -35,7 +30,7 @@
     <Button size="md" href="/login">Login</Button>
   </div>
   <NavHamburger />
-  <NavUl>
+  <NavUl {activeUrl}>
     <NavLi class="text-xl" href="/about">About Us</NavLi>
     <NavLi class="text-xl" href="/store">Store</NavLi>
   </NavUl>
