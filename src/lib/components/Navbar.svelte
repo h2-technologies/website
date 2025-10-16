@@ -26,9 +26,10 @@
       <p class="text-white text-xl">Technologies</p>
     {/if}
   </NavBrand>
-  <div class="flex md:order-2 pl-20">
-    <Button size="md" href="/login">Login</Button>
-  </div>
+  <!--TODO: Implement customer experience manager-->
+  <!-- <div class="flex md:order-2 pl-20">
+    <Button size="md" href="/cem/login">Login</Button>
+  </div> -->
   <NavHamburger />
   <NavUl {activeUrl}>
     <NavLi class="text-xl" href="/about">About Us</NavLi>
