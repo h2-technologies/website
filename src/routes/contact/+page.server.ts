@@ -1,4 +1,3 @@
-import { GOOGLE_CHAT_WEBHOOK } from "$env/static/private";
 import type { Actions } from "@sveltejs/kit";
 import { prisma } from "$lib/db";
 
