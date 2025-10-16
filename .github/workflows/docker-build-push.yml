@@ -52,7 +52,7 @@ jobs:
           client-secret: ${{ secrets.CLIENT_SECRET }}
           domain: "https://infisical.h2tech.dev"
           env-slug: "prod"
-          project-slug: "website"
+          project-slug: "website-i-gnx"
           export-type: "file"
           file-output-path: "/.env"
 
