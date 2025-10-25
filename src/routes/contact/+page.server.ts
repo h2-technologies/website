@@ -1,5 +1,5 @@
-import { GOOGLE_CHAT_WEBHOOK } from "$env/static/private";
 import type { Actions } from "@sveltejs/kit";
+import { prisma } from "$lib/db";
 
 export const actions: Actions = {
   default: async({ request }) => {
@@ -7,17 +7,22 @@ export const actions: Actions = {
     const email = formData.get('email')?.toString();
     const message = formData.get('message')?.toString();
     const name = formData.get('name')?.toString();
+    const subject = formData.get('subject')?.toString();
 
-    await fetch(GOOGLE_CHAT_WEBHOOK, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        text: `Hello! ${name} would like to be emailed at ${email} with the following message: ${message}`
-      })
+    if (!email || !message || !name || !subject) {
+      return { success: false, error: 'All fields are required.' };
+    }
+
+    await prisma.contactRequest.create({
+      data: {
+        name,
+        email,
+        subject, 
+        message
+      }
     })
 
+    return { success: true };
     
   }
 }
