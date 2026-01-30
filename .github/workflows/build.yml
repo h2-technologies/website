@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        - name: Setup Env
+      - name: Setup Env
         uses: Infisical/secrets-action@v1.0.9
         with:
           domain: "https://infisical.h2tech.dev"
