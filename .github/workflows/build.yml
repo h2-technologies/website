@@ -11,5 +11,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        - name: Setup Env
+        uses: Infisical/secrets-action@v1.0.9
+        with:
+          domain: "https://infisical.h2tech.dev"
+          env-slug: "prod"
+          project-slug: "banditsystem"
+          client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
+          client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+          export-type: "file"
+          file-output-path: "/.env"
       - name: Deploy
         run: docker compose up --build -d
