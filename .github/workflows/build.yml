@@ -16,7 +16,7 @@ jobs:
         with:
           domain: "https://infisical.h2tech.dev"
           env-slug: "prod"
-          project-slug: "banditsystem"
+          project-slug: "website"
           client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
           client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
           export-type: "file"
