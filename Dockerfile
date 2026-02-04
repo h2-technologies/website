@@ -12,10 +12,14 @@ RUN npm i -g pnpm
 
 RUN pnpm i
 
-RUN pnpm build
+ENV PORT=3002
 
 RUN pnpx prisma@6.3.1 generate
 
+RUN pnpm build
+
 USER node
+
+EXPOSE 3002
 
 CMD node ./build/index.js
