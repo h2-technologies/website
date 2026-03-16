@@ -6,7 +6,7 @@
   ];
 </script>
 
-<div class="text-gray-800 dark:text-white bg-white dark:bg-gray-800 py-3 px-4">
+<div class="text-gray-800 dark:text-white bg-white dark:bg-gray-800 py-3 px-4 pb-12">
   <h1 class="text-3xl font-semibold pb-2">
     Who We Are
   </h1>
@@ -18,7 +18,7 @@
 
 </div>
 
-<div class="text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 py-3 px-4">
+<div class="text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 py-3 px-4 pb-12">
   <h1 class="text-3xl font-semibold pb-2">
     Mission
   </h1>
@@ -27,7 +27,7 @@
   </p>
 </div>
 
-<div class="text-gray-800 dark:text-white bg-white dark:bg-gray-800 py-3 px-4">
+<div class="text-gray-800 dark:text-white bg-white dark:bg-gray-800 py-3 px-4 pb-12">
   <h2 class="text-3xl font-semibold pb-2">
     Vision
   </h2>
@@ -36,14 +36,14 @@
   </p>
 </div>
 
-<div class="text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 py-3 px-4">
+<div class="text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 py-3 px-4 pb-12">
   <h2 class="text-3xl font-semibold pb-2">
     Values
   </h2>
   <div class="flex justify-center align-middle items-center">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
       <div class="bg-white dark:bg-gray-800 h-52 w-72 rounded-xl">
-        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4">
+        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2 pt-4 ">
           Innovation
         </h3>
         <p class="text-gray-600 dark:text-gray-300 pt-8">
@@ -95,7 +95,7 @@
   </div>
 </div>
 
-<div class="text-gray-800 dark:text-white bg-white dark:bg-gray-800 py-2">
+<div class="text-gray-800 dark:text-white bg-white dark:bg-gray-800 py-2 pb-12">
   <h2 class="text-3xl font-semibold py-2">
     What We Do
   </h2>
@@ -129,7 +129,7 @@
   </div>
 </div>
 
-<div class="text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 py-2 px-4">
+<div class="text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 py-2 px-4 pb-12">
   <h2 class="text-3xl font-semibold text-gray-800 dark:text-white text-center mb-2 pt-4">
     Our Clients
   </h2>
