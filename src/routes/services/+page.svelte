@@ -77,14 +77,14 @@
 <section class="relative overflow-hidden bg-slate-950 text-white">
 	<div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.2),transparent_30%),radial-gradient(circle_at_top_right,rgba(14,165,233,0.16),transparent_28%)]"></div>
 	<div class="relative mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:px-12 lg:py-24">
-		<div class="max-w-3xl">
+		<div class="mx-auto max-w-3xl text-center">
 			<p class="inline-flex rounded-full border border-white/10 bg-white/6 px-4 py-1 text-sm font-medium tracking-[0.2em] text-orange-200 backdrop-blur">
 				SERVICES
 			</p>
 			<h1 class="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
 				Three core services, one practical technology partner.
 			</h1>
-			<p class="mt-6 max-w-2xl text-lg leading-8 text-slate-200 sm:text-xl">
+			<p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-200 sm:text-xl">
 				Whether you need to build, improve collaboration, or strengthen security, we focus on solutions that fit the way your business already works.
 			</p>
 		</div>
