@@ -78,7 +78,7 @@
 			</p>
 			<h2 class="mt-4 text-3xl font-semibold tracking-tight text-gray-900">What guides our work</h2>
 			<p class="mt-4 text-lg leading-8 text-gray-600">
-				To empower businesses of all sizes with innovative technology solutions that drive growth, efficiency, and security.
+				Our mission is to empower small and midsize businesses with reliable, scalable software and hardware solutions that remove barriers, accelerate growth, and unlock their full potential.
 			</p>
 		</article>
 
@@ -88,19 +88,17 @@
 			</p>
 			<h2 class="mt-4 text-3xl font-semibold tracking-tight text-gray-900">What we are building toward</h2>
 			<p class="mt-4 text-lg leading-8 text-gray-700">
-				To be a leading technology partner, recognized for our expertise, innovation, integrity, and commitment to customer success.
+				Our vision is to create a company that clients are pround to partner with, and employees are proud to call home. We aim to be a trusted technology partner known for delivering thoughtful, responsive, and practical solutions that drive real results for our clients.
 			</p>
 		</article>
 	</section>
 
 	<section class="mx-auto max-w-6xl px-6 py-8 sm:px-8 lg:px-10">
-		<div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-			<div class="max-w-2xl">
-				<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">
-					Values
-				</p>
-				<h2 class="mt-3 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">The principles behind every engagement</h2>
-			</div>
+		<div class="mx-auto max-w-2xl text-center">
+			<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">
+				Values
+			</p>
+			<h2 class="mt-3 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">The principles behind every engagement</h2>
 		</div>
 
 		<div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -116,7 +114,7 @@
 
 	<section class="mx-auto max-w-6xl px-6 py-16 sm:px-8 lg:px-10">
 		<div class="rounded-4xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
-			<div class="max-w-2xl">
+			<div class="mx-auto max-w-2xl text-center">
 				<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">
 					What We Do
 				</p>
@@ -176,7 +174,7 @@
 			<div class="flex lg:justify-end">
 				<a
 					href="https://client-portal.app.intuit.com/contact-form?accountId=249325971&formId=287439"
-					class="inline-flex items-center justify-center rounded-full bg-orange-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-orange-500/25 transition duration-200 hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-orange-500/30"
+					class="inline-flex items-center justify-center rounded-full bg-orange-500 pl-8 pr-8 mr-16 py-4 text-base font-semibold text-white shadow-lg shadow-orange-500/25 transition duration-200 hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-orange-500/30"
 				>
 					Contact Us
 				</a>
