@@ -54,7 +54,7 @@
 
 <div class="bg-white text-gray-900">
 	<section class="relative w-full overflow-hidden border-b border-gray-200">
-		<div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.22),transparent_34%),radial-gradient(circle_at_top_right,rgba(14,165,233,0.14),transparent_28%)]"></div>
+		<div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.14),transparent_34%),radial-gradient(circle_at_top_right,rgba(251,146,60,0.22),transparent_28%)]"></div>
 		<div class="relative mx-auto max-w-6xl px-6 py-20 sm:px-8 lg:px-10">
 			<div class="mx-auto max-w-3xl text-center">
 				<p class="mb-4 inline-flex rounded-full border border-orange-200 bg-orange-50 px-4 py-1 text-sm font-medium tracking-wide text-orange-700 shadow-sm">
