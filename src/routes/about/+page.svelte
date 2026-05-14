@@ -174,7 +174,7 @@
 			<div class="flex lg:justify-end">
 				<a
 					href="https://client-portal.app.intuit.com/contact-form?accountId=249325971&formId=287439"
-					class="inline-flex items-center justify-center rounded-full bg-orange-500 pl-8 pr-8 mr-16 py-4 text-base font-semibold text-white shadow-lg shadow-orange-500/25 transition duration-200 hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-orange-500/30"
+						class="inline-flex w-full items-center justify-center rounded-full bg-orange-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-orange-500/25 transition duration-200 hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-orange-500/30 sm:w-auto lg:mr-16"
 				>
 					Contact Us
 				</a>
