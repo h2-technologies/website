@@ -1,22 +1,57 @@
 <script lang="ts">
 	import '../app.css';
-	import Analytics from "$lib/components/analytics.svelte";
-	import Navbar from '$lib/components/Navbar.svelte';
 	let { children } = $props();
 
+	import { page } from '$app/state';
+	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, Button } from 'flowbite-svelte';
+
+	let activeUrl = $derived(page.url.pathname);
 </script>
 
-<div class="min-h-screen h-fit w-full min-w-fit overflow-x-hidden">
-	<Analytics />
+<svelte:head>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-418QESNPEX">
+	</script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag('js', new Date());
+		gtag('config', 'G-418QESNPEX');
+	</script>
+</svelte:head>
+
+<div class="h-fit min-h-screen w-full min-w-fit overflow-x-hidden">
 	<div>
-		<Navbar />
+		<Navbar color="none" class="sticky start-0 top-0 z-20 w-full">
+			<NavBrand href="/">
+				<img src="/wideLogo.png" alt="H2 Technologies Logo" />
+			</NavBrand>
+			<div class="flex md:order-2">
+				<Button
+					size="md"
+					href="https://client-portal.app.intuit.com/contact-form?accountId=249325971&formId=287439"
+					class="bg-orange-500">Contact Us</Button
+				>
+				<NavHamburger />
+			</div>
+			<NavHamburger />
+			<NavUl {activeUrl}>
+				<NavLi class="text-xl" href="/about">About Us</NavLi>
+				<NavLi class="text-xl" href="/store">Store</NavLi>
+			</NavUl>
+		</Navbar>
 	</div>
 
-	<main class="font-roboto flex-col items-center justify-center text-center text-slate-800 mb-auto grow">
+	<main
+		class="font-roboto mb-auto grow flex-col items-center justify-center text-center text-slate-800"
+	>
 		{@render children()}
 	</main>
 
-	<footer class="w-full bottom-0 text-start p-4 justify-center dark:bg-gray-900 text-slate-100 text-md pt-2 sticky top-full">
+	<footer
+		class="text-md sticky top-full bottom-0 w-full justify-center p-4 pt-2 text-start text-slate-100 dark:bg-gray-900"
+	>
 		<p>&copy;{new Date().getFullYear()} H2 Technologies. All rights reserved.</p>
 	</footer>
 </div>
