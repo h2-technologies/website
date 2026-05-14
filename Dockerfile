@@ -14,8 +14,6 @@ RUN pnpm i
 
 ENV PORT=3002
 
-RUN pnpx prisma@6.3.1 generate
-
 RUN pnpm build
 
 USER node

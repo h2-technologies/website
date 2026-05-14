@@ -43,8 +43,8 @@
     </p>
     <div class="hero-buttons flex flex-wrap justify-center gap-4">
       <a
-        href="/contact"
-        class="primary-button bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-md transition-transform transform hover:translate-y-[-2px] shadow-lg hover:shadow-xl"
+        href="https://client-portal.app.intuit.com/contact-form?accountId=249325971&formId=287439"
+        class="primary-button bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-md transition-transform transform hover:translate-y-0.5 shadow-lg hover:shadow-xl"
       >
         Get a Free Consulation
       </a>
@@ -62,7 +62,7 @@
             {#if service.type == "png"}
               <img src={service.icon} alt={service.title} class="w-12 h-12 mx-auto" />
             {:else}
-              <Icon icon={service.icon} class="w-[2rem] h-[2rem] mx-auto bg-white rounded-md" />
+              <Icon icon={service.icon} class="w-8 h-8 mx-auto bg-white rounded-md" />
             {/if}
           </div>
           <h3 class="service-title text-xl font-semibold text-gray-900 dark:text-white mb-2">{service.title}</h3>
