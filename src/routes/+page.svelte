@@ -8,7 +8,7 @@
         'Custom software and modern websites built around your workflow, with clean UX, fast delivery, and room to scale.',
       type: 'icon',
       icon: 'material-symbols:code-blocks',
-      link: '/services/development',
+      link: '/services#development',
       accent: 'from-orange-500/20 to-amber-400/20',
       badge: 'Build'
     },
@@ -18,7 +18,7 @@
         'Setup, licensing, admin support, and user adoption help to keep your team productive and aligned.',
       icon: '/google.png',
       type: 'png',
-      link: '/services/google-workspace',
+      link: '/services#google-workspace',
       accent: 'from-sky-500/20 to-cyan-400/20',
       badge: 'Collaborate'
     },
@@ -28,7 +28,7 @@
         'Network security consulting, hardware sales, and implementation support for a stronger perimeter.',
       icon: '/fortinet.png',
       type: 'png',
-      link: '/services/fortinet',
+      link: '/services#fortinet',
       accent: 'from-emerald-500/20 to-teal-400/20',
       badge: 'Protect'
     }

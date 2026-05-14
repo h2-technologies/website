@@ -33,6 +33,7 @@
 				<NavHamburger />
 			</div>
 			<NavUl class="order-1">
+				<NavLi class="text-xl" href="/services">Services</NavLi>
 				<NavLi class="text-xl" href="/about">About Us</NavLi>
 			</NavUl>
 		</Navbar>
