@@ -156,14 +156,14 @@
 			{/each}
 		</div>
 
-		<div class="mt-10 flex flex-col items-start justify-between gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-8 lg:flex-row lg:items-center">
+		<div class="mt-10 flex flex-col items-center justify-between gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center lg:flex-row lg:items-center lg:text-left">
 			<div class="max-w-2xl">
 				<h3 class="text-2xl font-semibold">Need help deciding where to start?</h3>
 				<p class="mt-2 text-slate-300">Send us a message and we will help you map the first step.</p>
 			</div>
 			<a
 				href="https://client-portal.app.intuit.com/contact-form?accountId=249325971&formId=287439"
-				class="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-base font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-orange-100"
+				class="inline-flex w-full items-center justify-center rounded-full bg-white px-6 py-3 text-base font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-orange-100 sm:w-auto"
 			>
 				Contact H2 Technologies
 			</a>
