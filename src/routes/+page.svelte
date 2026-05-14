@@ -33,8 +33,8 @@
   <title>H2 Technologies</title>
 </svelte:head>
 
-<section class="bg-[url(/herobackground.jpg)] bg-cover bg-center backdrop-blur-sm flex items-center justify-center">
-  <div class="text-center max-w-3xl py-6">
+<section class="w-screen bg-[url(/herobackground.jpg)] bg-cover bg-center backdrop-blur-sm flex items-center justify-center min-h-screen">
+  <div class="text-center max-w-3xl px-6">
     <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-6">
       Empowering Your Business with Innovative Technology Solutions
     </h1>

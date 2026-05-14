@@ -2,10 +2,7 @@
 	import '../app.css';
 	let { children } = $props();
 
-	import { page } from '$app/state';
 	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, Button } from 'flowbite-svelte';
-
-	let activeUrl = $derived(page.url.pathname);
 </script>
 
 <svelte:head>
@@ -35,14 +32,14 @@
 				>
 				<NavHamburger />
 			</div>
-			<NavUl {activeUrl} class="order-1">
+			<NavUl class="order-1">
 				<NavLi class="text-xl" href="/about">About Us</NavLi>
 			</NavUl>
 		</Navbar>
 	</div>
 
 	<main
-		class="font-roboto mb-auto grow flex-col items-center justify-center text-center text-slate-800"
+		class="w-full font-roboto mb-auto grow flex flex-col justify-center text-center text-slate-800"
 	>
 		{@render children()}
 	</main>
