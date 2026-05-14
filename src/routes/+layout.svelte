@@ -23,9 +23,9 @@
 
 <div class="h-fit min-h-screen w-full min-w-fit overflow-x-hidden">
 	<div>
-		<Navbar color="none" class="sticky start-0 top-0 z-20 w-full">
+		<Navbar>
 			<NavBrand href="/">
-				<img src="/wideLogo.png" alt="H2 Technologies Logo" />
+				<img src="/wideLogo.png" class="w-50" alt="H2 Technologies Logo" />
 			</NavBrand>
 			<div class="flex md:order-2">
 				<Button
@@ -35,10 +35,8 @@
 				>
 				<NavHamburger />
 			</div>
-			<NavHamburger />
-			<NavUl {activeUrl}>
+			<NavUl {activeUrl} class="order-1">
 				<NavLi class="text-xl" href="/about">About Us</NavLi>
-				<NavLi class="text-xl" href="/store">Store</NavLi>
 			</NavUl>
 		</Navbar>
 	</div>
