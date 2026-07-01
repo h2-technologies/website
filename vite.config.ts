@@ -3,12 +3,9 @@ import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-	plugins: [
-		tailwindcss(),
-		sveltekit()
-	],
+	plugins: [tailwindcss(), sveltekit()],
 	server: {},
 	preview: {
-		allowedHosts: [".h2technologiesllc.com"],
-	},
+		allowedHosts: ['.h2technologiesllc.com']
+	}
 });

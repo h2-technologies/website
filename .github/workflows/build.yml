@@ -2,7 +2,7 @@ name: Deploy to Server
 
 on:
   push:
-    branches: 
+    branches:
       - 'master'
   workflow_dispatch:
 
@@ -15,12 +15,12 @@ jobs:
       - name: Setup Env
         uses: Infisical/secrets-action@v1.0.9
         with:
-          domain: "https://infisical.h2tech.dev"
-          env-slug: "prod"
-          project-slug: "website"
+          domain: 'https://infisical.h2tech.dev'
+          env-slug: 'prod'
+          project-slug: 'website'
           client-id: ${{ secrets.CLIENT_ID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}
-          export-type: "file"
-          file-output-path: "/.env"
+          export-type: 'file'
+          file-output-path: '/.env'
       - name: Deploy
         run: docker compose up --build -d

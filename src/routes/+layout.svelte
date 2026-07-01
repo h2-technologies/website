@@ -1,13 +1,14 @@
 <script lang="ts">
 	import '../app.css';
-	let { children } = $props();
+	import { locations } from '$lib/locations';
+	import { services } from '$lib/services';
+	import { site } from '$lib/site';
 
-	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, Button } from 'flowbite-svelte';
+	let { children } = $props();
 </script>
 
 <svelte:head>
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-418QESNPEX">
-	</script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-418QESNPEX"></script>
 	<script>
 		window.dataLayer = window.dataLayer || [];
 		function gtag() {
@@ -18,36 +19,85 @@
 	</script>
 </svelte:head>
 
-<div class="h-fit min-h-screen w-full min-w-fit overflow-x-hidden">
-	<div>
-		<Navbar>
-			<NavBrand href="/">
-				<img src="/wideLogo.png" class="w-50" alt="H2 Technologies Logo" />
-			</NavBrand>
-			<div class="flex md:order-2">
-				<Button
-					size="md"
-					href="https://client-portal.app.intuit.com/contact-form?accountId=249325971&formId=287439"
-					class="bg-orange-500">Contact Us</Button
-				>
-				<NavHamburger />
-			</div>
-			<NavUl class="order-1">
-				<NavLi class="text-xl" href="/services">Services</NavLi>
-				<NavLi class="text-xl" href="/about">About Us</NavLi>
-			</NavUl>
-		</Navbar>
-	</div>
-
-	<main
-		class="w-full font-roboto mb-auto grow flex flex-col justify-center text-center text-slate-800"
+<div class="min-h-screen bg-white text-slate-900">
+	<a
+		href="#main-content"
+		class="sr-only z-50 rounded-lg bg-slate-950 px-4 py-3 font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
 	>
+		Skip to content
+	</a>
+
+	<header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+		<nav
+			class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-4 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-12"
+		>
+			<a href="/" class="inline-flex items-center">
+				<img src="/wideLogo.png" class="h-12 w-auto" alt="H2 Technologies LLC" />
+			</a>
+			<div class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-semibold text-slate-700">
+				<a class="hover:text-orange-700" href="/services/">Services</a>
+				<a class="hover:text-orange-700" href="/locations/it-services-ohio/">Ohio IT</a>
+				<a class="hover:text-orange-700" href="/resources/">Resources</a>
+				<a class="hover:text-orange-700" href="/about/">About</a>
+				<a
+					href="/contact/"
+					class="inline-flex min-h-11 items-center justify-center rounded-lg bg-orange-500 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-orange-600"
+				>
+					Talk to an Engineer
+				</a>
+			</div>
+		</nav>
+	</header>
+
+	<main id="main-content">
 		{@render children()}
 	</main>
 
-	<footer
-		class="text-md sticky top-full bottom-0 w-full justify-center p-4 pt-2 text-start text-slate-100 dark:bg-gray-900"
-	>
-		<p>&copy;{new Date().getFullYear()} H2 Technologies. All rights reserved.</p>
+	<footer class="bg-slate-950 px-6 py-12 text-left text-slate-300 sm:px-8 lg:px-12">
+		<div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
+			<div>
+				<img
+					src="/wideLogo.png"
+					class="h-12 w-auto rounded bg-white p-1"
+					alt="H2 Technologies LLC"
+					loading="lazy"
+				/>
+				<p class="mt-4 max-w-sm text-sm leading-7">
+					Ohio-based, remote-capable technology consulting for secure software, enterprise networks,
+					cybersecurity, productivity platforms, and practical business IT support.
+				</p>
+				<p class="mt-4 text-sm">
+					&copy; {new Date().getFullYear()} H2 Technologies LLC. All rights reserved.
+				</p>
+			</div>
+			<div>
+				<h2 class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-300">Services</h2>
+				<div class="mt-4 grid gap-2 text-sm">
+					{#each services.slice(0, 6) as service}
+						<a class="hover:text-white" href={`/services/${service.slug}/`}>{service.title}</a>
+					{/each}
+					<a class="font-semibold text-white hover:text-orange-200" href="/services/"
+						>View all services</a
+					>
+				</div>
+			</div>
+			<div>
+				<h2 class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-300">Ohio</h2>
+				<div class="mt-4 grid gap-2 text-sm">
+					{#each locations.slice(0, 5) as location}
+						<a class="hover:text-white" href={`/locations/${location.slug}/`}>{location.title}</a>
+					{/each}
+				</div>
+			</div>
+			<div>
+				<h2 class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-300">Contact</h2>
+				<div class="mt-4 grid gap-2 text-sm">
+					<a class="hover:text-white" href="/contact/">Request a Technology Assessment</a>
+					<a class="hover:text-white" href={site.contactHref}>Schedule a Free Consultation</a>
+					<a class="hover:text-white" href="/routing/">BGP Routing Policy</a>
+					<a class="hover:text-white" href="/sitemap.xml">Sitemap</a>
+				</div>
+			</div>
+		</div>
 	</footer>
 </div>
