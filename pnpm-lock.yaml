@@ -21,8 +21,8 @@ importers:
         specifier: ^11.10.0
         version: 11.10.0
       svelte-use-form:
-        specifier: ^2.10.0
-        version: 2.10.0(svelte@5.55.7(@typescript-eslint/types@8.59.3))
+        specifier: ^3.0.1
+        version: 3.0.1(svelte@5.55.7(@typescript-eslint/types@8.59.3))
       tailwindcss:
         specifier: ^4.3.0
         version: 4.3.0
@@ -1920,10 +1920,10 @@ packages:
       svelte:
         optional: true
 
-  svelte-use-form@2.10.0:
-    resolution: {integrity: sha512-RSYkfRCmJF+2dm4UzhCdORjwmAM+Vueg+Blqcui1It8wsicLnfpUgtXbHWw9NxhXB4cHz88EDK63cxqmamhEyA==}
+  svelte-use-form@3.0.1:
+    resolution: {integrity: sha512-q2a3saQqsZ2WQFewFtsssnIt0U5x5vhUdHn0DmJOpvVJByQLVA5mE70D1ZWT9XWV/T2D3PHOIM7f2vAh/xitgw==}
     peerDependencies:
-      svelte: '>=3.46.0 < 5'
+      svelte: ^4.0.0 || ^5.0.0
 
   svelte@5.55.7:
     resolution: {integrity: sha512-ymI5ykLPwIHW839E053FQbI1G+jnRFJEw3Kv5Y4njixVWywQBx+NUFpkkKyk5LIb36Fg9DVXSYpqiGekLD0hyw==}
@@ -3884,7 +3884,7 @@ snapshots:
     optionalDependencies:
       svelte: 5.55.7(@typescript-eslint/types@8.59.3)
 
-  svelte-use-form@2.10.0(svelte@5.55.7(@typescript-eslint/types@8.59.3)):
+  svelte-use-form@3.0.1(svelte@5.55.7(@typescript-eslint/types@8.59.3)):
     dependencies:
       svelte: 5.55.7(@typescript-eslint/types@8.59.3)
 

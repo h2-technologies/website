@@ -43,7 +43,7 @@
 		"@tailwindcss/vite": "^4.3.0",
 		"@uploadthing/svelte": "^7.3.3",
 		"firebase": "^11.10.0",
-		"svelte-use-form": "^2.10.0",
+		"svelte-use-form": "^3.0.1",
 		"tailwindcss": "^4.3.0",
 		"uploadthing": "^7.7.4"
 	},
