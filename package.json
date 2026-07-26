@@ -39,7 +39,7 @@
 		"vite": "^6.4.2"
 	},
 	"dependencies": {
-		"@iconify/svelte": "^4.2.0",
+		"@iconify/svelte": "^5.2.2",
 		"@tailwindcss/vite": "^4.3.0",
 		"@uploadthing/svelte": "^7.3.3",
 		"firebase": "^11.10.0",
