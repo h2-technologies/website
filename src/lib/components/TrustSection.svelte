@@ -6,7 +6,7 @@
 	<div class="mx-auto max-w-7xl">
 		<div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
 			<div>
-				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">
+				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">
 					Why H2 Technologies
 				</p>
 				<h2 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -23,7 +23,7 @@
 					<ul class="mt-4 space-y-3 text-left text-slate-700">
 						{#each expertise as item}
 							<li class="flex gap-3">
-								<span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-500"></span>
+								<span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"></span>
 								<span>{item}</span>
 							</li>
 						{/each}

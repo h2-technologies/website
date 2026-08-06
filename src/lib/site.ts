@@ -3,13 +3,32 @@ export const site = {
 	shortName: 'H2 Technologies',
 	url: 'https://h2technologiesllc.com',
 	description:
-		'Ohio-based technology consulting for secure software, enterprise networks, cybersecurity, Google Workspace, Fortinet, IPv6, BGP, and practical business IT support.',
-	logo: '/wideLogo.png',
-	image: '/wideLogo.png',
+		'Ohio technology consulting for secure software, business websites, enterprise networks, cybersecurity, Google Workspace, Fortinet, IPv6, BGP, and IT support.',
+	logo: '/squareLogo.png',
+	socialImage: '/herobackground.jpg',
+	socialImageAlt: 'H2 Technologies secure network infrastructure background',
 	contactHref:
 		'https://client-portal.app.intuit.com/contact-form?accountId=249325971&formId=287439',
+	securityEmail: 'noc@h2technologiesllc.com',
 	areaServed: ['Ohio', 'United States', 'Remote and hybrid teams']
 };
+
+export const footerServices = [
+	{ title: 'Custom Software Development', slug: 'custom-software-development' },
+	{ title: 'Business Website Development', slug: 'business-website-development' },
+	{ title: 'Enterprise Network Design', slug: 'enterprise-network-design' },
+	{ title: 'BGP Consulting', slug: 'bgp-consulting' },
+	{ title: 'IPv6 Consulting', slug: 'ipv6-consulting' },
+	{ title: 'Fortinet Firewall Consulting', slug: 'fortinet-firewall-consulting' }
+];
+
+export const footerLocations = [
+	{ title: 'IT Services in Ohio', slug: 'it-services-ohio' },
+	{ title: 'Network Consulting in Ohio', slug: 'network-consulting-ohio' },
+	{ title: 'Cybersecurity Consulting in Ohio', slug: 'cybersecurity-consulting-ohio' },
+	{ title: 'Software Development in Ohio', slug: 'software-development-ohio' },
+	{ title: 'Website Development in Ohio', slug: 'website-development-ohio' }
+];
 
 export const trustPoints = [
 	'Enterprise Network Architecture',

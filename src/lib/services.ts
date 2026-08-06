@@ -98,7 +98,11 @@ export const services: Service[] = [
 			'Build, optimize, and test',
 			'Launch support and iteration'
 		],
-		related: ['custom-software-development', 'business-automation', 'website-development-ohio'],
+		related: [
+			'custom-software-development',
+			'business-automation',
+			'cloud-infrastructure-consulting'
+		],
 		faqs: [
 			faq(
 				'Can you write the website copy?',
@@ -211,7 +215,7 @@ export const services: Service[] = [
 	{
 		slug: 'ipv6-consulting',
 		title: 'IPv6 Consulting',
-		seoTitle: 'IPv6 Consulting and Infrastructure Planning | H2 Technologies LLC',
+		seoTitle: 'IPv6 Consulting | H2 Technologies LLC',
 		meta: 'IPv6 consulting for addressing plans, dual-stack architecture, firewall policy, DNS, BGP routing, and business network readiness.',
 		h1: 'IPv6 Consulting and Infrastructure Planning',
 		intro:
@@ -333,11 +337,7 @@ export const services: Service[] = [
 			'Migration or cleanup plan',
 			'Support, documentation, and handoff'
 		],
-		related: [
-			'microsoft-365-migration',
-			'cybersecurity-consulting',
-			'google-workspace-consulting-ohio'
-		],
+		related: ['microsoft-365-migration', 'cybersecurity-consulting', 'managed-it-support'],
 		faqs: [
 			faq(
 				'Can you help set up Google Workspace?',
@@ -403,7 +403,7 @@ export const services: Service[] = [
 	{
 		slug: 'cybersecurity-consulting',
 		title: 'Cybersecurity Consulting',
-		seoTitle: 'Cybersecurity Consulting for Small and Growing Businesses | H2 Technologies LLC',
+		seoTitle: 'Cybersecurity Consulting | H2 Technologies LLC',
 		meta: 'Cybersecurity consulting for firewall policy, secure software, identity, remote access, disaster recovery, monitoring, and practical risk reduction.',
 		h1: 'Cybersecurity Consulting With Practical Business Outcomes',
 		intro:
@@ -693,7 +693,7 @@ export const services: Service[] = [
 	{
 		slug: 'managed-it-support',
 		title: 'Managed IT Support',
-		seoTitle: 'Managed IT Support and Practical Business IT | H2 Technologies LLC',
+		seoTitle: 'Managed IT Support | H2 Technologies LLC',
 		meta: 'Managed IT support for business technology planning, troubleshooting, accounts, networks, security, vendors, and practical day-to-day support.',
 		h1: 'Managed IT Support for Practical Business Technology',
 		intro:

@@ -36,8 +36,8 @@
 
 <Seo
 	title="Technology Consulting Services | H2 Technologies LLC"
-	description="Explore H2 Technologies services for software development, business websites, enterprise network design, BGP, IPv6, Fortinet, Google Workspace, cybersecurity, cloud infrastructure, and managed IT support."
-	path="/services/"
+	description="Explore H2 Technologies consulting for software, websites, enterprise networks, BGP, IPv6, Fortinet, Google Workspace, cybersecurity, cloud, and managed IT."
+	path="/services"
 />
 
 <section class="bg-slate-950 px-6 py-20 text-white sm:px-8 lg:px-12">
@@ -63,7 +63,7 @@
 			<div>
 				<h2 class="text-3xl font-semibold tracking-tight">{group.title}</h2>
 				<div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-					{#each group.slugs.map((slug) => services.find((service) => service.slug === slug)!) as service}
+					{#each group.slugs.map( (slug) => services.find((service) => service.slug === slug)! ) as service}
 						<ServiceCard {service} />
 					{/each}
 				</div>

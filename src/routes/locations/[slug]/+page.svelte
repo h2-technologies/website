@@ -10,28 +10,42 @@
 	let { data } = $props<{ data: { location: LocationPage } }>();
 
 	const location = $derived(data.location);
-	const path = $derived(`/locations/${location.slug}/`);
+	const path = $derived(`/locations/${location.slug}`);
 	const relatedServices = $derived(
 		location.serviceSlugs.map((slug: string) => services.find((service) => service.slug === slug)!)
 	);
-	const schema = $derived({
-		'@type': 'LocalBusiness',
-		'@id': `${absoluteUrl(path)}#localbusiness`,
-		name: `${site.name} - ${location.title}`,
+	const serviceSchema = $derived({
+		'@type': 'Service',
+		'@id': `${absoluteUrl(path)}#service`,
+		name: location.title,
+		description: location.meta,
 		url: absoluteUrl(path),
-		areaServed: 'Ohio',
-		address: { '@type': 'PostalAddress', addressRegion: 'OH', addressCountry: 'US' }
+		provider: { '@id': `${site.url}/#organization` },
+		areaServed: { '@type': 'AdministrativeArea', name: 'Ohio' }
+	});
+	const breadcrumbSchema = $derived({
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Home', item: site.url },
+			{ '@type': 'ListItem', position: 2, name: 'Locations', item: absoluteUrl('/locations') },
+			{ '@type': 'ListItem', position: 3, name: location.title, item: absoluteUrl(path) }
+		]
 	});
 </script>
 
-<Seo title={location.seoTitle} description={location.meta} {path} schema={[schema]} />
+<Seo
+	title={location.seoTitle}
+	description={location.meta}
+	{path}
+	schema={[serviceSchema, breadcrumbSchema]}
+/>
 
 <section class="bg-slate-950 px-6 py-20 text-white sm:px-8 lg:px-12">
 	<div class="mx-auto max-w-7xl">
 		<Breadcrumbs
 			items={[
 				{ name: 'Home', href: '/' },
-				{ name: 'Locations', href: '/locations/' },
+				{ name: 'Locations', href: '/locations' },
 				{ name: location.title, href: path }
 			]}
 		/>
@@ -42,8 +56,8 @@
 		<p class="mt-6 max-w-3xl text-lg leading-8 text-slate-300">{location.meta}</p>
 		<div class="mt-8">
 			<a
-				href="/contact/"
-				class="inline-flex min-h-12 items-center justify-center rounded-lg bg-orange-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-orange-950/30 transition hover:-translate-y-0.5 hover:bg-orange-400"
+				href="/contact"
+				class="inline-flex min-h-12 items-center justify-center rounded-lg bg-orange-700 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-orange-950/30 transition hover:-translate-y-0.5 hover:bg-orange-800"
 			>
 				Schedule a Free Consultation
 			</a>
@@ -54,7 +68,7 @@
 <section class="bg-white px-6 py-20 text-slate-900 sm:px-8 lg:px-12">
 	<div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
 		<div>
-			<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">
+			<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">
 				Local and remote-capable
 			</p>
 			<h2 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">

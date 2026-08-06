@@ -6,8 +6,8 @@
 
 <Seo
 	title="Ohio Technology Consulting Locations | H2 Technologies LLC"
-	description="Ohio-focused IT services, network consulting, cybersecurity consulting, software development, website development, Google Workspace consulting, and Fortinet consulting."
-	path="/locations/"
+	description="Explore H2 Technologies' Ohio IT, network, cybersecurity, software, website, Google Workspace, and Fortinet consulting services."
+	path="/locations"
 />
 
 <section class="bg-slate-950 px-6 py-20 text-white sm:px-8 lg:px-12">
@@ -33,7 +33,7 @@
 				<p class="mt-3 leading-7 text-slate-600">{location.meta}</p>
 				<a
 					class="mt-5 inline-flex font-semibold text-orange-700"
-					href={`/locations/${location.slug}/`}>Learn more →</a
+					href={`/locations/${location.slug}`}>Learn more →</a
 				>
 			</article>
 		{/each}

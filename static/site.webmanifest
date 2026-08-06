@@ -1,0 +1,20 @@
+{
+	"name": "H2 Technologies LLC",
+	"short_name": "H2 Technologies",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#ffffff",
+	"theme_color": "#020617",
+	"icons": [
+		{
+			"src": "/favicon.png",
+			"sizes": "500x500",
+			"type": "image/png"
+		},
+		{
+			"src": "/squareLogo.png",
+			"sizes": "161x161",
+			"type": "image/png"
+		}
+	]
+}

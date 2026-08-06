@@ -15,7 +15,7 @@
 			.map((slug: string) => services.find((item) => item.slug === slug))
 			.filter(Boolean) as Service[]
 	);
-	const path = $derived(`/services/${service.slug}/`);
+	const path = $derived(`/services/${service.slug}`);
 	const serviceSchema = $derived({
 		'@type': 'Service',
 		'@id': `${absoluteUrl(path)}#service`,
@@ -41,7 +41,7 @@
 		'@type': 'BreadcrumbList',
 		itemListElement: [
 			{ '@type': 'ListItem', position: 1, name: 'Home', item: site.url },
-			{ '@type': 'ListItem', position: 2, name: 'Services', item: absoluteUrl('/services/') },
+			{ '@type': 'ListItem', position: 2, name: 'Services', item: absoluteUrl('/services') },
 			{ '@type': 'ListItem', position: 3, name: service.title, item: absoluteUrl(path) }
 		]
 	});
@@ -59,7 +59,7 @@
 		<Breadcrumbs
 			items={[
 				{ name: 'Home', href: '/' },
-				{ name: 'Services', href: '/services/' },
+				{ name: 'Services', href: '/services' },
 				{ name: service.title, href: path }
 			]}
 		/>
@@ -71,13 +71,13 @@
 			<p class="mt-6 max-w-3xl text-lg leading-8 text-slate-300">{service.intro}</p>
 			<div class="mt-8 flex flex-col gap-4 sm:flex-row">
 				<a
-					href="/contact/"
-					class="inline-flex min-h-12 items-center justify-center rounded-lg bg-orange-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-orange-950/30 transition hover:-translate-y-0.5 hover:bg-orange-400"
+					href="/contact"
+					class="inline-flex min-h-12 items-center justify-center rounded-lg bg-orange-700 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-orange-950/30 transition hover:-translate-y-0.5 hover:bg-orange-800"
 				>
 					Request a Technology Assessment
 				</a>
 				<a
-					href="/services/"
+					href="/services"
 					class="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-base font-semibold text-white transition hover:border-white/30 hover:bg-white/10"
 				>
 					Explore Services
@@ -94,7 +94,7 @@
 			<ul class="mt-5 space-y-3 text-left text-slate-700">
 				{#each service.audience as item}
 					<li class="flex gap-3">
-						<span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-500"></span>{item}
+						<span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"></span>{item}
 					</li>
 				{/each}
 			</ul>
@@ -123,7 +123,7 @@
 <section class="bg-slate-50 px-6 py-20 text-slate-900 sm:px-8 lg:px-12">
 	<div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
 		<div>
-			<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">Process</p>
+			<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">Process</p>
 			<h2 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
 				A clear path from assessment to implementation.
 			</h2>
@@ -149,7 +149,7 @@
 
 <section class="bg-white px-6 py-20 text-slate-900 sm:px-8 lg:px-12">
 	<div class="mx-auto max-w-4xl">
-		<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">FAQ</p>
+		<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">FAQ</p>
 		<h2 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
 			Common questions about {service.title}
 		</h2>
