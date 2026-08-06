@@ -2,7 +2,15 @@ services:
   website:
     build:
       context: .
-    env_file:
-      - .env
+    init: true
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     ports:
-      - '3002:3002'
+      - '127.0.0.1:3002:3002'
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '3'
