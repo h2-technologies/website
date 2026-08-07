@@ -4,6 +4,8 @@
 	import ServiceCard from '$lib/components/ServiceCard.svelte';
 	import { services } from '$lib/services';
 
+	const serviceForSlug = (slug: string) => services.find((service) => service.slug === slug)!;
+
 	const groups = [
 		{
 			title: 'Software, Websites, and Automation',
@@ -63,7 +65,7 @@
 			<div>
 				<h2 class="text-3xl font-semibold tracking-tight">{group.title}</h2>
 				<div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-					{#each group.slugs.map( (slug) => services.find((service) => service.slug === slug)! ) as service}
+					{#each group.slugs.map(serviceForSlug) as service}
 						<ServiceCard {service} />
 					{/each}
 				</div>

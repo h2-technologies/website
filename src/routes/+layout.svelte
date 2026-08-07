@@ -6,7 +6,6 @@
 </script>
 
 <svelte:head>
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-418QESNPEX"></script>
 	<script defer src="/analytics.js"></script>
 </svelte:head>
 
