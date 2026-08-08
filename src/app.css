@@ -1,7 +1,5 @@
 @import 'tailwindcss';
 
-@plugin 'flowbite/plugin';
-
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -28,12 +26,25 @@
 	--color-secondary-900: #0c4a6e;
 }
 
-@source "../node_modules/flowbite-svelte/dist";
-@source "../node_modules/flowbite-svelte-icons/dist";
-
 @layer base {
-	/* disable chrome cancel button */
-	input[type='search']::-webkit-search-cancel-button {
-		display: none;
+	html {
+		scroll-padding-top: 7rem;
+	}
+
+	:where(a, button, input, select, textarea, summary, iframe):focus-visible {
+		outline: 3px solid #075985;
+		outline-offset: 3px;
+		box-shadow: 0 0 0 5px #ffffff;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			scroll-behavior: auto !important;
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+		}
 	}
 }

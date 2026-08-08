@@ -1,13 +1,12 @@
 <script lang="ts">
 	import Seo from '$lib/components/Seo.svelte';
-	import { services } from '$lib/services';
 	import { site } from '$lib/site';
 </script>
 
 <Seo
 	title="Contact H2 Technologies LLC | Talk to an Engineer"
-	description="Contact H2 Technologies to schedule a free consultation or request a technology assessment for software, IT consulting, cybersecurity, networking, infrastructure, Google Workspace, or Fortinet work."
-	path="/contact/"
+	description="Contact H2 Technologies for a technology assessment or consultation covering software, cybersecurity, networking, Google Workspace, Fortinet, or IT support."
+	path="/contact"
 />
 
 <section class="bg-slate-950 px-6 py-20 text-white sm:px-8 lg:px-12">
@@ -34,96 +33,43 @@
 			</div>
 		</div>
 
-		<form
-			class="grid gap-4 rounded-2xl border border-white/10 bg-white p-6 text-left text-slate-900 shadow-2xl sm:p-8"
-			action={site.contactHref}
-			method="get"
+		<section
+			aria-labelledby="hosted-contact-heading"
+			class="rounded-2xl border border-white/10 bg-white p-6 text-left text-slate-900 shadow-2xl sm:p-8"
 		>
-			<div class="grid gap-4 sm:grid-cols-2">
-				<label class="grid gap-2 font-semibold">
-					Name
-					<input
-						class="rounded-lg border border-slate-300 px-4 py-3"
-						name="name"
-						autocomplete="name"
-						required
-					/>
-				</label>
-				<label class="grid gap-2 font-semibold">
-					Company
-					<input
-						class="rounded-lg border border-slate-300 px-4 py-3"
-						name="company"
-						autocomplete="organization"
-					/>
-				</label>
-				<label class="grid gap-2 font-semibold">
-					Email
-					<input
-						class="rounded-lg border border-slate-300 px-4 py-3"
-						name="email"
-						type="email"
-						autocomplete="email"
-						required
-					/>
-				</label>
-				<label class="grid gap-2 font-semibold">
-					Phone
-					<input
-						class="rounded-lg border border-slate-300 px-4 py-3"
-						name="phone"
-						type="tel"
-						autocomplete="tel"
-					/>
-				</label>
-				<label class="grid gap-2 font-semibold">
-					Service Needed
-					<select class="rounded-lg border border-slate-300 px-4 py-3" name="service">
-						<option value="">Select a service</option>
-						{#each services as service}
-							<option>{service.title}</option>
-						{/each}
-					</select>
-				</label>
-				<label class="grid gap-2 font-semibold">
-					Timeline
-					<select class="rounded-lg border border-slate-300 px-4 py-3" name="timeline">
-						<option>Not sure yet</option>
-						<option>As soon as possible</option>
-						<option>Within 30 days</option>
-						<option>1-3 months</option>
-						<option>3+ months</option>
-					</select>
-				</label>
-				<label class="grid gap-2 font-semibold sm:col-span-2">
-					Budget Range
-					<select class="rounded-lg border border-slate-300 px-4 py-3" name="budget">
-						<option>Not sure yet</option>
-						<option>Under $5,000</option>
-						<option>$5,000-$15,000</option>
-						<option>$15,000-$50,000</option>
-						<option>$50,000+</option>
-					</select>
-				</label>
-			</div>
-			<label class="grid gap-2 font-semibold">
-				Project Details
-				<textarea
-					class="min-h-36 rounded-lg border border-slate-300 px-4 py-3"
-					name="details"
-					required
-				></textarea>
-			</label>
-			<button
-				class="min-h-12 rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600"
-				type="submit"
-			>
-				Request a Technology Assessment
-			</button>
-			<p class="text-sm leading-6 text-slate-600">
-				This form forwards you to H2 Technologies' hosted contact workflow. Include enough detail to
-				help route the request quickly.
+			<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">
+				Secure contact workflow
 			</p>
-		</form>
+			<h2 id="hosted-contact-heading" class="mt-3 text-3xl font-semibold tracking-tight">
+				Request a technology assessment
+			</h2>
+			<p class="mt-4 leading-7 text-slate-600">
+				Open H2 Technologies' Intuit-hosted contact form to share your name, contact information,
+				service need, timeline, and project details directly with the team.
+			</p>
+			<ul class="mt-6 grid gap-3 text-slate-700">
+				<li class="flex gap-3">
+					<span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"></span>
+					Describe the business goal and current environment.
+				</li>
+				<li class="flex gap-3">
+					<span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"></span>
+					Include timing, budget range, and known constraints when possible.
+				</li>
+				<li class="flex gap-3">
+					<span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"></span>
+					H2 Technologies will follow up with the most practical next step.
+				</li>
+			</ul>
+			<a
+				href={site.contactHref}
+				class="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-orange-700 px-6 py-3 text-center font-semibold text-white transition hover:bg-orange-800"
+			>
+				Open the Hosted Contact Form
+			</a>
+			<p class="mt-4 text-sm leading-6 text-slate-600">
+				Your information is entered in the hosted workflow rather than placed in this website's URL.
+			</p>
+		</section>
 	</div>
 </section>

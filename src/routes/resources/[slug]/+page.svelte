@@ -10,21 +10,58 @@
 	let { data } = $props<{ data: { post: Post } }>();
 
 	const post = $derived(data.post);
-	const path = $derived(`/resources/${post.slug}/`);
+	const path = $derived(`/resources/${post.slug}`);
 	const relatedServices = $derived(
 		post.relatedServices.map((slug: string) => services.find((service) => service.slug === slug)!)
 	);
+	const sectionId = (heading: string) =>
+		heading
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/(^-|-$)/g, '');
+	const formatDate = (date: string) =>
+		new Intl.DateTimeFormat('en-US', {
+			dateStyle: 'long',
+			timeZone: 'UTC'
+		}).format(new Date(`${date}T00:00:00Z`));
 	const articleSchema = $derived({
-		'@type': 'Article',
+		'@type': 'TechArticle',
+		'@id': `${absoluteUrl(path)}#article`,
 		headline: post.title,
 		description: post.meta,
 		url: absoluteUrl(path),
+		mainEntityOfPage: { '@id': absoluteUrl(path) },
+		image: {
+			'@type': 'ImageObject',
+			url: absoluteUrl(site.socialImage),
+			width: 4288,
+			height: 2848
+		},
+		datePublished: post.publishedAt,
+		dateModified: post.updatedAt,
+		inLanguage: 'en-US',
 		author: { '@id': `${site.url}/#organization` },
 		publisher: { '@id': `${site.url}/#organization` }
 	});
+	const breadcrumbSchema = $derived({
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Home', item: absoluteUrl('/') },
+			{ '@type': 'ListItem', position: 2, name: 'Resources', item: absoluteUrl('/resources') },
+			{ '@type': 'ListItem', position: 3, name: post.title, item: absoluteUrl(path) }
+		]
+	});
 </script>
 
-<Seo title={post.seoTitle} description={post.meta} {path} schema={[articleSchema]} />
+<Seo
+	title={post.seoTitle}
+	description={post.meta}
+	{path}
+	type="article"
+	publishedTime={post.publishedAt}
+	modifiedTime={post.updatedAt}
+	schema={[articleSchema, breadcrumbSchema]}
+/>
 
 <article>
 	<section class="bg-slate-950 px-6 py-20 text-white sm:px-8 lg:px-12">
@@ -32,7 +69,7 @@
 			<Breadcrumbs
 				items={[
 					{ name: 'Home', href: '/' },
-					{ name: 'Resources', href: '/resources/' },
+					{ name: 'Resources', href: '/resources' },
 					{ name: post.title, href: path }
 				]}
 			/>
@@ -41,38 +78,59 @@
 				{post.title}
 			</h1>
 			<p class="mt-6 text-lg leading-8 text-slate-300">{post.summary}</p>
+			<p class="mt-5 text-sm text-slate-400">
+				Published <time datetime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+				<span aria-hidden="true"> · </span>
+				Updated <time datetime={post.updatedAt}>{formatDate(post.updatedAt)}</time>
+			</p>
 		</div>
 	</section>
 
 	<section class="bg-white px-6 py-16 text-slate-900 sm:px-8 lg:px-12">
-		<div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr]">
-			<aside class="rounded-2xl border border-slate-200 bg-slate-50 p-6">
-				<h2 class="text-xl font-semibold">Table of contents</h2>
-				<ol class="mt-4 space-y-3 text-slate-700">
-					{#each post.toc as item}
-						<li>
-							<a
-								class="font-medium text-orange-700"
-								href={`#${item.toLowerCase().replaceAll(' ', '-')}`}>{item}</a
-							>
-						</li>
-					{/each}
-				</ol>
+		<div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[minmax(14rem,0.6fr)_minmax(0,1.4fr)]">
+			<aside
+				class="self-start rounded-2xl border border-slate-200 bg-slate-50 p-6 lg:sticky lg:top-28"
+			>
+				<nav aria-labelledby="guide-contents-heading">
+					<h2 id="guide-contents-heading" class="text-xl font-semibold">Table of contents</h2>
+					<ol class="mt-4 space-y-3 text-slate-700">
+						{#each post.sections as section, index}
+							<li>
+								<a
+									class="inline-flex gap-2 font-medium text-orange-800 underline decoration-orange-300 underline-offset-4 hover:text-orange-950"
+									href={`#${sectionId(section.heading)}`}
+								>
+									<span class="text-slate-500" aria-hidden="true">{index + 1}.</span>
+									<span>{section.heading}</span>
+								</a>
+							</li>
+						{/each}
+					</ol>
+				</nav>
 			</aside>
-			<div class="prose max-w-none">
-				<h2>Summary</h2>
-				<p>{post.summary}</p>
-				{#each post.toc as item}
-					<h2 id={item.toLowerCase().replaceAll(' ', '-')}>{item}</h2>
-					<p>
-						Use this section as a starter framework for evaluating {item.toLowerCase()} in the context
-						of your business, users, risk level, budget, and support expectations. The best decision is
-						usually the one your team can operate consistently after launch.
-					</p>
-					<p>
-						For a stronger plan, document the current state, decision owner, technical dependencies,
-						security considerations, and how success will be measured after implementation.
-					</p>
+			<div class="min-w-0">
+				<p class="text-xl leading-8 text-slate-700">{post.summary}</p>
+				{#each post.sections as section}
+					<section class="mt-12" aria-labelledby={sectionId(section.heading)}>
+						<h2
+							id={sectionId(section.heading)}
+							class="scroll-mt-28 text-3xl font-semibold tracking-tight text-slate-950"
+						>
+							{section.heading}
+						</h2>
+						{#each section.paragraphs as paragraph}
+							<p class="mt-5 text-lg leading-8 text-slate-700">{paragraph}</p>
+						{/each}
+						{#if section.bullets}
+							<ul
+								class="mt-6 space-y-3 pl-6 text-lg leading-8 text-slate-700 marker:text-orange-700"
+							>
+								{#each section.bullets as bullet}
+									<li class="list-disc pl-1">{bullet}</li>
+								{/each}
+							</ul>
+						{/if}
+					</section>
 				{/each}
 			</div>
 		</div>

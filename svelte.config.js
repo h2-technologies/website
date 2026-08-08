@@ -8,10 +8,38 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
-		adapter: adapter()
+		adapter: adapter(),
+		csp: {
+			mode: 'auto',
+			directives: {
+				'default-src': ['self'],
+				'base-uri': ['self'],
+				'connect-src': [
+					'self',
+					'https://*.analytics.google.com',
+					'https://*.google-analytics.com',
+					'https://www.googletagmanager.com'
+				],
+				'font-src': ['self'],
+				'form-action': ['self'],
+				'frame-ancestors': ['none'],
+				'frame-src': ['self'],
+				'img-src': [
+					'self',
+					'data:',
+					'https://*.google-analytics.com',
+					'https://www.googletagmanager.com'
+				],
+				'manifest-src': ['self'],
+				'media-src': ['self'],
+				'object-src': ['none'],
+				'script-src': ['self', 'https://www.googletagmanager.com'],
+				'style-src': ['self'],
+				'style-src-attr': ['unsafe-inline'],
+				'worker-src': ['self'],
+				'upgrade-insecure-requests': true
+			}
+		}
 	}
 };
 

@@ -6,8 +6,8 @@
 
 <Seo
 	title="Technology Resources for Business Owners | H2 Technologies LLC"
-	description="Practical H2 Technologies resources covering firewalls, Google Workspace, Microsoft 365, BGP, IPv6, remote work security, website redesigns, disaster recovery, and managed IT."
-	path="/resources/"
+	description="Practical guides on firewalls, Google Workspace, Microsoft 365, BGP, IPv6, remote work, website redesigns, disaster recovery, and managed IT."
+	path="/resources"
 />
 
 <section class="bg-slate-950 px-6 py-20 text-white sm:px-8 lg:px-12">
@@ -27,10 +27,10 @@
 	<div class="mx-auto grid max-w-7xl gap-6 md:grid-cols-2 xl:grid-cols-4">
 		{#each posts as post}
 			<article class="rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm">
-				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">Guide</p>
+				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">Guide</p>
 				<h2 class="mt-3 text-2xl font-semibold tracking-tight">{post.title}</h2>
 				<p class="mt-3 text-sm leading-7 text-slate-600">{post.summary}</p>
-				<a class="mt-5 inline-flex font-semibold text-orange-700" href={`/resources/${post.slug}/`}
+				<a class="mt-5 inline-flex font-semibold text-orange-700" href={`/resources/${post.slug}`}
 					>Read guide →</a
 				>
 			</article>

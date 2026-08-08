@@ -5,7 +5,7 @@
 <Seo
 	title="BGP Routing Policy AS17290 | H2 Technologies LLC"
 	description="View the H2 Technologies LLC BGP routing policy for AS17290."
-	path="/routing/"
+	path="/routing"
 />
 
 <section class="bg-slate-950 px-6 py-12 text-white sm:px-8 lg:px-12">
@@ -20,12 +20,24 @@
 </section>
 
 <section class="bg-white px-6 py-10 sm:px-8 lg:px-12">
-	<div class="mx-auto max-w-7xl overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-		<iframe
-			src="/bgp-routing-policy.pdf"
-			title="BGP Routing Policy AS17290"
-			class="h-screen w-full border-0"
-			loading="lazy"
-		></iframe>
+	<div class="mx-auto max-w-7xl">
+		<p id="routing-document-help" class="mb-5 leading-7 text-slate-700">
+			If the embedded document is not convenient to use,
+			<a
+				class="font-semibold text-orange-700 hover:text-orange-800"
+				href="/bgp-routing-policy.pdf"
+				target="_blank"
+				rel="noopener noreferrer">open the routing policy PDF directly</a
+			>.
+		</p>
+		<div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+			<iframe
+				src="/bgp-routing-policy.pdf"
+				title="BGP Routing Policy AS17290"
+				aria-describedby="routing-document-help"
+				class="h-screen w-full border-0"
+				loading="lazy"
+			></iframe>
+		</div>
 	</div>
 </section>

@@ -1,26 +1,63 @@
-name: Deploy to Server
+name: Validate and Deploy
 
 on:
+  pull_request:
+    branches:
+      - dev
+      - master
   push:
     branches:
-      - 'master'
+      - dev
+      - master
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
-  build_site:
-    runs-on: self-hosted
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Env
-        uses: Infisical/secrets-action@v1.0.9
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
-          domain: 'https://infisical.h2tech.dev'
-          env-slug: 'prod'
-          project-slug: 'website'
-          client-id: ${{ secrets.CLIENT_ID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          export-type: 'file'
-          file-output-path: '/.env'
+          version: 9.14.4
+          run_install: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.18.0
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Verify production build
+        run: pnpm run verify
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: validate
+    runs-on: self-hosted
+    timeout-minutes: 20
+    environment: Production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Deploy
-        run: docker compose up --build -d
+        run: |
+          docker compose build --pull
+          docker compose up --detach --wait --remove-orphans
+      - name: Verify container-local readiness
+        run: >-
+          docker compose exec -T website node -e
+          "fetch('http://127.0.0.1:3002/').then((response) => {
+          if (!response.ok) process.exit(1);
+          }).catch(() => process.exit(1));"

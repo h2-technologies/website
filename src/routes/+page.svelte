@@ -27,13 +27,15 @@
 </script>
 
 <Seo
-	title="H2 Technologies LLC | Secure Software, Enterprise Networks, and Practical IT Solutions"
+	title="H2 Technologies LLC | Software, Network & IT Consulting"
 	description={site.description}
 	path="/"
 />
 
 <section class="relative overflow-hidden bg-slate-950 text-white">
-	<div class="absolute inset-0 bg-[url(/herobackground.jpg)] bg-cover bg-center opacity-25"></div>
+	<div
+		class="absolute inset-0 hidden bg-[url(/herobackground.jpg)] bg-cover bg-center opacity-25 sm:block"
+	></div>
 	<div
 		class="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/76 to-slate-950"
 	></div>
@@ -51,13 +53,13 @@
 			</p>
 			<div class="mt-8 flex flex-col gap-4 sm:flex-row">
 				<a
-					href="/contact/"
-					class="inline-flex min-h-12 items-center justify-center rounded-lg bg-orange-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-orange-950/30 transition hover:-translate-y-0.5 hover:bg-orange-400"
+					href="/contact"
+					class="inline-flex min-h-12 items-center justify-center rounded-lg bg-orange-700 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-orange-950/30 transition hover:-translate-y-0.5 hover:bg-orange-800"
 				>
 					Schedule a Free Consultation
 				</a>
 				<a
-					href="/services/"
+					href="/services"
 					class="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-base font-semibold text-white transition hover:border-white/30 hover:bg-white/10"
 				>
 					Explore Services
@@ -83,7 +85,7 @@
 	<div class="mx-auto max-w-7xl">
 		<div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
 			<div class="max-w-3xl">
-				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">Services</p>
+				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">Services</p>
 				<h2 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
 					Specific consulting services for build, security, networking, and support.
 				</h2>
@@ -91,7 +93,7 @@
 					Start with a focused need or combine services into a larger technology roadmap.
 				</p>
 			</div>
-			<a class="font-semibold text-orange-700 hover:text-orange-800" href="/services/"
+			<a class="font-semibold text-orange-700 hover:text-orange-800" href="/services"
 				>View all services →</a
 			>
 		</div>
@@ -108,7 +110,7 @@
 <section class="bg-slate-50 px-6 py-20 text-slate-900 sm:px-8 lg:px-12">
 	<div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
 		<div>
-			<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">
+			<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">
 				Business outcomes
 			</p>
 			<h2 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -133,16 +135,16 @@
 	<div class="mx-auto max-w-7xl">
 		<div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
 			<div class="max-w-3xl">
-				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">Resources</p>
+				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">Resources</p>
 				<h2 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
 					Practical guides for technology decisions.
 				</h2>
 				<p class="mt-4 text-lg leading-8 text-slate-600">
-					Starter resources explain common decisions in plain language and link back to the services
-					that can help.
+					These guides explain common decisions in plain language and link back to the services that
+					can help.
 				</p>
 			</div>
-			<a class="font-semibold text-orange-700 hover:text-orange-800" href="/resources/"
+			<a class="font-semibold text-orange-700 hover:text-orange-800" href="/resources"
 				>View resources →</a
 			>
 		</div>
@@ -151,9 +153,8 @@
 				<article class="rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm">
 					<h3 class="text-xl font-semibold tracking-tight">{post.title}</h3>
 					<p class="mt-3 text-sm leading-7 text-slate-600">{post.summary}</p>
-					<a
-						class="mt-5 inline-flex font-semibold text-orange-700"
-						href={`/resources/${post.slug}/`}>Read guide →</a
+					<a class="mt-5 inline-flex font-semibold text-orange-700" href={`/resources/${post.slug}`}
+						>Read guide →</a
 					>
 				</article>
 			{/each}

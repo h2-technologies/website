@@ -53,8 +53,8 @@
 
 <Seo
 	title="About H2 Technologies LLC | Ohio Technology Consulting"
-	description="Learn about H2 Technologies LLC, an Ohio-based technology consulting partner for secure software, websites, cloud solutions, cybersecurity, Google Workspace, Fortinet, and business IT support."
-	path="/about/"
+	description="Meet H2 Technologies LLC, an Ohio technology consulting firm focused on secure software, websites, networks, cybersecurity, cloud, and business IT."
+	path="/about"
 />
 
 <div class="bg-white text-gray-900">
@@ -83,7 +83,7 @@
 
 	<section class="mx-auto grid max-w-6xl gap-6 px-6 py-16 sm:px-8 lg:grid-cols-2 lg:px-10">
 		<article class="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
-			<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">Mission</p>
+			<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-700">Mission</p>
 			<h2 class="mt-4 text-3xl font-semibold tracking-tight text-gray-900">What guides our work</h2>
 			<p class="mt-4 text-lg leading-8 text-gray-600">
 				Our mission is to empower small and midsize businesses with reliable, scalable software and
@@ -92,7 +92,7 @@
 		</article>
 
 		<article class="rounded-3xl border border-gray-200 bg-gray-50 p-8 shadow-sm">
-			<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">Vision</p>
+			<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-700">Vision</p>
 			<h2 class="mt-4 text-3xl font-semibold tracking-tight text-gray-900">
 				What we are building toward
 			</h2>
@@ -106,7 +106,7 @@
 
 	<section class="mx-auto max-w-6xl px-6 py-8 sm:px-8 lg:px-10">
 		<div class="mx-auto max-w-2xl text-center">
-			<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">Values</p>
+			<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-700">Values</p>
 			<h2 class="mt-3 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
 				The principles behind every engagement
 			</h2>
@@ -128,7 +128,7 @@
 	<section class="mx-auto max-w-6xl px-6 py-16 sm:px-8 lg:px-10">
 		<div class="rounded-4xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
 			<div class="mx-auto max-w-2xl text-center">
-				<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">What We Do</p>
+				<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-700">What We Do</p>
 				<h2 class="mt-3 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
 					Services shaped around practical outcomes
 				</h2>
@@ -153,7 +153,7 @@
 		<div class="rounded-4xl border border-gray-200 bg-gray-50 px-8 py-10 shadow-sm sm:px-10">
 			<div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
 				<div class="max-w-2xl">
-					<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">
+					<p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-700">
 						Our Clients
 					</p>
 					<h2 class="mt-3 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
@@ -168,7 +168,15 @@
 				<div class="flex flex-wrap gap-4">
 					{#each clients as client}
 						<div class="flex items-center rounded-2xl bg-white border border-gray-200 px-5 py-4">
-							<img src={client.logo} alt={client.name} class="h-12 w-auto" />
+							<img
+								src={client.logo}
+								alt={client.name}
+								class="h-12 w-auto"
+								width="2038"
+								height="500"
+								loading="lazy"
+								decoding="async"
+							/>
 						</div>
 					{/each}
 				</div>
