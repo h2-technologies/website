@@ -29,7 +29,7 @@ ENV HOST=0.0.0.0 \
 	PORT=3002
 
 COPY --from=build --chown=node:node /usr/src/app/build ./build
-COPY --chown=node:node server.js ./server.js
+COPY --chown=node:node server.js canonical-url.js ./
 
 EXPOSE 3002
 

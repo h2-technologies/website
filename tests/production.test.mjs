@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { after, before, describe, it } from 'node:test';
 import {
+	crawlablePaths,
 	expectedSitemapUrls,
 	fetchWithoutRedirect,
+	publicAssetPaths,
 	publicHtmlPaths,
 	siteUrl,
 	startProductionServer
@@ -114,6 +116,26 @@ describe('crawler-facing production routes', () => {
 		}
 	});
 
+	it('dates every sitemap entry with an accurate lastmod', async () => {
+		const response = await fetchWithoutRedirect(server.baseUrl, '/sitemap.xml');
+		const body = await response.text();
+		const locs = allMatches(body, /<loc>([^<]+)<\/loc>/g);
+		const lastmods = allMatches(body, /<lastmod>([^<]+)<\/lastmod>/g);
+		const today = new Date().toISOString().slice(0, 10);
+
+		assert.equal(lastmods.length, locs.length, 'every URL should carry exactly one lastmod');
+		for (const [index, lastmod] of lastmods.entries()) {
+			assert.match(lastmod, /^\d{4}-\d{2}-\d{2}$/, `${locs[index]} needs a W3C date`);
+			assert.ok(Number.isFinite(Date.parse(lastmod)), `${locs[index]} needs a real date`);
+			assert.ok(lastmod <= today, `${locs[index]} must not be dated in the future`);
+		}
+
+		// Articles carry their own editorial date rather than the site-wide revision date.
+		const articleLastmod = lastmods[locs.indexOf(`${siteUrl}/resources/what-is-bgp`)];
+		const { html } = await getHtml('/resources/what-is-bgp');
+		assert.equal(articleLastmod, metaContent(html, 'property', 'article:modified_time'));
+	});
+
 	it('serves a current RFC 9116 security.txt from the well-known location', async () => {
 		const response = await fetchWithoutRedirect(server.baseUrl, '/.well-known/security.txt');
 		const body = await response.text();
@@ -142,6 +164,87 @@ describe('crawler-facing production routes', () => {
 			['en']
 		);
 		assert.ok(contacts.every((contact) => /^(?:mailto:|https:\/\/)/.test(contact)));
+	});
+});
+
+describe('canonical URL enforcement', () => {
+	it('answers every crawlable URL at exactly one address', async () => {
+		for (const path of crawlablePaths) {
+			const canonical = await fetchWithoutRedirect(server.baseUrl, path);
+			assertDirectSuccess(canonical, path);
+
+			const slashed = await fetchWithoutRedirect(server.baseUrl, `${path}/`);
+			assert.equal(slashed.status, 301, `${path}/ should be a permanent redirect`);
+			assert.equal(
+				slashed.headers.get('location'),
+				path,
+				`${path}/ should redirect straight to the canonical path`
+			);
+		}
+	});
+
+	it('redirects static assets too, not just routes the framework owns', async () => {
+		// Regression guard: `adapter-node` serves these ahead of the SvelteKit router, so before
+		// `canonical-url.js` both spellings returned 200 with identical bytes.
+		for (const path of publicAssetPaths) {
+			const response = await fetchWithoutRedirect(server.baseUrl, `${path}/`);
+			assert.equal(response.status, 301, `${path}/ should not be served from disk`);
+			assert.equal(response.headers.get('location'), path);
+		}
+	});
+
+	it('reaches the canonical URL in a single hop, never a redirect chain', async () => {
+		for (const path of ['/about', '/services/bgp-consulting', '/favicon.png']) {
+			for (const variant of [`${path}/`, `${path}//`, `/${path}`]) {
+				const first = await fetchWithoutRedirect(server.baseUrl, variant);
+				assert.equal(first.status, 301, `${variant} should redirect`);
+
+				const target = first.headers.get('location');
+				assert.equal(target, path, `${variant} should land on ${path} directly`);
+
+				const second = await fetchWithoutRedirect(server.baseUrl, target);
+				assertDirectSuccess(second, `${variant} -> ${target}`);
+			}
+		}
+	});
+
+	it('preserves the query string across the canonical redirect', async () => {
+		const response = await fetchWithoutRedirect(
+			server.baseUrl,
+			'/services/bgp-consulting/?utm_source=google&utm_medium=cpc'
+		);
+
+		assert.equal(response.status, 301);
+		assert.equal(
+			response.headers.get('location'),
+			'/services/bgp-consulting?utm_source=google&utm_medium=cpc'
+		);
+	});
+
+	it('keeps redirects on the site origin', async () => {
+		for (const variant of ['//evil.example.com/', '//evil.example.com/path/']) {
+			const response = await fetchWithoutRedirect(server.baseUrl, variant);
+			const location = response.headers.get('location');
+
+			if (location === null) continue;
+			assert.ok(!location.startsWith('//'), `${variant} must not yield a protocol-relative host`);
+			assert.equal(new URL(location, siteUrl).origin, siteUrl, `${variant} must stay on-origin`);
+		}
+	});
+
+	it('serves the canonical form with a matching self-referencing canonical tag', async () => {
+		for (const path of publicHtmlPaths) {
+			const { html } = await getHtml(path);
+			assert.equal(linkHref(html, 'canonical'), `${siteUrl}${path}`);
+		}
+	});
+
+	it('keeps the redirect from resurrecting pages that do not exist', async () => {
+		const response = await fetchWithoutRedirect(server.baseUrl, '/services/does-not-exist/');
+		assert.equal(response.status, 301);
+
+		const followed = await fetchWithoutRedirect(server.baseUrl, response.headers.get('location'));
+		assert.equal(followed.status, 404, 'a redirect must not turn a 404 into a 200');
 	});
 });
 
