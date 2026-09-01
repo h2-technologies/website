@@ -13,6 +13,15 @@ export const site = {
 	areaServed: ['Ohio', 'United States', 'Remote and hybrid teams']
 };
 
+/**
+ * Last date the marketing pages, service pages, and location pages were revised, published as
+ * `<lastmod>` in sitemap.xml. Google ignores a sitemap's `lastmod` when it disagrees with the
+ * page it describes, so bump this in the same commit that changes that copy — and leave it
+ * alone for changes that do not alter what a visitor reads. Resource articles carry their own
+ * `updatedAt` and do not use this value.
+ */
+export const contentRevisedAt = '2026-08-07';
+
 export const footerServices = [
 	{ title: 'Custom Software Development', slug: 'custom-software-development' },
 	{ title: 'Business Website Development', slug: 'business-website-development' },
