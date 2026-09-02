@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.css';
+	import ContactDetails from '$lib/components/ContactDetails.svelte';
 	import { footerLocations, footerServices, site } from '$lib/site';
 
 	let { children } = $props();
@@ -66,6 +67,9 @@
 					Ohio-based, remote-capable technology consulting for secure software, enterprise networks,
 					cybersecurity, productivity platforms, and practical business IT support.
 				</p>
+				<div class="mt-5 max-w-sm">
+					<ContactDetails />
+				</div>
 				<p class="mt-4 text-sm">
 					&copy; {new Date().getFullYear()} H2 Technologies LLC. All rights reserved.
 				</p>
@@ -87,14 +91,20 @@
 					{#each footerLocations as location}
 						<a class="hover:text-white" href={`/locations/${location.slug}`}>{location.title}</a>
 					{/each}
+					<a class="font-semibold text-white hover:text-orange-200" href="/locations"
+						>All service areas</a
+					>
 				</div>
 			</div>
 			<div>
-				<h2 class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-300">Contact</h2>
+				<h2 class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-300">Company</h2>
 				<div class="mt-4 grid gap-2 text-sm">
 					<a class="hover:text-white" href="/contact">Request a Technology Assessment</a>
 					<a class="hover:text-white" href={site.contactHref}>Schedule a Free Consultation</a>
-					<a class="hover:text-white" href="/routing">BGP Routing Policy</a>
+					<a class="hover:text-white" href="/about">About H2 Technologies</a>
+					<a class="hover:text-white" href="/faq">Frequently Asked Questions</a>
+					<a class="hover:text-white" href="/resources">Technical Guides</a>
+					<a class="hover:text-white" href="/routing">AS17290 BGP Routing Policy</a>
 					<a class="hover:text-white" href="/sitemap.xml">Sitemap</a>
 				</div>
 			</div>

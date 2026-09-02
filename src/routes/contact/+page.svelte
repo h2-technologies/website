@@ -1,12 +1,44 @@
 <script lang="ts">
+	import ContactDetails from '$lib/components/ContactDetails.svelte';
 	import Seo from '$lib/components/Seo.svelte';
-	import { site } from '$lib/site';
+	import { absoluteUrl, nap, site } from '$lib/site';
+
+	const path = '/contact';
+	const contactPageSchema = {
+		'@type': 'ContactPage',
+		'@id': `${absoluteUrl(path)}#webpage`,
+		url: absoluteUrl(path),
+		name: 'Contact H2 Technologies LLC',
+		description:
+			'Reach H2 Technologies in Ashland, Ohio for a technology assessment covering software, network, security, and IT support work.',
+		isPartOf: { '@id': `${site.url}/#website` },
+		about: { '@id': `${site.url}/#organization` },
+		mainEntity: { '@id': `${site.url}/#organization` }
+	};
+	const contactPointSchema = {
+		'@type': 'ContactPoint',
+		'@id': `${absoluteUrl(path)}#sales`,
+		contactType: 'sales',
+		areaServed: site.areaServed,
+		availableLanguage: 'English',
+		url: site.contactHref,
+		...(nap.telephone ? { telephone: nap.telephone } : {}),
+		...(nap.email ? { email: nap.email } : {})
+	};
+	const breadcrumbSchema = {
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Home', item: site.url },
+			{ '@type': 'ListItem', position: 2, name: 'Contact', item: absoluteUrl(path) }
+		]
+	};
 </script>
 
 <Seo
 	title="Contact H2 Technologies LLC | Talk to an Engineer"
-	description="Contact H2 Technologies for a technology assessment or consultation covering software, cybersecurity, networking, Google Workspace, Fortinet, or IT support."
-	path="/contact"
+	description="Contact H2 Technologies in Ashland, Ohio for a technology assessment covering software, cybersecurity, networking, Google Workspace, Fortinet, or IT support."
+	{path}
+	schema={[contactPageSchema, contactPointSchema, breadcrumbSchema]}
 />
 
 <section class="bg-slate-950 px-6 py-20 text-white sm:px-8 lg:px-12">
@@ -30,6 +62,20 @@
 				<a class="mt-5 inline-flex font-semibold text-orange-300" href={site.contactHref}
 					>Use the hosted contact form instead →</a
 				>
+			</div>
+
+			<div class="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6">
+				<h2 class="text-xl font-semibold">Business details</h2>
+				<div class="mt-3">
+					<ContactDetails />
+				</div>
+				<p class="mt-4 text-sm leading-7 text-slate-400">
+					H2 Technologies is based in Ashland, Ohio and delivers most consulting work remotely, with
+					onsite coordination arranged for network, firewall, and cabling work across
+					<a class="font-semibold text-orange-300 hover:text-orange-200" href="/locations"
+						>the Ohio areas we serve</a
+					>.
+				</p>
 			</div>
 		</div>
 

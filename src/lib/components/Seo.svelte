@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { absoluteUrl, site } from '$lib/site';
+	import {
+		absoluteUrl,
+		founder,
+		nap,
+		organizationProfiles,
+		postalAddressSchema,
+		site
+	} from '$lib/site';
 
 	export let title: string;
 	export let description: string;
@@ -9,6 +16,16 @@
 	export let publishedTime: string | undefined = undefined;
 	export let modifiedTime: string | undefined = undefined;
 
+	const organizationId = `${site.url}/#organization`;
+	const founderId = `${site.url}/#founder`;
+
+	const openingHoursSchema = nap.openingHours.map((entry) => ({
+		'@type': 'OpeningHoursSpecification',
+		dayOfWeek: entry.days,
+		opens: entry.opens,
+		closes: entry.closes
+	}));
+
 	$: canonical = absoluteUrl(path);
 	$: socialImage = absoluteUrl(site.socialImage);
 	$: schemaGraph = [
@@ -16,11 +33,16 @@
 			'@context': 'https://schema.org',
 			'@graph': [
 				{
-					'@type': 'Organization',
-					'@id': `${site.url}/#organization`,
+					// ProfessionalService is a LocalBusiness subtype. Declaring both keeps
+					// every existing `provider: { '@id': ... }` reference valid while
+					// making the entity eligible for local business treatment.
+					'@type': ['Organization', 'ProfessionalService'],
+					'@id': organizationId,
 					name: site.name,
+					legalName: nap.legalName,
 					url: site.url,
-					foundingDate: '2023',
+					foundingDate: site.foundingDate,
+					description: site.description,
 					logo: {
 						'@type': 'ImageObject',
 						url: absoluteUrl(site.logo),
@@ -29,19 +51,32 @@
 					},
 					image: socialImage,
 					areaServed: site.areaServed,
-					address: {
-						'@type': 'PostalAddress',
-						addressLocality: 'Ashland',
-						addressRegion: 'OH',
-						addressCountry: 'US'
-					}
+					address: postalAddressSchema(),
+					founder: { '@id': founderId },
+					...(nap.telephone ? { telephone: nap.telephone } : {}),
+					...(nap.email ? { email: nap.email } : {}),
+					...(nap.mapUrl ? { hasMap: nap.mapUrl } : {}),
+					...(openingHoursSchema.length ? { openingHoursSpecification: openingHoursSchema } : {}),
+					...(organizationProfiles.length ? { sameAs: organizationProfiles } : {})
+				},
+				{
+					'@type': 'Person',
+					'@id': founderId,
+					name: founder.name,
+					jobTitle: founder.jobTitle,
+					description: founder.shortBio,
+					knowsAbout: founder.knowsAbout,
+					url: absoluteUrl('/about'),
+					worksFor: { '@id': organizationId },
+					...(founder.profiles.length ? { sameAs: founder.profiles } : {})
 				},
 				{
 					'@type': 'WebSite',
 					'@id': `${site.url}/#website`,
 					name: site.name,
 					url: site.url,
-					publisher: { '@id': `${site.url}/#organization` }
+					inLanguage: 'en-US',
+					publisher: { '@id': organizationId }
 				},
 				...schema
 			]
