@@ -11,6 +11,7 @@ const staticPaths = [
 	'/services',
 	'/locations',
 	'/resources',
+	'/faq',
 	'/contact',
 	'/routing'
 ];

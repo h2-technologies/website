@@ -13,6 +13,7 @@ export const staticPaths = [
 	'/services',
 	'/locations',
 	'/resources',
+	'/faq',
 	'/contact',
 	'/routing'
 ];
@@ -42,7 +43,10 @@ export const locationPaths = [
 	'/locations/software-development-ohio',
 	'/locations/website-development-ohio',
 	'/locations/google-workspace-consulting-ohio',
-	'/locations/fortinet-consulting-ohio'
+	'/locations/fortinet-consulting-ohio',
+	'/locations/it-services-ashland-ohio',
+	'/locations/it-services-mansfield-ohio',
+	'/locations/it-services-wooster-ohio'
 ];
 
 export const resourcePaths = [

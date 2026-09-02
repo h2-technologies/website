@@ -4,12 +4,14 @@
 	import FaqBlock from '$lib/components/FaqBlock.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import ServiceCard from '$lib/components/ServiceCard.svelte';
+	import { locationsForService } from '$lib/locations';
 	import { services, type Service } from '$lib/services';
 	import { absoluteUrl, site } from '$lib/site';
 
 	let { data } = $props<{ data: { service: Service } }>();
 
 	const service = $derived(data.service);
+	const serviceAreas = $derived(locationsForService(service.slug));
 	const related = $derived(
 		service.related
 			.map((slug: string) => services.find((item) => item.slug === slug))
@@ -169,6 +171,36 @@
 		</div>
 	</div>
 </section>
+
+{#if serviceAreas.length}
+	<section class="bg-white px-6 py-16 text-slate-900 sm:px-8 lg:px-12">
+		<div class="mx-auto max-w-7xl">
+			<h2 class="text-2xl font-semibold tracking-tight">
+				Where {service.title.toLowerCase()} is delivered
+			</h2>
+			<p class="mt-3 max-w-3xl leading-7 text-slate-600">
+				H2 Technologies is based in Ashland, Ohio. This work is delivered remotely across Ohio and
+				nationally, with onsite coordination where the task requires it.
+			</p>
+			<ul class="mt-5 flex flex-wrap gap-3">
+				{#each serviceAreas.slice(0, 4) as area}
+					<li>
+						<a
+							class="inline-flex rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-orange-700 transition hover:border-orange-200 hover:text-orange-800"
+							href={`/locations/${area.slug}`}>{area.title}</a
+						>
+					</li>
+				{/each}
+				<li>
+					<a
+						class="inline-flex rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300"
+						href="/locations">All service areas</a
+					>
+				</li>
+			</ul>
+		</div>
+	</section>
+{/if}
 
 <CTA
 	title={`Talk to an engineer about ${service.title.toLowerCase()}.`}

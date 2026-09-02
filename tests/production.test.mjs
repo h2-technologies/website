@@ -106,7 +106,7 @@ describe('crawler-facing production routes', () => {
 		assert.match(body, /^<\?xml version="1\.0" encoding="UTF-8"\?>/);
 		assert.match(body, /<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
 		assert.deepEqual(locs, expectedSitemapUrls);
-		assert.equal(new Set(locs).size, 37, 'sitemap URLs should be unique');
+		assert.equal(new Set(locs).size, 41, 'sitemap URLs should be unique');
 		assert.ok(locs.every((url) => url === `${siteUrl}/` || !url.endsWith('/')));
 		assert.match(body.trimEnd(), /<\/urlset>$/);
 
@@ -249,7 +249,7 @@ describe('canonical URL enforcement', () => {
 });
 
 describe('HTML metadata and structured data', () => {
-	it('serves all 37 canonical pages with complete, unique metadata', async () => {
+	it('serves all 41 canonical pages with complete, unique metadata', async () => {
 		const titles = new Set();
 		const descriptions = new Set();
 

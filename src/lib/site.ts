@@ -10,7 +10,8 @@ export const site = {
 	contactHref:
 		'https://client-portal.app.intuit.com/contact-form?accountId=249325971&formId=287439',
 	securityEmail: 'noc@h2technologiesllc.com',
-	areaServed: ['Ohio', 'United States', 'Remote and hybrid teams']
+	areaServed: ['Ohio', 'United States', 'Remote and hybrid teams'],
+	foundingDate: '2023'
 };
 
 /**
@@ -20,7 +21,90 @@ export const site = {
  * alone for changes that do not alter what a visitor reads. Resource articles carry their own
  * `updatedAt` and do not use this value.
  */
-export const contentRevisedAt = '2026-08-07';
+export const contentRevisedAt = '2026-09-02';
+
+/**
+ * Name, address, and phone details published on the site and in structured data.
+ *
+ * Every value here must match the Google Business Profile and any external
+ * directory listing character for character; inconsistent NAP data is the most
+ * common cause of weak local search results. Values left empty are omitted from
+ * both the rendered page and the schema graph rather than guessed, so filling in
+ * `streetAddress`, `postalCode`, and `telephone` is the highest-value manual
+ * follow-up on this file.
+ */
+export const nap = {
+	legalName: 'H2 Technologies LLC',
+	streetAddress: '',
+	addressLocality: 'Ashland',
+	addressRegion: 'OH',
+	addressRegionName: 'Ohio',
+	postalCode: '',
+	addressCountry: 'US',
+	telephone: '',
+	email: '',
+	/** Public map link (Google Business Profile short link or place URL). */
+	mapUrl: '',
+	/** e.g. [{ days: ['Monday', ...], opens: '08:00', closes: '17:00' }] */
+	openingHours: [] as { days: string[]; opens: string; closes: string }[]
+};
+
+/**
+ * Profiles that unambiguously identify H2 Technologies, emitted as
+ * `Organization.sameAs`. Add the Google Business Profile, LinkedIn company page,
+ * and GitHub organization URLs here once confirmed. Unverified URLs are worse
+ * than none, because a wrong `sameAs` splits the entity Google builds.
+ */
+export const organizationProfiles: string[] = [];
+
+/**
+ * The named operator behind the technical work. Search engines weigh
+ * author-level expertise for technical content, and the AS17290 routing policy
+ * published at /routing is registered to this person, so the site states the
+ * relationship explicitly instead of attributing everything to the company.
+ */
+export const founder = {
+	name: 'Austin Hadley',
+	jobTitle: 'Founder and Chief Executive Officer',
+	shortBio:
+		'Austin Hadley founded H2 Technologies in 2023 and leads its software, network, and security engagements. He operates AS17290 and publishes its routing policy publicly.',
+	knowsAbout: [
+		'Border Gateway Protocol',
+		'IPv6 deployment',
+		'DNS architecture',
+		'Network segmentation and firewall policy',
+		'Custom software development',
+		'Cloud infrastructure and disaster recovery planning'
+	],
+	/** Verified profiles for the person, emitted as `Person.sameAs`. */
+	profiles: [] as string[]
+};
+
+/** Public autonomous system operated by H2 Technologies. */
+export const network = {
+	asn: 'AS17290',
+	asnNumber: 17290,
+	asSet: 'AS-17290:AS-AUSTIN-HADLEY',
+	registrant: 'Austin Hadley',
+	policyPath: '/routing',
+	policyPdf: '/bgp-routing-policy.pdf',
+	references: [
+		{ label: 'AS17290 on bgp.tools', href: 'https://bgp.tools/as/17290' },
+		{ label: 'AS17290 on RIPEstat', href: 'https://stat.ripe.net/AS17290' }
+	]
+};
+
+/** Postal address fragment for schema.org, with unknown fields omitted. */
+export function postalAddressSchema() {
+	return {
+		'@type': 'PostalAddress',
+		...(nap.streetAddress ? { streetAddress: nap.streetAddress } : {}),
+		addressLocality: nap.addressLocality,
+		addressRegion: nap.addressRegion,
+		...(nap.postalCode ? { postalCode: nap.postalCode } : {}),
+		addressCountry: nap.addressCountry
+	};
+}
 
 export const footerServices = [
 	{ title: 'Custom Software Development', slug: 'custom-software-development' },

@@ -3,8 +3,38 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import ServiceCard from '$lib/components/ServiceCard.svelte';
 	import { services } from '$lib/services';
+	import { absoluteUrl, site } from '$lib/site';
 
+	const path = '/services';
 	const serviceForSlug = (slug: string) => services.find((service) => service.slug === slug)!;
+
+	const collectionSchema = {
+		'@type': 'CollectionPage',
+		'@id': `${absoluteUrl(path)}#webpage`,
+		url: absoluteUrl(path),
+		name: 'Technology consulting services',
+		description:
+			'The full set of software, network, infrastructure, security, and support services offered by H2 Technologies.',
+		isPartOf: { '@id': `${site.url}/#website` },
+		about: { '@id': `${site.url}/#organization` }
+	};
+	const itemListSchema = {
+		'@type': 'ItemList',
+		'@id': `${absoluteUrl(path)}#list`,
+		itemListElement: services.map((service, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: service.title,
+			url: absoluteUrl(`/services/${service.slug}`)
+		}))
+	};
+	const breadcrumbSchema = {
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Home', item: site.url },
+			{ '@type': 'ListItem', position: 2, name: 'Services', item: absoluteUrl(path) }
+		]
+	};
 
 	const groups = [
 		{
@@ -39,7 +69,8 @@
 <Seo
 	title="Technology Consulting Services | H2 Technologies LLC"
 	description="Explore H2 Technologies consulting for software, websites, enterprise networks, BGP, IPv6, Fortinet, Google Workspace, cybersecurity, cloud, and managed IT."
-	path="/services"
+	{path}
+	schema={[collectionSchema, itemListSchema, breadcrumbSchema]}
 />
 
 <section class="bg-slate-950 px-6 py-20 text-white sm:px-8 lg:px-12">
