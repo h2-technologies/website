@@ -13,6 +13,7 @@ export const staticPaths = [
 	'/services',
 	'/locations',
 	'/resources',
+	'/faq',
 	'/contact',
 	'/routing'
 ];
@@ -42,7 +43,10 @@ export const locationPaths = [
 	'/locations/software-development-ohio',
 	'/locations/website-development-ohio',
 	'/locations/google-workspace-consulting-ohio',
-	'/locations/fortinet-consulting-ohio'
+	'/locations/fortinet-consulting-ohio',
+	'/locations/it-services-ashland-ohio',
+	'/locations/it-services-mansfield-ohio',
+	'/locations/it-services-wooster-ohio'
 ];
 
 export const resourcePaths = [
@@ -64,6 +68,25 @@ export const publicHtmlPaths = [
 ];
 
 export const expectedSitemapUrls = publicHtmlPaths.map((path) => `${siteUrl}${path}`);
+
+// Files served straight from disk by the adapter's static handler, which never reaches the
+// SvelteKit router. The routing PDF in particular is linked publicly and is indexable, so it
+// needs the same one-URL-per-resource guarantee the pages get.
+export const publicAssetPaths = [
+	'/favicon.png',
+	'/squareLogo.png',
+	'/wideLogo.png',
+	'/herobackground.jpg',
+	'/clients/bandit-machine.png',
+	'/analytics.js',
+	'/site.webmanifest',
+	'/bgp-routing-policy.pdf'
+];
+
+// Everything a crawler can request and expect a 200 from.
+export const publicEndpointPaths = ['/sitemap.xml', '/robots.txt', '/.well-known/security.txt'];
+
+export const crawlablePaths = [...publicHtmlPaths, ...publicEndpointPaths, ...publicAssetPaths];
 
 async function findOpenPort() {
 	return await new Promise((resolve, reject) => {

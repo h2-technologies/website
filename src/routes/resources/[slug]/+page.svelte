@@ -5,7 +5,7 @@
 	import ServiceCard from '$lib/components/ServiceCard.svelte';
 	import { type Post } from '$lib/posts';
 	import { services } from '$lib/services';
-	import { absoluteUrl, site } from '$lib/site';
+	import { absoluteUrl, founder, site } from '$lib/site';
 
 	let { data } = $props<{ data: { post: Post } }>();
 
@@ -40,7 +40,7 @@
 		datePublished: post.publishedAt,
 		dateModified: post.updatedAt,
 		inLanguage: 'en-US',
-		author: { '@id': `${site.url}/#organization` },
+		author: { '@id': `${site.url}/#founder` },
 		publisher: { '@id': `${site.url}/#organization` }
 	});
 	const breadcrumbSchema = $derived({
@@ -79,6 +79,11 @@
 			</h1>
 			<p class="mt-6 text-lg leading-8 text-slate-300">{post.summary}</p>
 			<p class="mt-5 text-sm text-slate-400">
+				By
+				<a class="font-semibold text-orange-300 hover:text-orange-200" href="/about" rel="author"
+					>{founder.name}</a
+				>, {founder.jobTitle}
+				<span aria-hidden="true"> · </span>
 				Published <time datetime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
 				<span aria-hidden="true"> · </span>
 				Updated <time datetime={post.updatedAt}>{formatDate(post.updatedAt)}</time>

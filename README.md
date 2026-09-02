@@ -60,7 +60,10 @@ The test suite exercises the built adapter-node application, including primary r
 
 - `src/routes` contains the SvelteKit pages and public metadata endpoints.
 - `src/lib/services.ts`, `src/lib/locations.ts`, and `src/lib/posts.ts` provide the data for crawlable service, location, and resource routes.
-- `src/lib/components/Seo.svelte` supplies canonical, Open Graph, social, and structured-data metadata.
+- `src/lib/faqs.ts` holds the site-wide questions rendered at `/faq`; service- and location-specific questions stay with their own collection so each `FAQPage` block matches its page.
+- `src/lib/routing-policy.ts` is the HTML source of record for the AS17290 routing policy published at `/routing`. Keep it in step with `static/bgp-routing-policy.pdf`, which is the same policy in downloadable form.
+- `src/lib/site.ts` also carries the published name, address, and phone details (`nap`), the founder entity, and the `organizationProfiles` list used for `Organization.sameAs`. Empty values there are omitted from both the page and the schema graph rather than guessed, so anything published must match the Google Business Profile exactly.
+- `src/lib/components/Seo.svelte` supplies canonical, Open Graph, social, and structured-data metadata, including the shared `Organization`/`ProfessionalService`, `Person`, and `WebSite` nodes that page-level schema references by `@id`.
 - `src/hooks.server.ts` applies response security headers. The SvelteKit CSP is configured in `svelte.config.js`.
 - `@sveltejs/adapter-node` produces the deployable `build/` directory.
 - `server.js` wraps the generated handler with consistent static-asset security and cache headers.
@@ -76,6 +79,8 @@ The canonical hostname has no `www` prefix, and public page URLs do not use trai
 - `/sitemap.xml` is generated from the static route list and the service, location, and resource data collections.
 - `/.well-known/security.txt` is the RFC 9116 contact document. Renew its `Expires` value before it lapses and confirm that the listed mailbox is monitored.
 - Page metadata and schema are generated through the shared SEO component and route data.
+
+Location routes come in two kinds, and the distinction is what keeps them from competing for the same query. A `service` page covers one capability across Ohio; a `place` page covers one community across capabilities. Give every new page genuinely local detail rather than templated copy reused under a different town name.
 
 When adding a service, location, or resource:
 

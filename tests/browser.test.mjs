@@ -21,6 +21,13 @@ const responsiveScenarios = [
 	},
 	{ path: '/routing', width: 390, height: 844, label: 'routing policy at mobile' },
 	{ path: '/locations/it-services-ohio', width: 768, height: 1024, label: 'location at tablet' },
+	{
+		path: '/locations/it-services-ashland-ohio',
+		width: 390,
+		height: 844,
+		label: 'city location at mobile'
+	},
+	{ path: '/faq', width: 390, height: 844, label: 'faq at mobile' },
 	{ path: '/resources', width: 768, height: 1024, label: 'resources at tablet' },
 	{ path: '/', width: 1280, height: 800, label: 'home at desktop' },
 	{
@@ -36,6 +43,8 @@ const accessibilityPaths = [
 	'/contact',
 	'/services/custom-software-development',
 	'/locations/it-services-ohio',
+	'/locations/it-services-ashland-ohio',
+	'/faq',
 	'/resources/choose-firewall-small-business',
 	'/routing',
 	'/this-page-does-not-exist'

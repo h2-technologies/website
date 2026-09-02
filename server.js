@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { handler } from './build/handler.js';
+import { canonicalTarget } from './canonical-url.js';
 
 const host = process.env.HOST ?? '0.0.0.0';
 const port = Number.parseInt(process.env.PORT ?? '3000', 10);
@@ -22,6 +23,19 @@ const cacheableAsset = /\.(?:avif|css|gif|ico|jpe?g|js|json|pdf|png|svg|webmanif
 const server = createServer((request, response) => {
 	for (const [header, value] of Object.entries(staticSecurityHeaders)) {
 		response.setHeader(header, value);
+	}
+
+	// Collapse every non-canonical spelling of a URL onto the canonical one before the
+	// adapter handler can answer it, so static assets normalize the same way pages do.
+	const redirectTarget = canonicalTarget(request.url);
+	if (redirectTarget !== null) {
+		response.writeHead(301, {
+			'cache-control': 'public, max-age=3600',
+			'content-length': 0,
+			location: redirectTarget
+		});
+		response.end();
+		return;
 	}
 
 	const pathname = (request.url ?? '/').split('?', 1)[0];

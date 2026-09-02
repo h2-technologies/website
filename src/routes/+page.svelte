@@ -3,9 +3,10 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import ServiceCard from '$lib/components/ServiceCard.svelte';
 	import TrustSection from '$lib/components/TrustSection.svelte';
+	import { placePages } from '$lib/locations';
 	import { posts } from '$lib/posts';
 	import { services } from '$lib/services';
-	import { site, trustPoints } from '$lib/site';
+	import { network, site, trustPoints } from '$lib/site';
 
 	const featuredServices = [
 		'custom-software-development',
@@ -132,6 +133,52 @@
 </section>
 
 <section class="bg-white px-6 py-20 text-slate-900 sm:px-8 lg:px-12">
+	<div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+		<div>
+			<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">
+				Based in Ashland, Ohio
+			</p>
+			<h2 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+				A local firm that also runs its own network.
+			</h2>
+			<p class="mt-4 text-lg leading-8 text-slate-600">
+				H2 Technologies is an Ashland business, with onsite coverage across Ashland, Richland, and
+				Wayne counties and remote delivery statewide. It also operates {network.asn} and publishes the
+				<a class="font-semibold text-orange-700 hover:text-orange-800" href={network.policyPath}
+					>{network.asn} routing policy</a
+				> in full, which is an unusual thing for a regional IT provider to be able to show.
+			</p>
+			<ul class="mt-6 flex flex-wrap gap-3">
+				{#each placePages as place}
+					<li>
+						<a
+							class="inline-flex rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-orange-700 transition hover:border-orange-200 hover:text-orange-800"
+							href={`/locations/${place.slug}`}>{place.title}</a
+						>
+					</li>
+				{/each}
+				<li>
+					<a
+						class="inline-flex rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300"
+						href="/locations">All service areas</a
+					>
+				</li>
+			</ul>
+		</div>
+		<div class="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+			<h2 class="text-xl font-semibold">Common first questions</h2>
+			<p class="mt-3 leading-7 text-slate-600">
+				What an engagement costs, whether you need a contract, how remote and onsite work are split,
+				and when public routing is actually worth it.
+			</p>
+			<a class="mt-5 inline-flex font-semibold text-orange-700 hover:text-orange-800" href="/faq"
+				>Read the frequently asked questions →</a
+			>
+		</div>
+	</div>
+</section>
+
+<section class="bg-slate-50 px-6 py-20 text-slate-900 sm:px-8 lg:px-12">
 	<div class="mx-auto max-w-7xl">
 		<div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
 			<div class="max-w-3xl">
