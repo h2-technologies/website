@@ -1,9 +1,11 @@
 <script lang="ts">
 	import '../app.css';
 	import ContactDetails from '$lib/components/ContactDetails.svelte';
+	import PromoBanner from '$lib/components/PromoBanner.svelte';
 	import { footerLocations, footerServices, site } from '$lib/site';
+	import type { LayoutProps } from './$types';
 
-	let { children } = $props();
+	let { children, data }: LayoutProps = $props();
 </script>
 
 <svelte:head>
@@ -17,6 +19,10 @@
 	>
 		Skip to content
 	</a>
+
+	<!-- After the skip link so it stays the first keyboard stop, and above the sticky header so
+	     the offer scrolls away instead of permanently occupying the viewport. -->
+	<PromoBanner show={data.showPromoBanner} />
 
 	<header class="z-40 border-b border-slate-200 bg-white/95 backdrop-blur lg:sticky lg:top-0">
 		<nav

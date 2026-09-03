@@ -10,6 +10,8 @@ export const site = {
 	contactHref:
 		'https://client-portal.app.intuit.com/contact-form?accountId=249325971&formId=287439',
 	securityEmail: 'noc@h2technologiesllc.com',
+	/** Sales mailbox used by the promotional banner's primary call to action. */
+	salesEmail: 'sales@h2technologiesllc.com',
 	areaServed: ['Ohio', 'United States', 'Remote and hybrid teams'],
 	foundingDate: '2023'
 };
@@ -21,7 +23,7 @@ export const site = {
  * alone for changes that do not alter what a visitor reads. Resource articles carry their own
  * `updatedAt` and do not use this value.
  */
-export const contentRevisedAt = '2026-09-02';
+export const contentRevisedAt = '2026-09-03';
 
 /**
  * Name, address, and phone details published on the site and in structured data.
