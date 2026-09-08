@@ -2,7 +2,7 @@
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import { policyIntro, policySections } from '$lib/routing-policy';
-	import { absoluteUrl, founder, network, site } from '$lib/site';
+	import { absoluteUrl, contentRevisedAt, founder, network, site } from '$lib/site';
 
 	const path = '/routing';
 	const articleSchema = {
@@ -13,6 +13,7 @@
 			'Route acceptance, peering, transit onboarding, and outbound announcement policy for AS17290.',
 		url: absoluteUrl(path),
 		mainEntityOfPage: { '@id': absoluteUrl(path) },
+		dateModified: contentRevisedAt,
 		inLanguage: 'en-US',
 		author: { '@id': `${site.url}/#founder` },
 		publisher: { '@id': `${site.url}/#organization` },

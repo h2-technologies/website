@@ -28,6 +28,7 @@ const responsiveScenarios = [
 		label: 'city location at mobile'
 	},
 	{ path: '/faq', width: 390, height: 844, label: 'faq at mobile' },
+	{ path: '/admin/login', width: 390, height: 844, label: 'admin login at mobile' },
 	{ path: '/resources', width: 768, height: 1024, label: 'resources at tablet' },
 	{ path: '/', width: 1280, height: 800, label: 'home at desktop' },
 	{
@@ -47,6 +48,7 @@ const accessibilityPaths = [
 	'/faq',
 	'/resources/choose-firewall-small-business',
 	'/routing',
+	'/admin/login',
 	'/this-page-does-not-exist'
 ];
 
@@ -219,6 +221,41 @@ describe('real-browser production smoke', () => {
 			assert.match(await pdfLink.getAttribute('rel'), /\bnoreferrer\b/);
 		} finally {
 			await routing.context.close();
+		}
+	});
+
+	it('renders a labelled contact form that never exposes the honeypot to a visitor', async () => {
+		const { context, page, consoleErrors, pageErrors } = await loadPage('/contact', {
+			width: 390,
+			height: 844
+		});
+
+		try {
+			for (const label of ['Name', 'Email', 'What are you trying to improve?']) {
+				await assert.doesNotReject(
+					page.getByLabel(label, { exact: true }).first().waitFor({ state: 'visible' }),
+					`the contact form should label its ${label} field`
+				);
+			}
+
+			// The honeypot has to be invisible and out of the tab order for a person, while still
+			// being present in the markup for a bot to fill in.
+			const honeypot = page.locator('input[name="website"]');
+			assert.equal(await honeypot.count(), 1, 'the honeypot field should exist');
+			assert.equal(await honeypot.isVisible(), false, 'the honeypot must not be visible');
+			assert.equal(await honeypot.getAttribute('tabindex'), '-1');
+
+			// A GET form would put the visitor's message in the URL, the referrer, and the log.
+			for (const method of await page
+				.locator('form')
+				.evaluateAll((forms) => forms.map((form) => form.getAttribute('method')))) {
+				assert.ok(method === null || method.toLowerCase() === 'post');
+			}
+
+			assert.deepEqual(pageErrors, []);
+			assert.deepEqual(consoleErrors, []);
+		} finally {
+			await context.close();
 		}
 	});
 

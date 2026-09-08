@@ -84,7 +84,16 @@ export const publicAssetPaths = [
 ];
 
 // Everything a crawler can request and expect a 200 from.
-export const publicEndpointPaths = ['/sitemap.xml', '/robots.txt', '/.well-known/security.txt'];
+export const publicEndpointPaths = [
+	'/sitemap.xml',
+	'/robots.txt',
+	'/llms.txt',
+	'/.well-known/security.txt'
+];
+
+// Routes behind the admin session check. They are deliberately absent from `publicHtmlPaths`
+// and from the sitemap: nothing here is meant to be crawled or indexed.
+export const adminPaths = ['/admin', '/admin/submissions'];
 
 export const crawlablePaths = [...publicHtmlPaths, ...publicEndpointPaths, ...publicAssetPaths];
 
@@ -138,14 +147,22 @@ export async function startProductionServer() {
 	const baseUrl = `http://127.0.0.1:${port}`;
 	const stderr = [];
 	let processError;
+	// The suite runs against an application with no database and no Turnstile keys, which is the
+	// configuration CI builds in. Any such values in the developer's shell are stripped so the
+	// tests behave identically everywhere and never reach a real database.
+	const serverEnv = {
+		...process.env,
+		HOST: '127.0.0.1',
+		PORT: String(port),
+		NODE_ENV: 'production'
+	};
+	for (const key of ['DATABASE_URL', 'TURNSTILE_SECRET_KEY', 'PUBLIC_TURNSTILE_SITE_KEY']) {
+		delete serverEnv[key];
+	}
+
 	const child = spawn(process.execPath, ['server.js'], {
 		cwd: root,
-		env: {
-			...process.env,
-			HOST: '127.0.0.1',
-			PORT: String(port),
-			NODE_ENV: 'production'
-		},
+		env: serverEnv,
 		stdio: ['ignore', 'ignore', 'pipe']
 	});
 

@@ -4,6 +4,14 @@ services:
       context: .
     init: true
     restart: unless-stopped
+    # `DATABASE_URL` and the Turnstile keys are read from a `.env` file next to this file on the
+    # deployment host. That file is never committed and never enters the image build context.
+    # The public pages serve normally when these are unset; only /admin and the contact form
+    # need them.
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-}
+      PUBLIC_TURNSTILE_SITE_KEY: ${PUBLIC_TURNSTILE_SITE_KEY:-}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
     security_opt:
       - no-new-privileges:true
     cap_drop:

@@ -4,7 +4,7 @@
 	import FaqBlock from '$lib/components/FaqBlock.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import { allFaqItems, faqGroups } from '$lib/faqs';
-	import { absoluteUrl, site } from '$lib/site';
+	import { absoluteUrl, contentRevisedAt, site } from '$lib/site';
 
 	const path = '/faq';
 	const faqSchema = {
@@ -14,6 +14,9 @@
 		name: 'H2 Technologies frequently asked questions',
 		isPartOf: { '@id': `${site.url}/#website` },
 		about: { '@id': `${site.url}/#organization` },
+		// Answers are edited in `src/lib/faqs.ts`, and the same revision date drives this page's
+		// `<lastmod>` in sitemap.xml, so the two can never disagree.
+		dateModified: contentRevisedAt,
 		mainEntity: allFaqItems.map((item) => ({
 			'@type': 'Question',
 			name: item.question,

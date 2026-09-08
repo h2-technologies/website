@@ -20,6 +20,11 @@
 		isPartOf: { '@id': `${site.url}/#website` },
 		publisher: { '@id': `${site.url}/#organization` },
 		author: { '@id': `${site.url}/#founder` },
+		// The index is exactly as current as its most recently edited guide.
+		dateModified: posts.reduce(
+			(latest, post) => (post.updatedAt > latest ? post.updatedAt : latest),
+			posts[0].updatedAt
+		),
 		blogPost: posts.map((post) => ({
 			'@type': 'TechArticle',
 			'@id': `${absoluteUrl(`/resources/${post.slug}`)}#article`,

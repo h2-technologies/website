@@ -14,8 +14,12 @@ const config = {
 			directives: {
 				'default-src': ['self'],
 				'base-uri': ['self'],
+				// `challenges.cloudflare.com` is the Cloudflare Turnstile widget used by the contact
+				// form. It needs a script source, a frame source for the challenge iframe, and a
+				// connect source for the checks the widget runs while solving.
 				'connect-src': [
 					'self',
+					'https://challenges.cloudflare.com',
 					'https://*.analytics.google.com',
 					'https://*.google-analytics.com',
 					'https://www.googletagmanager.com'
@@ -23,7 +27,7 @@ const config = {
 				'font-src': ['self'],
 				'form-action': ['self'],
 				'frame-ancestors': ['none'],
-				'frame-src': ['self'],
+				'frame-src': ['self', 'https://challenges.cloudflare.com'],
 				'img-src': [
 					'self',
 					'data:',
@@ -33,7 +37,11 @@ const config = {
 				'manifest-src': ['self'],
 				'media-src': ['self'],
 				'object-src': ['none'],
-				'script-src': ['self', 'https://www.googletagmanager.com'],
+				'script-src': [
+					'self',
+					'https://challenges.cloudflare.com',
+					'https://www.googletagmanager.com'
+				],
 				'style-src': ['self'],
 				'style-src-attr': ['unsafe-inline'],
 				'worker-src': ['self'],

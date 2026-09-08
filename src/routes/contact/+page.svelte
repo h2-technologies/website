@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ContactDetails from '$lib/components/ContactDetails.svelte';
+	import ContactForm from '$lib/components/ContactForm.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import { absoluteUrl, nap, site } from '$lib/site';
 
@@ -80,41 +81,35 @@
 		</div>
 
 		<section
-			aria-labelledby="hosted-contact-heading"
+			aria-labelledby="contact-form-heading"
 			class="rounded-2xl border border-white/10 bg-white p-6 text-left text-slate-900 shadow-2xl sm:p-8"
 		>
 			<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">
 				Secure contact workflow
 			</p>
-			<h2 id="hosted-contact-heading" class="mt-3 text-3xl font-semibold tracking-tight">
+			<h2 id="contact-form-heading" class="mt-3 text-3xl font-semibold tracking-tight">
 				Request a technology assessment
 			</h2>
 			<p class="mt-4 leading-7 text-slate-600">
-				Open H2 Technologies' Intuit-hosted contact form to share your name, contact information,
-				service need, timeline, and project details directly with the team.
+				Describe the business goal and the current environment, and include timing, budget range,
+				and known constraints where you can. The more of that is in the first message, the more
+				specific the reply can be.
 			</p>
-			<ul class="mt-6 grid gap-3 text-slate-700">
-				<li class="flex gap-3">
-					<span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"></span>
-					Describe the business goal and current environment.
-				</li>
-				<li class="flex gap-3">
-					<span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"></span>
-					Include timing, budget range, and known constraints when possible.
-				</li>
-				<li class="flex gap-3">
-					<span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"></span>
-					H2 Technologies will follow up with the most practical next step.
-				</li>
-			</ul>
-			<a
-				href={site.contactHref}
-				class="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-orange-700 px-6 py-3 text-center font-semibold text-white transition hover:bg-orange-800"
-			>
-				Open the Hosted Contact Form
-			</a>
-			<p class="mt-4 text-sm leading-6 text-slate-600">
-				Your information is entered in the hosted workflow rather than placed in this website's URL.
+
+			<div class="mt-6">
+				<ContactForm />
+			</div>
+
+			<p class="mt-6 border-t border-slate-200 pt-5 text-sm leading-6 text-slate-600">
+				Submissions are posted to this site and stored on H2 Technologies' own infrastructure, never
+				placed in the page URL. If you would rather use the hosted workflow,
+				<a
+					href={site.contactHref}
+					class="font-semibold text-orange-700 underline hover:text-orange-800"
+				>
+					Open the Hosted Contact Form
+				</a>
+				instead.
 			</p>
 		</section>
 	</div>

@@ -3,8 +3,11 @@
 // for information about these interfaces
 declare global {
 	namespace App {
+		interface Locals {
+			/** The signed-in admin, resolved once per request in `src/hooks.server.ts`. */
+			user: { id: string; email: string } | null;
+		}
 		// interface Error {}
-		// interface Locals {}
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}

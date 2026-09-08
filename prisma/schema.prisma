@@ -1,0 +1,71 @@
+// Schema for the `h2_website` database, which is deliberately a separate database from any
+// other application sharing the same PostgreSQL server. A dedicated database plus its own
+// least-privilege role keeps a compromise of one application from reaching the other's data
+// and lets each one migrate on its own schedule.
+//
+// Provision once, as the server's admin role:
+//
+//   CREATE DATABASE h2_website;
+//   CREATE ROLE h2_website_app WITH LOGIN PASSWORD '<generated secret>';
+//   GRANT ALL PRIVILEGES ON DATABASE h2_website TO h2_website_app;
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// A person who can sign in to /admin. Accounts are created out of band with
+/// `scripts/create-admin.ts`; there is no self-service registration.
+model AdminUser {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  lastLoginAt  DateTime?
+  sessions     Session[]
+
+  @@map("admin_users")
+}
+
+/// A signed-in browser session. Only the SHA-256 hash of the session token is stored, so a
+/// database disclosure does not hand out usable cookies, and deleting the row revokes the
+/// session immediately rather than waiting for a stateless token to expire.
+model Session {
+  id        String    @id @default(uuid())
+  tokenHash String    @unique
+  userId    String
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+/// One public contact-form submission. `ipAddress` also backs the submission rate limit, which
+/// is counted in the database rather than in process memory so it still holds when more than
+/// one instance of the application is running.
+model ContactSubmission {
+  id         String    @id @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  company    String?
+  message    String
+  sourcePage String?
+  ipAddress  String?
+  userAgent  String?
+  status     String    @default("new") // new | read | archived
+  createdAt  DateTime  @default(now())
+  readAt     DateTime?
+  viewedBy   String?
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("contact_submissions")
+}

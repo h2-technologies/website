@@ -9,15 +9,29 @@ ARG PNPM_VERSION
 
 WORKDIR /usr/src/app
 
-RUN npm install --global pnpm@${PNPM_VERSION} \
+# `argon2` is a native module. It currently ships a musl prebuild, but the C toolchain is kept
+# available so that a release without one falls back to compiling rather than failing the deploy.
+# It stays in this stage and never reaches the runtime image.
+RUN apk add --no-cache python3 make g++ \
+	&& npm install --global pnpm@${PNPM_VERSION} \
 	&& test "$(pnpm --version)" = "${PNPM_VERSION}"
 
-COPY package.json pnpm-lock.yaml svelte.config.js tsconfig.json vite.config.ts ./
+# The `prepare` script runs during install and needs both the Svelte config and the Prisma
+# schema, so those are copied before dependencies are installed.
+COPY package.json pnpm-lock.yaml svelte.config.js tsconfig.json vite.config.ts prisma.config.ts ./
+COPY prisma ./prisma
 COPY src/app.html ./src/app.html
 RUN pnpm install --frozen-lockfile
 
 COPY . .
 RUN pnpm run build
+
+# `adapter-node` leaves dependencies as bare imports rather than bundling them, and the Prisma
+# client is generated into `node_modules`, so the runtime image needs the production dependency
+# tree rather than the adapter output alone. Pruning here keeps the Vite pipeline and the browser
+# test dependencies out of the shipped image; `--ignore-scripts` is required because the
+# `prepare` script depends on packages the prune has just removed.
+RUN pnpm prune --prod --ignore-scripts
 
 FROM ${NODE_IMAGE} AS runtime
 
@@ -28,8 +42,9 @@ ENV HOST=0.0.0.0 \
 	ORIGIN=https://h2technologiesllc.com \
 	PORT=3002
 
+COPY --from=build --chown=node:node /usr/src/app/node_modules ./node_modules
 COPY --from=build --chown=node:node /usr/src/app/build ./build
-COPY --chown=node:node server.js canonical-url.js ./
+COPY --chown=node:node package.json server.js canonical-url.js ./
 
 EXPOSE 3002
 

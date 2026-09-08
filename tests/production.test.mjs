@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { after, before, describe, it } from 'node:test';
 import {
+	adminPaths,
 	crawlablePaths,
 	expectedSitemapUrls,
 	fetchWithoutRedirect,
@@ -65,6 +66,39 @@ function parseJsonLd(html, path) {
 	});
 }
 
+// robots.txt is a grouped format: one or more `User-agent` lines followed by the rules that
+// apply to them. Parsing it here means the test asserts what a crawler would actually conclude
+// rather than pinning the file byte for byte.
+function parseRobots(body) {
+	const groups = new Map();
+	let currentAgents = [];
+
+	for (const rawLine of body.split(/\r?\n/)) {
+		const line = rawLine.replace(/#.*$/, '').trim();
+		if (!line) {
+			currentAgents = [];
+			continue;
+		}
+
+		const [field, ...rest] = line.split(':');
+		const value = rest.join(':').trim();
+		const name = field.trim().toLowerCase();
+
+		if (name === 'user-agent') {
+			currentAgents.push(value);
+			groups.set(value, groups.get(value) ?? { allow: [], disallow: [] });
+			continue;
+		}
+		if (name !== 'allow' && name !== 'disallow') continue;
+
+		for (const agent of currentAgents) {
+			groups.get(agent)[name].push(value);
+		}
+	}
+
+	return groups;
+}
+
 function assertDirectSuccess(response, path) {
 	assert.equal(response.status, 200, `${path} should return HTTP 200 without redirecting`);
 	assert.equal(response.headers.get('location'), null, `${path} should not redirect`);
@@ -89,11 +123,72 @@ describe('crawler-facing production routes', () => {
 	it('serves an explicit, indexable robots.txt with the canonical sitemap', async () => {
 		const response = await fetchWithoutRedirect(server.baseUrl, '/robots.txt');
 		const body = await response.text();
+		const groups = parseRobots(body);
 
 		assertDirectSuccess(response, '/robots.txt');
 		assert.match(response.headers.get('content-type') ?? '', /^text\/plain\b/i);
-		assert.equal(body, `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
-		assert.doesNotMatch(body, /^Disallow:\s*\/$/im);
+		assert.match(body, new RegExp(`^Sitemap: ${escapeRegex(siteUrl)}/sitemap\\.xml$`, 'm'));
+
+		const wildcard = groups.get('*');
+		assert.ok(wildcard, 'robots.txt should carry a wildcard group');
+		assert.deepEqual(wildcard.allow, ['/'], 'the public site must stay crawlable');
+		assert.ok(!wildcard.disallow.includes('/'), 'the site must not be blocked wholesale');
+		assert.ok(wildcard.disallow.includes('/admin/'), 'the admin area must be excluded');
+
+		// Answer engines are named individually because several only honour a group matching
+		// their own token, so a wildcard group alone leaves their behaviour to the vendor.
+		for (const agent of [
+			'GPTBot',
+			'OAI-SearchBot',
+			'ChatGPT-User',
+			'ClaudeBot',
+			'Claude-Web',
+			'anthropic-ai',
+			'PerplexityBot',
+			'Google-Extended',
+			'Applebot-Extended',
+			'CCBot'
+		]) {
+			const group = groups.get(agent);
+			assert.ok(group, `${agent} should have its own group`);
+			assert.deepEqual(group.allow, ['/'], `${agent} should be allowed`);
+			assert.deepEqual(group.disallow, ['/admin/'], `${agent} should still be kept out of /admin`);
+		}
+
+		assert.deepEqual(groups.get('Bytespider')?.disallow, ['/']);
+
+		// Every group has to name the admin area, or a crawler matching only that group would be
+		// told nothing about it.
+		for (const [agent, rules] of groups) {
+			if (agent === 'Bytespider') continue;
+			assert.ok(rules.disallow.includes('/admin/'), `${agent} should be told to skip /admin`);
+		}
+	});
+
+	it('publishes an llms.txt index that matches the sitemap inventory', async () => {
+		const response = await fetchWithoutRedirect(server.baseUrl, '/llms.txt');
+		const body = await response.text();
+		const linkedUrls = allMatches(body, /^-\s*\[[^\]]+\]\((\S+)\)/gm);
+
+		assertDirectSuccess(response, '/llms.txt');
+		assert.match(response.headers.get('content-type') ?? '', /^text\/plain\b/i);
+		assert.match(body, /^# H2 Technologies LLC$/m, 'llms.txt should open with a single H1');
+		assert.match(body, /^> /m, 'llms.txt should carry a blockquote summary');
+		assert.match(body, /^## Core pages$/m);
+		assert.match(body, /^## Optional$/m);
+
+		assert.ok(linkedUrls.length > 0, 'llms.txt should link to pages');
+		assert.equal(new Set(linkedUrls).size, linkedUrls.length, 'llms.txt should not repeat a URL');
+		for (const url of linkedUrls) {
+			assert.ok(
+				expectedSitemapUrls.includes(url),
+				`${url} is linked from llms.txt but is not a canonical page`
+			);
+		}
+		for (const path of ['/services', '/faq', '/about', '/resources', '/routing', '/contact']) {
+			assert.ok(linkedUrls.includes(`${siteUrl}${path}`), `llms.txt should link ${path}`);
+		}
+		assert.ok(!body.includes('/admin'), 'llms.txt must not advertise the admin area');
 	});
 
 	it('publishes the exact slashless canonical URL inventory in sitemap.xml', async () => {
@@ -437,7 +532,21 @@ describe('security posture and public links', () => {
 			.filter((href) => href?.includes('client-portal.app.intuit.com'))
 			.map((href) => new URL(href.replaceAll('&amp;', '&')));
 
-		assert.doesNotMatch(html, /<form\b/i, 'the local page should not submit visitor data with GET');
+		// The page now posts to this origin. What still must not happen is a GET form, which would
+		// put a visitor's name and message in a URL, in the referrer, and in the access log.
+		const forms = html.match(/<form\b[^>]*>/gi) ?? [];
+		assert.ok(forms.length >= 1, 'contact should expose a form');
+		for (const formTag of forms) {
+			const method = attribute(formTag, /^<form\b[^>]*>$/i, 'method');
+			const action = attribute(formTag, /^<form\b[^>]*>$/i, 'action');
+			assert.ok(
+				method === undefined || method.toLowerCase() === 'post',
+				`a contact form should not submit with GET: ${formTag}`
+			);
+			if (action !== undefined) {
+				assert.equal(new URL(action, `${siteUrl}/contact`).origin, siteUrl);
+			}
+		}
 		assert.ok(hostedLinks.length >= 1, 'contact should expose the hosted Intuit workflow');
 		for (const link of hostedLinks) {
 			assert.equal(link.protocol, 'https:');
@@ -461,5 +570,90 @@ describe('security posture and public links', () => {
 			assert.doesNotMatch(source, /\b(?:TODO|FIXME)\b/i, relativePath);
 			assert.doesNotMatch(source, /lorem ipsum/i, relativePath);
 		}
+	});
+});
+
+describe('admin area and contact intake', () => {
+	async function postContact(payload) {
+		const response = await fetch(`${server.baseUrl}/api/contact`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: typeof payload === 'string' ? payload : JSON.stringify(payload),
+			redirect: 'manual'
+		});
+		return { response, body: await response.json().catch(() => null) };
+	}
+
+	const validSubmission = {
+		name: 'Test Person',
+		email: 'test@example.com',
+		message: 'We need a firewall review before renewing our circuit.',
+		turnstileToken: 'a-token-that-was-never-issued'
+	};
+
+	it('sends a signed-out visitor from every admin route to the login page', async () => {
+		for (const path of adminPaths) {
+			const response = await fetchWithoutRedirect(server.baseUrl, path);
+
+			assert.equal(response.status, 303, `${path} should redirect when signed out`);
+			assert.equal(response.headers.get('location'), '/admin/login');
+			assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow');
+		}
+	});
+
+	it('keeps the admin area out of every index, in headers and in markup', async () => {
+		const { response, html } = await getHtml('/admin/login');
+
+		assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow');
+		assert.equal(metaContent(html, 'name', 'robots'), 'noindex, nofollow');
+		assert.equal(linkHref(html, 'canonical'), undefined, 'admin pages need no canonical URL');
+
+		// The security headers the public site sets must still be applied to admin responses; the
+		// admin branch in the hook returns its own redirect and could quietly bypass them.
+		assert.equal(response.headers.get('x-frame-options'), 'DENY');
+		assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
+
+		for (const url of expectedSitemapUrls) {
+			assert.ok(!url.includes('/admin'), 'the sitemap must not list an admin URL');
+		}
+	});
+
+	it('rejects contact submissions that are malformed or unverified', async () => {
+		const malformed = await postContact('not json at all');
+		assert.equal(malformed.response.status, 400);
+
+		const withoutToken = { ...validSubmission };
+		delete withoutToken.turnstileToken;
+		assert.equal((await postContact(withoutToken)).response.status, 400);
+
+		assert.equal(
+			(await postContact({ ...validSubmission, email: 'not-an-address' })).response.status,
+			400
+		);
+		assert.equal((await postContact({ ...validSubmission, message: '' })).response.status, 400);
+
+		// No Turnstile secret is configured here, so verification cannot succeed. The endpoint has
+		// to fail closed: a misconfigured deployment must reject submissions, not wave them through.
+		const unverified = await postContact(validSubmission);
+		assert.equal(unverified.response.status, 400);
+		assert.match(unverified.body?.error ?? '', /verification/i);
+	});
+
+	it('answers a filled honeypot with success without storing or verifying anything', async () => {
+		const { response, body } = await postContact({
+			...validSubmission,
+			website: 'http://spam.example'
+		});
+
+		// Identical to the submission that is rejected above, except for the hidden field. Telling
+		// a bot it was caught only teaches whoever wrote it which field to leave alone next time,
+		// and the early return means the database is never touched.
+		assert.equal(response.status, 200);
+		assert.deepEqual(body, { ok: true });
+	});
+
+	it('exposes the contact endpoint for POST only', async () => {
+		const response = await fetchWithoutRedirect(server.baseUrl, '/api/contact');
+		assert.equal(response.status, 405);
 	});
 });
