@@ -73,7 +73,7 @@
 				Ohio-based technology consulting
 			</p>
 			<h1 class="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl lg:text-7xl">
-				Secure Software, Enterprise Networks, and Practical IT Solutions for Growing Businesses
+				Secure Software, Networks, and IT for Growing Businesses
 			</h1>
 			<p class="mt-6 max-w-3xl text-lg leading-8 text-slate-200 sm:text-xl">
 				H2 Technologies helps businesses build secure websites, custom software, reliable networks,
