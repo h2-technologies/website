@@ -92,9 +92,11 @@
 						</p>
 						<h3 class="mt-3 text-2xl font-semibold tracking-tight">{location.title}</h3>
 						<p class="mt-3 leading-7 text-slate-600">{location.meta}</p>
+						<!-- "Learn more" alone named every service area on this page identically. -->
 						<a
 							class="mt-5 inline-flex font-semibold text-orange-700 hover:text-orange-800"
-							href={`/locations/${location.slug}`}>Learn more →</a
+							href={`/locations/${location.slug}`}
+							aria-label={`Learn more about ${location.title}`}>Learn more →</a
 						>
 					</article>
 				{/each}

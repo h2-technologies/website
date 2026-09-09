@@ -2,8 +2,13 @@ export const site = {
 	name: 'H2 Technologies LLC',
 	shortName: 'H2 Technologies',
 	url: 'https://h2technologiesllc.com',
+	/**
+	 * Kept at or under 155 characters: Google truncates around there, and this string is
+	 * also the `Organization` and home page `WebPage` description, so an ellipsis here
+	 * would show up in more than one place.
+	 */
 	description:
-		'Ohio technology consulting for secure software, business websites, enterprise networks, cybersecurity, Google Workspace, Fortinet, IPv6, BGP, and IT support.',
+		'Ohio technology consulting for secure software, business websites, enterprise networks, cybersecurity, Google Workspace, Fortinet, IPv6, and BGP.',
 	logo: '/squareLogo.png',
 	socialImage: '/herobackground.jpg',
 	socialImageAlt: 'H2 Technologies secure network infrastructure background',
@@ -12,7 +17,14 @@ export const site = {
 	securityEmail: 'noc@h2technologiesllc.com',
 	/** Sales mailbox used by the promotional banner's primary call to action. */
 	salesEmail: 'sales@h2technologiesllc.com',
-	areaServed: ['Ohio', 'United States', 'Remote and hybrid teams'],
+	/**
+	 * Geographic areas only. `areaServed` is emitted on `Organization` and on every
+	 * `Service`, where it answers "where does this reach", so an audience descriptor like
+	 * "remote and hybrid teams" does not belong here — that idea lives in `industries` and
+	 * in the visible copy. Schema.org accepts free text, which is why the wrong kind of
+	 * value parses cleanly and still says something untrue about coverage.
+	 */
+	areaServed: ['Ohio', 'United States'],
 	foundingDate: '2023'
 };
 
@@ -37,19 +49,39 @@ export const contentRevisedAt = '2026-09-03';
  */
 export const nap = {
 	legalName: 'H2 Technologies LLC',
-	streetAddress: '',
+	streetAddress: '1293 Co Rd 1475',
 	addressLocality: 'Ashland',
 	addressRegion: 'OH',
 	addressRegionName: 'Ohio',
-	postalCode: '',
+	postalCode: '44805',
 	addressCountry: 'US',
-	telephone: '',
+	/** Formatted exactly as the Google Business Profile displays it. */
+	telephone: '(567) 261-0762',
 	email: '',
 	/** Public map link (Google Business Profile short link or place URL). */
-	mapUrl: '',
-	/** e.g. [{ days: ['Monday', ...], opens: '08:00', closes: '17:00' }] */
-	openingHours: [] as { days: string[]; opens: string; closes: string }[]
+	mapUrl: 'https://maps.app.goo.gl/XumBtwa8QLSb35RAA',
+	/**
+	 * Sunday is absent rather than listed as closed, which is how schema.org reads an
+	 * omitted day. These mirror the Google Business Profile hours; changing them here
+	 * without changing them there reintroduces exactly the inconsistency this file exists
+	 * to prevent.
+	 */
+	openingHours: [
+		{
+			days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+			opens: '08:00',
+			closes: '22:00'
+		},
+		{ days: ['Saturday'], opens: '09:00', closes: '14:00' }
+	] as { days: string[]; opens: string; closes: string }[]
 };
+
+/**
+ * Typical total project spend, emitted as `LocalBusiness.priceRange`. It is a planning
+ * figure, not a quote, and the same range is stated in the pricing FAQ so the markup
+ * matches something a visitor can actually read on the site.
+ */
+export const priceRange = '$4,000-$50,000';
 
 /**
  * Profiles that unambiguously identify H2 Technologies, emitted as
@@ -57,7 +89,10 @@ export const nap = {
  * and GitHub organization URLs here once confirmed. Unverified URLs are worse
  * than none, because a wrong `sameAs` splits the entity Google builds.
  */
-export const organizationProfiles: string[] = [];
+export const organizationProfiles: string[] = [
+	'https://www.linkedin.com/company/h2technologiesllc',
+	'https://www.facebook.com/H2Tech'
+];
 
 /**
  * The named operator behind the technical work. Search engines weigh
@@ -79,7 +114,10 @@ export const founder = {
 		'Cloud infrastructure and disaster recovery planning'
 	],
 	/** Verified profiles for the person, emitted as `Person.sameAs`. */
-	profiles: [] as string[]
+	profiles: [
+		'https://www.linkedin.com/in/austin-hadley-835407196',
+		'https://github.com/ahadley1124'
+	] as string[]
 };
 
 /** Public autonomous system operated by H2 Technologies. */
@@ -92,7 +130,8 @@ export const network = {
 	policyPdf: '/bgp-routing-policy.pdf',
 	references: [
 		{ label: 'AS17290 on bgp.tools', href: 'https://bgp.tools/as/17290' },
-		{ label: 'AS17290 on RIPEstat', href: 'https://stat.ripe.net/AS17290' }
+		{ label: 'AS17290 on RIPEstat', href: 'https://stat.ripe.net/AS17290' },
+		{ label: 'AS17290 on PeeringDB', href: 'https://www.peeringdb.com/net/37388' }
 	]
 };
 
@@ -123,6 +162,47 @@ export const footerLocations = [
 	{ title: 'Cybersecurity Consulting in Ohio', slug: 'cybersecurity-consulting-ohio' },
 	{ title: 'Software Development in Ohio', slug: 'software-development-ohio' },
 	{ title: 'Website Development in Ohio', slug: 'website-development-ohio' }
+];
+
+/**
+ * Vendor programs H2 Technologies belongs to.
+ *
+ * Each entry is written in the vendor's own terms and at the tier actually held. Partner
+ * tiers are checkable claims — a prospect can ask, and a vendor can be asked — so the
+ * wording is not rounded up: an authorized partner is not described as a premier or gold
+ * one, and the Fortinet entry keeps both its tier and its track.
+ *
+ * `logo` is optional and set only where the vendor supplies a partner badge and permits
+ * its use. Microsoft and Google are stated in text rather than illustrated with a
+ * corporate logo the site has no badge for.
+ */
+export const partnerships = [
+	{
+		vendor: 'Fortinet',
+		credential: 'Engage Advocate Partner',
+		track: 'Integrator',
+		summary:
+			'Firewall policy, segmentation, VPN and remote access, and security stack review on FortiGate.',
+		logo: '/partners/fortinet-engage-advocate-partner.png',
+		logoAlt: 'Fortinet Engage Advocate Partner badge, Integrator track'
+	},
+	{
+		vendor: 'Microsoft',
+		credential: 'Authorized Partner',
+		track: '',
+		summary: 'Microsoft 365 migration, identity, email flow, and tenant security configuration.',
+		logo: '',
+		logoAlt: ''
+	},
+	{
+		vendor: 'Google',
+		credential: 'Authorized Partner',
+		track: '',
+		summary:
+			'Google Workspace setup, administration, email authentication, and migration planning.',
+		logo: '',
+		logoAlt: ''
+	}
 ];
 
 export const trustPoints = [

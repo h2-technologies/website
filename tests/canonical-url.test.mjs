@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { canonicalTarget } from '../canonical-url.js';
+import { CANONICAL_HOST, canonicalOrigin, canonicalTarget } from '../canonical-url.js';
 
 describe('canonical URL normalization', () => {
 	it('leaves canonical targets untouched', () => {
@@ -95,6 +95,36 @@ describe('canonical URL normalization', () => {
 			const once = canonicalTarget(target);
 			assert.ok(once !== null);
 			assert.equal(canonicalTarget(once), null, `${once} should be a fixed point`);
+		}
+	});
+});
+
+describe('canonical host normalization', () => {
+	it('redirects the www spelling of the canonical host to the apex', () => {
+		for (const header of [
+			`www.${CANONICAL_HOST}`,
+			`WWW.${CANONICAL_HOST.toUpperCase()}`,
+			`www.${CANONICAL_HOST}:443`
+		]) {
+			assert.equal(canonicalOrigin(header), `https://${CANONICAL_HOST}`, header);
+		}
+	});
+
+	it('serves every other host where it landed', () => {
+		// The apex is already canonical, and the rest are the container health check, local
+		// development, and anything deployed to a preview hostname. Redirecting these would
+		// break them, so the rule stays deliberately narrow.
+		for (const header of [
+			CANONICAL_HOST,
+			`${CANONICAL_HOST}:3000`,
+			'127.0.0.1:3002',
+			'localhost:5173',
+			'preview.example.com',
+			`www.${CANONICAL_HOST}.evil.example`,
+			'',
+			undefined
+		]) {
+			assert.equal(canonicalOrigin(header), null, String(header));
 		}
 	});
 });

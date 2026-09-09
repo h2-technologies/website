@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { connect } from 'node:net';
 import { readFile } from 'node:fs/promises';
 import { after, before, describe, it } from 'node:test';
 import {
@@ -73,7 +74,14 @@ function assertDirectSuccess(response, path) {
 async function getHtml(path) {
 	const response = await fetchWithoutRedirect(server.baseUrl, path);
 	assertDirectSuccess(response, path);
-	assert.match(response.headers.get('content-type') ?? '', /^text\/html\b/i);
+	// The charset is asserted, not just the media type: the header overrides the
+	// `<meta charset>` in the document when the two disagree, so a page served without one
+	// is leaving the decoding to the client's guess.
+	assert.equal(
+		(response.headers.get('content-type') ?? '').toLowerCase(),
+		'text/html; charset=utf-8',
+		`${path} should declare its charset in the header`
+	);
 	return { response, html: await response.text() };
 }
 
@@ -92,8 +100,90 @@ describe('crawler-facing production routes', () => {
 
 		assertDirectSuccess(response, '/robots.txt');
 		assert.match(response.headers.get('content-type') ?? '', /^text\/plain\b/i);
-		assert.equal(body, `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
-		assert.doesNotMatch(body, /^Disallow:\s*\/$/im);
+		assert.match(body, /^User-agent: \*\nAllow: \/$/m);
+		assert.equal(body.trimEnd().split('\n').at(-1), `Sitemap: ${siteUrl}/sitemap.xml`);
+
+		// Nothing may be excluded: a `Disallow` here would silently drop the site out of
+		// whichever index the surrounding group named.
+		assert.doesNotMatch(body, /^Disallow:/im);
+
+		// Each crawler whose access is a standing business decision is named explicitly,
+		// so removing one is a visible edit rather than a silent fall-through to `*`.
+		for (const agent of [
+			'Googlebot',
+			'Bingbot',
+			'OAI-SearchBot',
+			'ChatGPT-User',
+			'Claude-SearchBot',
+			'Claude-User',
+			'PerplexityBot',
+			'GPTBot',
+			'ClaudeBot',
+			'Google-Extended'
+		]) {
+			assert.match(body, new RegExp(`^User-agent: ${agent}$`, 'm'), `${agent} needs a stated rule`);
+		}
+	});
+
+	it('sends www requests to the apex host in a single hop', async () => {
+		// `fetch` cannot set `Host`, so the request is written to the socket directly.
+		const send = (target, hostHeader) =>
+			new Promise((resolve, reject) => {
+				const url = new URL(server.baseUrl);
+				const socket = connect({ host: url.hostname, port: Number(url.port) }, () => {
+					socket.write(
+						`GET ${target} HTTP/1.1\r\nHost: ${hostHeader}\r\nConnection: close\r\n\r\n`
+					);
+				});
+				let raw = '';
+				socket.setEncoding('utf8');
+				socket.on('data', (chunk) => (raw += chunk));
+				socket.on('error', reject);
+				socket.on('end', () => {
+					const [head] = raw.split('\r\n\r\n', 1);
+					const status = Number(head.split(' ')[1]);
+					const location = head.match(/^location:\s*(.+)$/im)?.[1]?.trim();
+					resolve({ status, location });
+				});
+			});
+
+		const wwwHost = `www.${new URL(siteUrl).hostname}`;
+
+		const root = await send('/', wwwHost);
+		assert.equal(root.status, 301);
+		assert.equal(root.location, `${siteUrl}/`);
+
+		// A non-canonical path on the www host resolves host and path together rather than
+		// bouncing the client through `www.../about` on the way to the apex.
+		const trailing = await send('/about/', wwwHost);
+		assert.equal(trailing.status, 301);
+		assert.equal(trailing.location, `${siteUrl}/about`);
+
+		// The apex itself is served, not redirected.
+		const apex = await send('/about', new URL(siteUrl).hostname);
+		assert.equal(apex.status, 200);
+	});
+
+	it('serves an llms.txt whose links all resolve', async () => {
+		const response = await fetchWithoutRedirect(server.baseUrl, '/llms.txt');
+		const body = await response.text();
+
+		assertDirectSuccess(response, '/llms.txt');
+		assert.match(response.headers.get('content-type') ?? '', /^text\/plain\b/i);
+
+		// The llmstxt.org format: a single H1 naming the site, then a blockquote summary.
+		assert.match(body, /^# H2 Technologies LLC\n/);
+		assert.match(body, /^> \S/m);
+		assert.equal(allMatches(body, /^# .*/gm).length, 1, 'exactly one H1');
+
+		// Generated from the route data, so a link here that 404s means the two have drifted.
+		const urls = allMatches(body, /\]\((https?:[^)]+)\)/g);
+		assert.ok(urls.length > 20, `expected the full page inventory, got ${urls.length}`);
+		for (const url of urls) {
+			assert.ok(url.startsWith(`${siteUrl}/`), `${url} should be an absolute canonical URL`);
+			const pageResponse = await fetchWithoutRedirect(server.baseUrl, url.slice(siteUrl.length));
+			assertDirectSuccess(pageResponse, `llms.txt URL ${url}`);
+		}
 	});
 
 	it('publishes the exact slashless canonical URL inventory in sitemap.xml', async () => {
@@ -270,7 +360,13 @@ describe('HTML metadata and structured data', () => {
 				description && description.length >= 50,
 				`${path} should have a useful description`
 			);
-			assert.ok(description.length <= 160, `${path} description should remain concise`);
+			// 155 rather than 160: Google truncates a description around there, and a
+			// sentence that ends in an ellipsis in the result wastes the last thing a
+			// searcher reads before deciding whether to click.
+			assert.ok(
+				description.length <= 155,
+				`${path} description is ${description.length} chars; keep it at 155 or under`
+			);
 			assert.equal(linkHref(html, 'canonical'), canonical, `${path} canonical should be exact`);
 			assert.equal(metaContent(html, 'property', 'og:url'), canonical);
 			assert.equal(metaContent(html, 'property', 'og:site_name'), 'H2 Technologies LLC');

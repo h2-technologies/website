@@ -68,7 +68,7 @@
 
 <Seo
 	title="Technology Consulting Services | H2 Technologies LLC"
-	description="Explore H2 Technologies consulting for software, websites, enterprise networks, BGP, IPv6, Fortinet, Google Workspace, cybersecurity, cloud, and managed IT."
+	description="H2 Technologies consulting for software, websites, enterprise networks, BGP, IPv6, Fortinet, Google Workspace, cybersecurity, cloud, and managed IT."
 	{path}
 	schema={[collectionSchema, itemListSchema, breadcrumbSchema]}
 />

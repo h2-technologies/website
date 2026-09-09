@@ -4,7 +4,9 @@
 		founder,
 		nap,
 		organizationProfiles,
+		partnerships,
 		postalAddressSchema,
+		priceRange,
 		site
 	} from '$lib/site';
 
@@ -26,6 +28,32 @@
 		closes: entry.closes
 	}));
 
+	// `ProfessionalService` is a `LocalBusiness` subtype, and Google's LocalBusiness
+	// guidance is built around a business a customer can locate and contact: it asks for a
+	// complete address, and recommends a telephone and opening hours for the result to be
+	// worth showing. Claiming the type while `streetAddress`, `postalCode`, and `telephone`
+	// are still blank advertises a local business that cannot be found — which validators
+	// flag and Google has no reason to trust.
+	//
+	// So the claim is made only when the data behind it exists. Until then the entity is a
+	// plain `Organization`, which carries no such expectations and is accurate. Filling in
+	// `nap` in `site.ts` upgrades the type automatically; the `@id` never changes, so every
+	// `provider: { '@id': ... }` reference elsewhere in the graph stays valid either way.
+	// Vendor partner status, as `ProgramMembership` rather than `hasCredential`: these are
+	// standing memberships in a vendor's partner program, not qualifications awarded to a
+	// person. Each names its hosting organization so the membership resolves to a real
+	// vendor instead of sitting as a loose string, and the wording matches the badge and
+	// the text rendered on the page, which is the only claim a reader can check.
+	const membershipSchema = partnerships.map((partner) => ({
+		'@type': 'ProgramMembership',
+		programName: `${partner.vendor} ${partner.credential}`,
+		hostingOrganization: { '@type': 'Organization', name: partner.vendor },
+		...(partner.track ? { description: `${partner.track} track` } : {})
+	}));
+
+	const isLocatable = Boolean(nap.streetAddress && nap.postalCode && nap.telephone);
+	const organizationType = isLocatable ? ['Organization', 'ProfessionalService'] : 'Organization';
+
 	$: canonical = absoluteUrl(path);
 	$: socialImage = absoluteUrl(site.socialImage);
 	$: schemaGraph = [
@@ -33,10 +61,7 @@
 			'@context': 'https://schema.org',
 			'@graph': [
 				{
-					// ProfessionalService is a LocalBusiness subtype. Declaring both keeps
-					// every existing `provider: { '@id': ... }` reference valid while
-					// making the entity eligible for local business treatment.
-					'@type': ['Organization', 'ProfessionalService'],
+					'@type': organizationType,
 					'@id': organizationId,
 					name: site.name,
 					legalName: nap.legalName,
@@ -45,6 +70,9 @@
 					description: site.description,
 					logo: {
 						'@type': 'ImageObject',
+						// Addressable so pages can point `primaryImageOfPage` at it instead of
+						// repeating the same ImageObject in every page-level node.
+						'@id': `${site.url}/#logo`,
 						url: absoluteUrl(site.logo),
 						width: 161,
 						height: 161
@@ -56,8 +84,12 @@
 					...(nap.telephone ? { telephone: nap.telephone } : {}),
 					...(nap.email ? { email: nap.email } : {}),
 					...(nap.mapUrl ? { hasMap: nap.mapUrl } : {}),
+					// `priceRange` is a LocalBusiness property, so it is emitted only alongside
+					// the LocalBusiness type rather than hung on a bare Organization.
+					...(isLocatable ? { priceRange } : {}),
 					...(openingHoursSchema.length ? { openingHoursSpecification: openingHoursSchema } : {}),
-					...(organizationProfiles.length ? { sameAs: organizationProfiles } : {})
+					...(organizationProfiles.length ? { sameAs: organizationProfiles } : {}),
+					...(membershipSchema.length ? { memberOf: membershipSchema } : {})
 				},
 				{
 					'@type': 'Person',

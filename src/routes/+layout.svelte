@@ -38,11 +38,22 @@
 					alt="H2 Technologies LLC"
 				/>
 			</a>
-			<div class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-semibold text-slate-700">
-				<a class="hover:text-orange-700" href="/services">Services</a>
-				<a class="hover:text-orange-700" href="/locations/it-services-ohio">Ohio IT</a>
-				<a class="hover:text-orange-700" href="/resources">Resources</a>
-				<a class="hover:text-orange-700" href="/about">About</a>
+			<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold text-slate-700">
+				<!-- `min-h-11` keeps every primary nav link at a 44px touch height, matching the
+				     adjacent call to action; the text itself is only 20px tall. -->
+				<a class="inline-flex min-h-11 items-center px-2 hover:text-orange-700" href="/services"
+					>Services</a
+				>
+				<a
+					class="inline-flex min-h-11 items-center px-2 hover:text-orange-700"
+					href="/locations/it-services-ohio">Ohio IT</a
+				>
+				<a class="inline-flex min-h-11 items-center px-2 hover:text-orange-700" href="/resources"
+					>Resources</a
+				>
+				<a class="inline-flex min-h-11 items-center px-2 hover:text-orange-700" href="/about"
+					>About</a
+				>
 				<a
 					href="/contact"
 					class="inline-flex min-h-11 items-center justify-center rounded-lg bg-orange-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-orange-800"
@@ -84,10 +95,14 @@
 				<h2 class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-300">Services</h2>
 				<div class="mt-4 grid gap-2 text-sm">
 					{#each footerServices as service}
-						<a class="hover:text-white" href={`/services/${service.slug}`}>{service.title}</a>
+						<a
+							class="inline-flex min-h-8 items-center py-1.5 hover:text-white"
+							href={`/services/${service.slug}`}>{service.title}</a
+						>
 					{/each}
-					<a class="font-semibold text-white hover:text-orange-200" href="/services"
-						>View all services</a
+					<a
+						class="inline-flex min-h-8 items-center py-1.5 font-semibold text-white hover:text-orange-200"
+						href="/services">View all services</a
 					>
 				</div>
 			</div>
@@ -95,23 +110,42 @@
 				<h2 class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-300">Ohio</h2>
 				<div class="mt-4 grid gap-2 text-sm">
 					{#each footerLocations as location}
-						<a class="hover:text-white" href={`/locations/${location.slug}`}>{location.title}</a>
+						<a
+							class="inline-flex min-h-8 items-center py-1.5 hover:text-white"
+							href={`/locations/${location.slug}`}>{location.title}</a
+						>
 					{/each}
-					<a class="font-semibold text-white hover:text-orange-200" href="/locations"
-						>All service areas</a
+					<a
+						class="inline-flex min-h-8 items-center py-1.5 font-semibold text-white hover:text-orange-200"
+						href="/locations">All service areas</a
 					>
 				</div>
 			</div>
 			<div>
 				<h2 class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-300">Company</h2>
 				<div class="mt-4 grid gap-2 text-sm">
-					<a class="hover:text-white" href="/contact">Request a Technology Assessment</a>
-					<a class="hover:text-white" href={site.contactHref}>Schedule a Free Consultation</a>
-					<a class="hover:text-white" href="/about">About H2 Technologies</a>
-					<a class="hover:text-white" href="/faq">Frequently Asked Questions</a>
-					<a class="hover:text-white" href="/resources">Technical Guides</a>
-					<a class="hover:text-white" href="/routing">AS17290 BGP Routing Policy</a>
-					<a class="hover:text-white" href="/sitemap.xml">Sitemap</a>
+					<a class="inline-flex min-h-8 items-center py-1.5 hover:text-white" href="/contact"
+						>Request a Technology Assessment</a
+					>
+					<a
+						class="inline-flex min-h-8 items-center py-1.5 hover:text-white"
+						href={site.contactHref}>Schedule a Free Consultation</a
+					>
+					<a class="inline-flex min-h-8 items-center py-1.5 hover:text-white" href="/about"
+						>About H2 Technologies</a
+					>
+					<a class="inline-flex min-h-8 items-center py-1.5 hover:text-white" href="/faq"
+						>Frequently Asked Questions</a
+					>
+					<a class="inline-flex min-h-8 items-center py-1.5 hover:text-white" href="/resources"
+						>Technical Guides</a
+					>
+					<a class="inline-flex min-h-8 items-center py-1.5 hover:text-white" href="/routing"
+						>AS17290 BGP Routing Policy</a
+					>
+					<a class="inline-flex min-h-8 items-center py-1.5 hover:text-white" href="/sitemap.xml"
+						>Sitemap</a
+					>
 				</div>
 			</div>
 		</div>

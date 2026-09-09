@@ -50,3 +50,36 @@ export function canonicalTarget(requestTarget) {
 
 	return `${normalized}${suffix}`;
 }
+
+/**
+ * The one hostname this site answers to. It matches `site.url` in `src/lib/site.ts` and
+ * `siteUrl` in the test fixture; all three are the same string written in the three places
+ * that need it without importing TypeScript into the plain-JS server entry.
+ */
+export const CANONICAL_HOST = 'h2technologiesllc.com';
+
+/**
+ * The origin to redirect to when a request arrives on the `www` spelling of the canonical
+ * host, or `null` when the request should be served where it landed.
+ *
+ * Only the exact `www.` prefix of `CANONICAL_HOST` redirects. Every other host — the
+ * canonical host itself, `localhost`, the container's `127.0.0.1` health check, and any
+ * preview or staging domain — is deliberately served as-is. A blanket "redirect anything
+ * unrecognised" rule would be the more thorough-sounding policy and would break all four.
+ *
+ * `www` and the apex both resolving means the same page can be reached at two URLs. The
+ * `rel="canonical"` on every page already names the apex, which is what search engines
+ * consolidate on, so this is a redundancy rather than a fix for a live indexing bug — but
+ * a 301 settles it at the origin instead of asking every client to trust a hint.
+ *
+ * @param {string | undefined} hostHeader the request's `Host` header, e.g. `www.example.com:443`
+ * @returns {string | null} the canonical origin, e.g. `https://example.com`, or `null`
+ */
+export function canonicalOrigin(hostHeader) {
+	if (!hostHeader) return null;
+
+	// A `Host` header may carry a port, and hostnames are case-insensitive.
+	const hostname = hostHeader.toLowerCase().split(':', 1)[0];
+
+	return hostname === `www.${CANONICAL_HOST}` ? `https://${CANONICAL_HOST}` : null;
+}
