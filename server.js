@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { handler } from './build/handler.js';
-import { canonicalTarget } from './canonical-url.js';
+import { canonicalOrigin, canonicalTarget } from './canonical-url.js';
 
 const host = process.env.HOST ?? '0.0.0.0';
 const port = Number.parseInt(process.env.PORT ?? '3000', 10);
@@ -27,7 +27,16 @@ const server = createServer((request, response) => {
 
 	// Collapse every non-canonical spelling of a URL onto the canonical one before the
 	// adapter handler can answer it, so static assets normalize the same way pages do.
-	const redirectTarget = canonicalTarget(request.url);
+	const pathTarget = canonicalTarget(request.url);
+	const origin = canonicalOrigin(request.headers.host);
+
+	// Host and path are resolved together so `www.example.com/about/` reaches
+	// `https://example.com/about` in one hop. Emitting the host redirect and the trailing
+	// slash redirect separately would be two round trips and a redirect chain for a crawler
+	// to follow, which is exactly what the canonical policy exists to avoid.
+	const redirectTarget =
+		origin === null ? pathTarget : `${origin}${pathTarget ?? request.url ?? '/'}`;
+
 	if (redirectTarget !== null) {
 		response.writeHead(301, {
 			'cache-control': 'public, max-age=3600',

@@ -49,8 +49,9 @@
 				Talk to an engineer.
 			</h1>
 			<p class="mt-6 text-lg leading-8 text-slate-300">
-				Share what you are trying to improve. H2 Technologies will review the request and follow up
-				with a practical next step for consultation, assessment, or project scoping.
+				Share what you are trying to improve. You will talk to the engineer who would do the work,
+				not a sales team: H2 Technologies will review the request and follow up with a practical
+				next step for consultation, assessment, or project scoping.
 			</p>
 			<div class="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6">
 				<h2 class="text-xl font-semibold">What happens after submission</h2>

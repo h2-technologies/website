@@ -72,8 +72,12 @@
 					Updated <time datetime={post.updatedAt}>{formatDate(post.updatedAt)}</time>
 				</p>
 				<p class="mt-3 text-sm leading-7 text-slate-600">{post.summary}</p>
-				<a class="mt-5 inline-flex font-semibold text-orange-700" href={`/resources/${post.slug}`}
-					>Read guide →</a
+				<!-- One "Read guide" per card would name every guide on the page identically;
+				     the accessible name carries the title from the heading above it. -->
+				<a
+					class="mt-5 inline-flex font-semibold text-orange-700"
+					href={`/resources/${post.slug}`}
+					aria-label={`Read the guide: ${post.title}`}>Read guide →</a
 				>
 			</article>
 		{/each}

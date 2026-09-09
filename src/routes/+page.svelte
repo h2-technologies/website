@@ -227,8 +227,14 @@
 				<article class="rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm">
 					<h3 class="text-xl font-semibold tracking-tight">{post.title}</h3>
 					<p class="mt-3 text-sm leading-7 text-slate-600">{post.summary}</p>
-					<a class="mt-5 inline-flex font-semibold text-orange-700" href={`/resources/${post.slug}`}
-						>Read guide →</a
+					<!-- Four cards previously shared the anchor text "Read guide", so the link text
+					     named four different destinations. The visible label stays short; the
+					     accessible name carries the article title, which is the adjacent heading
+					     a sighted reader has already read. -->
+					<a
+						class="mt-5 inline-flex font-semibold text-orange-700"
+						href={`/resources/${post.slug}`}
+						aria-label={`Read the guide: ${post.title}`}>Read guide →</a
 					>
 				</article>
 			{/each}

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { connect } from 'node:net';
 import { readFile } from 'node:fs/promises';
 import { after, before, describe, it } from 'node:test';
 import {
@@ -73,7 +74,14 @@ function assertDirectSuccess(response, path) {
 async function getHtml(path) {
 	const response = await fetchWithoutRedirect(server.baseUrl, path);
 	assertDirectSuccess(response, path);
-	assert.match(response.headers.get('content-type') ?? '', /^text\/html\b/i);
+	// The charset is asserted, not just the media type: the header overrides the
+	// `<meta charset>` in the document when the two disagree, so a page served without one
+	// is leaving the decoding to the client's guess.
+	assert.equal(
+		(response.headers.get('content-type') ?? '').toLowerCase(),
+		'text/html; charset=utf-8',
+		`${path} should declare its charset in the header`
+	);
 	return { response, html: await response.text() };
 }
 
@@ -115,6 +123,45 @@ describe('crawler-facing production routes', () => {
 		]) {
 			assert.match(body, new RegExp(`^User-agent: ${agent}$`, 'm'), `${agent} needs a stated rule`);
 		}
+	});
+
+	it('sends www requests to the apex host in a single hop', async () => {
+		// `fetch` cannot set `Host`, so the request is written to the socket directly.
+		const send = (target, hostHeader) =>
+			new Promise((resolve, reject) => {
+				const url = new URL(server.baseUrl);
+				const socket = connect({ host: url.hostname, port: Number(url.port) }, () => {
+					socket.write(
+						`GET ${target} HTTP/1.1\r\nHost: ${hostHeader}\r\nConnection: close\r\n\r\n`
+					);
+				});
+				let raw = '';
+				socket.setEncoding('utf8');
+				socket.on('data', (chunk) => (raw += chunk));
+				socket.on('error', reject);
+				socket.on('end', () => {
+					const [head] = raw.split('\r\n\r\n', 1);
+					const status = Number(head.split(' ')[1]);
+					const location = head.match(/^location:\s*(.+)$/im)?.[1]?.trim();
+					resolve({ status, location });
+				});
+			});
+
+		const wwwHost = `www.${new URL(siteUrl).hostname}`;
+
+		const root = await send('/', wwwHost);
+		assert.equal(root.status, 301);
+		assert.equal(root.location, `${siteUrl}/`);
+
+		// A non-canonical path on the www host resolves host and path together rather than
+		// bouncing the client through `www.../about` on the way to the apex.
+		const trailing = await send('/about/', wwwHost);
+		assert.equal(trailing.status, 301);
+		assert.equal(trailing.location, `${siteUrl}/about`);
+
+		// The apex itself is served, not redirected.
+		const apex = await send('/about', new URL(siteUrl).hostname);
+		assert.equal(apex.status, 200);
 	});
 
 	it('serves an llms.txt whose links all resolve', async () => {
