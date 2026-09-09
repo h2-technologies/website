@@ -6,7 +6,7 @@
 	import { placePages } from '$lib/locations';
 	import { posts } from '$lib/posts';
 	import { services } from '$lib/services';
-	import { network, site, trustPoints } from '$lib/site';
+	import { absoluteUrl, network, site, trustPoints } from '$lib/site';
 
 	const featuredServices = [
 		'custom-software-development',
@@ -16,6 +16,32 @@
 		'google-workspace-administration',
 		'fortinet-firewall-consulting'
 	].map((slug) => services.find((service) => service.slug === slug)!);
+
+	// The home page was the only route emitting no page-level node, so the graph had an
+	// Organization with nothing stating which page described it. `WebPage` closes that,
+	// and the ItemList mirrors the six service cards rendered below — the same six, in the
+	// same order, so the markup matches what a visitor actually sees.
+	const webPageSchema = {
+		'@type': 'WebPage',
+		'@id': `${site.url}/#webpage`,
+		url: site.url,
+		name: 'H2 Technologies LLC',
+		description: site.description,
+		isPartOf: { '@id': `${site.url}/#website` },
+		about: { '@id': `${site.url}/#organization` },
+		primaryImageOfPage: { '@id': `${site.url}/#logo` }
+	};
+	const featuredListSchema = {
+		'@type': 'ItemList',
+		'@id': `${site.url}/#featured-services`,
+		name: 'Featured services',
+		itemListElement: featuredServices.map((service, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: service.title,
+			url: absoluteUrl(`/services/${service.slug}`)
+		}))
+	};
 
 	const projectTypes = [
 		'Website redesigns with stronger service pages and lead flow',
@@ -31,6 +57,7 @@
 	title="H2 Technologies LLC | Software, Network & IT Consulting"
 	description={site.description}
 	path="/"
+	schema={[webPageSchema, featuredListSchema]}
 />
 
 <section class="relative overflow-hidden bg-slate-950 text-white">

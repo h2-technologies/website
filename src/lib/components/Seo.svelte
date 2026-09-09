@@ -45,6 +45,9 @@
 					description: site.description,
 					logo: {
 						'@type': 'ImageObject',
+						// Addressable so pages can point `primaryImageOfPage` at it instead of
+						// repeating the same ImageObject in every page-level node.
+						'@id': `${site.url}/#logo`,
 						url: absoluteUrl(site.logo),
 						width: 161,
 						height: 161

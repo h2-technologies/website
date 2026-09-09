@@ -92,8 +92,51 @@ describe('crawler-facing production routes', () => {
 
 		assertDirectSuccess(response, '/robots.txt');
 		assert.match(response.headers.get('content-type') ?? '', /^text\/plain\b/i);
-		assert.equal(body, `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
-		assert.doesNotMatch(body, /^Disallow:\s*\/$/im);
+		assert.match(body, /^User-agent: \*\nAllow: \/$/m);
+		assert.equal(body.trimEnd().split('\n').at(-1), `Sitemap: ${siteUrl}/sitemap.xml`);
+
+		// Nothing may be excluded: a `Disallow` here would silently drop the site out of
+		// whichever index the surrounding group named.
+		assert.doesNotMatch(body, /^Disallow:/im);
+
+		// Each crawler whose access is a standing business decision is named explicitly,
+		// so removing one is a visible edit rather than a silent fall-through to `*`.
+		for (const agent of [
+			'Googlebot',
+			'Bingbot',
+			'OAI-SearchBot',
+			'ChatGPT-User',
+			'Claude-SearchBot',
+			'Claude-User',
+			'PerplexityBot',
+			'GPTBot',
+			'ClaudeBot',
+			'Google-Extended'
+		]) {
+			assert.match(body, new RegExp(`^User-agent: ${agent}$`, 'm'), `${agent} needs a stated rule`);
+		}
+	});
+
+	it('serves an llms.txt whose links all resolve', async () => {
+		const response = await fetchWithoutRedirect(server.baseUrl, '/llms.txt');
+		const body = await response.text();
+
+		assertDirectSuccess(response, '/llms.txt');
+		assert.match(response.headers.get('content-type') ?? '', /^text\/plain\b/i);
+
+		// The llmstxt.org format: a single H1 naming the site, then a blockquote summary.
+		assert.match(body, /^# H2 Technologies LLC\n/);
+		assert.match(body, /^> \S/m);
+		assert.equal(allMatches(body, /^# .*/gm).length, 1, 'exactly one H1');
+
+		// Generated from the route data, so a link here that 404s means the two have drifted.
+		const urls = allMatches(body, /\]\((https?:[^)]+)\)/g);
+		assert.ok(urls.length > 20, `expected the full page inventory, got ${urls.length}`);
+		for (const url of urls) {
+			assert.ok(url.startsWith(`${siteUrl}/`), `${url} should be an absolute canonical URL`);
+			const pageResponse = await fetchWithoutRedirect(server.baseUrl, url.slice(siteUrl.length));
+			assertDirectSuccess(pageResponse, `llms.txt URL ${url}`);
+		}
 	});
 
 	it('publishes the exact slashless canonical URL inventory in sitemap.xml', async () => {
