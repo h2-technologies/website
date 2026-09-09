@@ -49,19 +49,39 @@ export const contentRevisedAt = '2026-09-03';
  */
 export const nap = {
 	legalName: 'H2 Technologies LLC',
-	streetAddress: '',
+	streetAddress: '1293 Co Rd 1475',
 	addressLocality: 'Ashland',
 	addressRegion: 'OH',
 	addressRegionName: 'Ohio',
-	postalCode: '',
+	postalCode: '44805',
 	addressCountry: 'US',
-	telephone: '',
+	/** Formatted exactly as the Google Business Profile displays it. */
+	telephone: '(567) 261-0762',
 	email: '',
 	/** Public map link (Google Business Profile short link or place URL). */
-	mapUrl: '',
-	/** e.g. [{ days: ['Monday', ...], opens: '08:00', closes: '17:00' }] */
-	openingHours: [] as { days: string[]; opens: string; closes: string }[]
+	mapUrl: 'https://maps.app.goo.gl/XumBtwa8QLSb35RAA',
+	/**
+	 * Sunday is absent rather than listed as closed, which is how schema.org reads an
+	 * omitted day. These mirror the Google Business Profile hours; changing them here
+	 * without changing them there reintroduces exactly the inconsistency this file exists
+	 * to prevent.
+	 */
+	openingHours: [
+		{
+			days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+			opens: '08:00',
+			closes: '22:00'
+		},
+		{ days: ['Saturday'], opens: '09:00', closes: '14:00' }
+	] as { days: string[]; opens: string; closes: string }[]
 };
+
+/**
+ * Typical total project spend, emitted as `LocalBusiness.priceRange`. It is a planning
+ * figure, not a quote, and the same range is stated in the pricing FAQ so the markup
+ * matches something a visitor can actually read on the site.
+ */
+export const priceRange = '$4,000-$50,000';
 
 /**
  * Profiles that unambiguously identify H2 Technologies, emitted as
@@ -69,7 +89,10 @@ export const nap = {
  * and GitHub organization URLs here once confirmed. Unverified URLs are worse
  * than none, because a wrong `sameAs` splits the entity Google builds.
  */
-export const organizationProfiles: string[] = [];
+export const organizationProfiles: string[] = [
+	'https://www.linkedin.com/company/h2technologiesllc',
+	'https://www.facebook.com/H2Tech'
+];
 
 /**
  * The named operator behind the technical work. Search engines weigh
@@ -91,7 +114,10 @@ export const founder = {
 		'Cloud infrastructure and disaster recovery planning'
 	],
 	/** Verified profiles for the person, emitted as `Person.sameAs`. */
-	profiles: [] as string[]
+	profiles: [
+		'https://www.linkedin.com/in/austin-hadley-835407196',
+		'https://github.com/ahadley1124'
+	] as string[]
 };
 
 /** Public autonomous system operated by H2 Technologies. */
@@ -104,7 +130,8 @@ export const network = {
 	policyPdf: '/bgp-routing-policy.pdf',
 	references: [
 		{ label: 'AS17290 on bgp.tools', href: 'https://bgp.tools/as/17290' },
-		{ label: 'AS17290 on RIPEstat', href: 'https://stat.ripe.net/AS17290' }
+		{ label: 'AS17290 on RIPEstat', href: 'https://stat.ripe.net/AS17290' },
+		{ label: 'AS17290 on PeeringDB', href: 'https://www.peeringdb.com/net/37388' }
 	]
 };
 

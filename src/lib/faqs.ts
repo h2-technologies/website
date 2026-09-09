@@ -59,7 +59,7 @@ export const faqGroups: FaqGroup[] = [
 			{
 				question: 'How much does custom software cost?',
 				answer:
-					'It depends entirely on scope, and any firm quoting a number before discovery is guessing. Scoping produces a range with the assumptions written down, so you can decide whether to proceed, cut scope, or use an existing product instead. Sometimes the honest answer is that software is not the right purchase.'
+					'It depends entirely on scope, and any firm quoting a number before discovery is guessing. As a planning figure rather than a quote, most projects land between $4,000 and $50,000. Scoping then produces a specific range with the assumptions written down, so you can decide whether to proceed, cut scope, or use an existing product instead. Sometimes the honest answer is that software is not the right purchase.'
 			},
 			{
 				question: 'What does a technology assessment include?',

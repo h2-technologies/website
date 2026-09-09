@@ -5,6 +5,7 @@
 		nap,
 		organizationProfiles,
 		postalAddressSchema,
+		priceRange,
 		site
 	} from '$lib/site';
 
@@ -70,6 +71,9 @@
 					...(nap.telephone ? { telephone: nap.telephone } : {}),
 					...(nap.email ? { email: nap.email } : {}),
 					...(nap.mapUrl ? { hasMap: nap.mapUrl } : {}),
+					// `priceRange` is a LocalBusiness property, so it is emitted only alongside
+					// the LocalBusiness type rather than hung on a bare Organization.
+					...(isLocatable ? { priceRange } : {}),
 					...(openingHoursSchema.length ? { openingHoursSpecification: openingHoursSchema } : {}),
 					...(organizationProfiles.length ? { sameAs: organizationProfiles } : {})
 				},
