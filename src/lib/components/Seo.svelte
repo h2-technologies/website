@@ -26,6 +26,20 @@
 		closes: entry.closes
 	}));
 
+	// `ProfessionalService` is a `LocalBusiness` subtype, and Google's LocalBusiness
+	// guidance is built around a business a customer can locate and contact: it asks for a
+	// complete address, and recommends a telephone and opening hours for the result to be
+	// worth showing. Claiming the type while `streetAddress`, `postalCode`, and `telephone`
+	// are still blank advertises a local business that cannot be found — which validators
+	// flag and Google has no reason to trust.
+	//
+	// So the claim is made only when the data behind it exists. Until then the entity is a
+	// plain `Organization`, which carries no such expectations and is accurate. Filling in
+	// `nap` in `site.ts` upgrades the type automatically; the `@id` never changes, so every
+	// `provider: { '@id': ... }` reference elsewhere in the graph stays valid either way.
+	const isLocatable = Boolean(nap.streetAddress && nap.postalCode && nap.telephone);
+	const organizationType = isLocatable ? ['Organization', 'ProfessionalService'] : 'Organization';
+
 	$: canonical = absoluteUrl(path);
 	$: socialImage = absoluteUrl(site.socialImage);
 	$: schemaGraph = [
@@ -33,10 +47,7 @@
 			'@context': 'https://schema.org',
 			'@graph': [
 				{
-					// ProfessionalService is a LocalBusiness subtype. Declaring both keeps
-					// every existing `provider: { '@id': ... }` reference valid while
-					// making the entity eligible for local business treatment.
-					'@type': ['Organization', 'ProfessionalService'],
+					'@type': organizationType,
 					'@id': organizationId,
 					name: site.name,
 					legalName: nap.legalName,

@@ -36,7 +36,7 @@
 
 <Seo
 	title="Contact H2 Technologies LLC | Talk to an Engineer"
-	description="Contact H2 Technologies in Ashland, Ohio for a technology assessment covering software, cybersecurity, networking, Google Workspace, Fortinet, or IT support."
+	description="Contact H2 Technologies in Ashland, Ohio for a technology assessment covering software, cybersecurity, networking, Google Workspace, or Fortinet."
 	{path}
 	schema={[contactPageSchema, contactPointSchema, breadcrumbSchema]}
 />

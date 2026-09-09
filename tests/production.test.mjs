@@ -360,7 +360,13 @@ describe('HTML metadata and structured data', () => {
 				description && description.length >= 50,
 				`${path} should have a useful description`
 			);
-			assert.ok(description.length <= 160, `${path} description should remain concise`);
+			// 155 rather than 160: Google truncates a description around there, and a
+			// sentence that ends in an ellipsis in the result wastes the last thing a
+			// searcher reads before deciding whether to click.
+			assert.ok(
+				description.length <= 155,
+				`${path} description is ${description.length} chars; keep it at 155 or under`
+			);
 			assert.equal(linkHref(html, 'canonical'), canonical, `${path} canonical should be exact`);
 			assert.equal(metaContent(html, 'property', 'og:url'), canonical);
 			assert.equal(metaContent(html, 'property', 'og:site_name'), 'H2 Technologies LLC');

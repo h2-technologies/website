@@ -2,8 +2,13 @@ export const site = {
 	name: 'H2 Technologies LLC',
 	shortName: 'H2 Technologies',
 	url: 'https://h2technologiesllc.com',
+	/**
+	 * Kept at or under 155 characters: Google truncates around there, and this string is
+	 * also the `Organization` and home page `WebPage` description, so an ellipsis here
+	 * would show up in more than one place.
+	 */
 	description:
-		'Ohio technology consulting for secure software, business websites, enterprise networks, cybersecurity, Google Workspace, Fortinet, IPv6, BGP, and IT support.',
+		'Ohio technology consulting for secure software, business websites, enterprise networks, cybersecurity, Google Workspace, Fortinet, IPv6, and BGP.',
 	logo: '/squareLogo.png',
 	socialImage: '/herobackground.jpg',
 	socialImageAlt: 'H2 Technologies secure network infrastructure background',
@@ -12,7 +17,14 @@ export const site = {
 	securityEmail: 'noc@h2technologiesllc.com',
 	/** Sales mailbox used by the promotional banner's primary call to action. */
 	salesEmail: 'sales@h2technologiesllc.com',
-	areaServed: ['Ohio', 'United States', 'Remote and hybrid teams'],
+	/**
+	 * Geographic areas only. `areaServed` is emitted on `Organization` and on every
+	 * `Service`, where it answers "where does this reach", so an audience descriptor like
+	 * "remote and hybrid teams" does not belong here — that idea lives in `industries` and
+	 * in the visible copy. Schema.org accepts free text, which is why the wrong kind of
+	 * value parses cleanly and still says something untrue about coverage.
+	 */
+	areaServed: ['Ohio', 'United States'],
 	foundingDate: '2023'
 };
 
