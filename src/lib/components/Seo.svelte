@@ -4,6 +4,7 @@
 		founder,
 		nap,
 		organizationProfiles,
+		partnerships,
 		postalAddressSchema,
 		priceRange,
 		site
@@ -38,6 +39,18 @@
 	// plain `Organization`, which carries no such expectations and is accurate. Filling in
 	// `nap` in `site.ts` upgrades the type automatically; the `@id` never changes, so every
 	// `provider: { '@id': ... }` reference elsewhere in the graph stays valid either way.
+	// Vendor partner status, as `ProgramMembership` rather than `hasCredential`: these are
+	// standing memberships in a vendor's partner program, not qualifications awarded to a
+	// person. Each names its hosting organization so the membership resolves to a real
+	// vendor instead of sitting as a loose string, and the wording matches the badge and
+	// the text rendered on the page, which is the only claim a reader can check.
+	const membershipSchema = partnerships.map((partner) => ({
+		'@type': 'ProgramMembership',
+		programName: `${partner.vendor} ${partner.credential}`,
+		hostingOrganization: { '@type': 'Organization', name: partner.vendor },
+		...(partner.track ? { description: `${partner.track} track` } : {})
+	}));
+
 	const isLocatable = Boolean(nap.streetAddress && nap.postalCode && nap.telephone);
 	const organizationType = isLocatable ? ['Organization', 'ProfessionalService'] : 'Organization';
 
@@ -75,7 +88,8 @@
 					// the LocalBusiness type rather than hung on a bare Organization.
 					...(isLocatable ? { priceRange } : {}),
 					...(openingHoursSchema.length ? { openingHoursSpecification: openingHoursSchema } : {}),
-					...(organizationProfiles.length ? { sameAs: organizationProfiles } : {})
+					...(organizationProfiles.length ? { sameAs: organizationProfiles } : {}),
+					...(membershipSchema.length ? { memberOf: membershipSchema } : {})
 				},
 				{
 					'@type': 'Person',

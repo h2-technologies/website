@@ -1,5 +1,6 @@
 <script>
 	import CTA from '$lib/components/CTA.svelte';
+	import Partnerships from '$lib/components/Partnerships.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import { absoluteUrl, founder, network, site } from '$lib/site';
 
@@ -183,6 +184,10 @@
 				thoughtful, responsive, and practical solutions that drive real results for our clients.
 			</p>
 		</article>
+	</section>
+
+	<section class="mx-auto max-w-6xl px-6 py-8 sm:px-8 lg:px-10">
+		<Partnerships tone="light" headingLevel="h2" />
 	</section>
 
 	<section class="mx-auto max-w-6xl px-6 py-8 sm:px-8 lg:px-10">

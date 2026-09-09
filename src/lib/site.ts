@@ -164,6 +164,47 @@ export const footerLocations = [
 	{ title: 'Website Development in Ohio', slug: 'website-development-ohio' }
 ];
 
+/**
+ * Vendor programs H2 Technologies belongs to.
+ *
+ * Each entry is written in the vendor's own terms and at the tier actually held. Partner
+ * tiers are checkable claims — a prospect can ask, and a vendor can be asked — so the
+ * wording is not rounded up: an authorized partner is not described as a premier or gold
+ * one, and the Fortinet entry keeps both its tier and its track.
+ *
+ * `logo` is optional and set only where the vendor supplies a partner badge and permits
+ * its use. Microsoft and Google are stated in text rather than illustrated with a
+ * corporate logo the site has no badge for.
+ */
+export const partnerships = [
+	{
+		vendor: 'Fortinet',
+		credential: 'Engage Advocate Partner',
+		track: 'Integrator',
+		summary:
+			'Firewall policy, segmentation, VPN and remote access, and security stack review on FortiGate.',
+		logo: '/partners/fortinet-engage-advocate-partner.png',
+		logoAlt: 'Fortinet Engage Advocate Partner badge, Integrator track'
+	},
+	{
+		vendor: 'Microsoft',
+		credential: 'Authorized Partner',
+		track: '',
+		summary: 'Microsoft 365 migration, identity, email flow, and tenant security configuration.',
+		logo: '',
+		logoAlt: ''
+	},
+	{
+		vendor: 'Google',
+		credential: 'Authorized Partner',
+		track: '',
+		summary:
+			'Google Workspace setup, administration, email authentication, and migration planning.',
+		logo: '',
+		logoAlt: ''
+	}
+];
+
 export const trustPoints = [
 	'Enterprise Network Architecture',
 	'Custom Software Development',

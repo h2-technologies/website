@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Partnerships from '$lib/components/Partnerships.svelte';
 	import { expertise, industries } from '$lib/site';
 </script>
 
@@ -41,6 +42,10 @@
 					</ul>
 				</div>
 			</div>
+		</div>
+
+		<div class="mt-12 border-t border-slate-200 pt-10">
+			<Partnerships tone="light" headingLevel="h3" />
 		</div>
 	</div>
 </section>
