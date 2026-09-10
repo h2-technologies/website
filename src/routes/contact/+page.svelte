@@ -21,7 +21,7 @@
 		contactType: 'sales',
 		areaServed: site.areaServed,
 		availableLanguage: 'English',
-		url: site.contactHref,
+		url: site.bookingHref,
 		...(nap.telephone ? { telephone: nap.telephone } : {}),
 		...(nap.email ? { email: nap.email } : {})
 	};
@@ -143,48 +143,31 @@
 				</p>
 			</section>
 
+			<!--
+				Secondary by construction: the booking calendar above resolves a request without
+				anyone reading it, so the form is the fallback for people who need to write out
+				detail first. It keeps a heading and its own landmark so the page still has a
+				navigable structure, but not the panel weight it had when the two were co-equal.
+			-->
 			<section
 				aria-labelledby="hosted-contact-heading"
-				class="rounded-2xl border border-white/10 bg-white p-6 text-left text-slate-900 shadow-2xl sm:p-8"
+				class="rounded-2xl border border-white/10 bg-white/5 p-6 text-left"
 			>
-				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-orange-700">
-					Secure contact workflow
-				</p>
-				<h2 id="hosted-contact-heading" class="mt-3 text-3xl font-semibold tracking-tight">
-					Request a technology assessment
+				<h2 id="hosted-contact-heading" class="text-lg font-semibold text-white">
+					Rather send the details first?
 				</h2>
-				<p class="mt-4 leading-7 text-slate-600">
-					Not ready to put a meeting on the calendar? Open H2 Technologies' Intuit-hosted contact
-					form to share your name, contact information, service need, timeline, and project details
-					directly with the team.
+				<p class="mt-2 text-sm leading-7 text-slate-300">
+					Use H2 Technologies' Intuit-hosted contact form to describe the business goal, current
+					environment, timeline, and budget range, and we will follow up with the most practical
+					next step. Your information is entered in the hosted workflow rather than placed in this
+					website's URL.
 				</p>
-				<ul class="mt-6 grid gap-3 text-slate-700">
-					<li class="flex gap-3">
-						<span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"
-						></span>
-						Describe the business goal and current environment.
-					</li>
-					<li class="flex gap-3">
-						<span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"
-						></span>
-						Include timing, budget range, and known constraints when possible.
-					</li>
-					<li class="flex gap-3">
-						<span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-700"
-						></span>
-						H2 Technologies will follow up with the most practical next step.
-					</li>
-				</ul>
 				<a
 					href={site.contactHref}
-					class="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-orange-700 px-6 py-3 text-center font-semibold text-white transition hover:bg-orange-800"
+					class="mt-5 inline-flex min-h-12 items-center justify-center rounded-lg border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10"
 				>
 					Open the Hosted Contact Form
 				</a>
-				<p class="mt-4 text-sm leading-6 text-slate-600">
-					Your information is entered in the hosted workflow rather than placed in this website's
-					URL.
-				</p>
 			</section>
 		</div>
 	</div>

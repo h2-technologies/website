@@ -20,7 +20,7 @@
 		</div>
 		<div class="flex flex-col gap-3 sm:flex-row lg:flex-col">
 			<a
-				href={site.contactHref}
+				href={site.bookingHref}
 				class="inline-flex min-h-12 items-center justify-center rounded-lg bg-orange-700 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-orange-950/25 transition hover:-translate-y-0.5 hover:bg-orange-800"
 			>
 				{primaryLabel}
