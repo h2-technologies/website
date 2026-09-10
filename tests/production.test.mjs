@@ -566,6 +566,13 @@ describe('security posture and public links', () => {
 			'the booking frame needs a title, which is all a screen reader gets for it'
 		);
 
+		// The form is the fallback, so it has to sit after the calendar in reading order,
+		// which is also the order a screen reader and a crawler see.
+		assert.ok(
+			html.indexOf(bookingFrames[0]) < html.indexOf('client-portal.app.intuit.com'),
+			'the booking calendar should come before the hosted form on the page'
+		);
+
 		// A blocked or failed frame is silent, so the page must still say where to go.
 		const bookingLinks = anchors
 			.map((anchorTag) => attribute(anchorTag, /^<a\b[^>]*>$/i, 'href'))
@@ -575,6 +582,25 @@ describe('security posture and public links', () => {
 			const link = new URL(href.replaceAll('&amp;', '&'));
 			assert.equal(link.protocol, 'https:');
 			assert.equal(link.hostname, 'outlook.office.com');
+		}
+	});
+
+	it('routes every call to action to booking, leaving the form only on /contact', async () => {
+		// Booking is the funnel: a visitor confirms a slot unattended, so no page should
+		// hand them the hosted form as its call to action. The form stays reachable, but
+		// from /contact only, underneath the calendar.
+		for (const path of publicHtmlPaths) {
+			const { html } = await getHtml(path);
+			const intuitLinks = (html.match(/<a\b[^>]*>/gi) ?? [])
+				.map((anchorTag) => attribute(anchorTag, /^<a\b[^>]*>$/i, 'href'))
+				.filter((href) => href?.includes('client-portal.app.intuit.com'));
+
+			if (path === '/contact') {
+				assert.equal(intuitLinks.length, 1, 'contact should keep one link to the hosted form');
+				continue;
+			}
+
+			assert.deepEqual(intuitLinks, [], `${path} should send visitors to booking, not the form`);
 		}
 	});
 
