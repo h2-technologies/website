@@ -1,3 +1,9 @@
+/**
+ * Microsoft Bookings page for the sales mailbox. Declared outside `site` only so that
+ * `bookingEmbedSrc` below can be built from it without repeating the mailbox address.
+ */
+const bookingHref = 'https://outlook.office.com/book/Sales1@h2technologiesllc.com/';
+
 export const site = {
 	name: 'H2 Technologies LLC',
 	shortName: 'H2 Technologies',
@@ -14,6 +20,22 @@ export const site = {
 	socialImageAlt: 'H2 Technologies secure network infrastructure background',
 	contactHref:
 		'https://client-portal.app.intuit.com/contact-form?accountId=249325971&formId=287439',
+	/**
+	 * Microsoft Bookings page for the sales mailbox. This is the self-service path: a
+	 * visitor picks a slot and Bookings writes the meeting straight onto the calendar,
+	 * with no one triaging a message first. It sits alongside `contactHref` rather than
+	 * replacing it, because a booking page only serves people who already know they want
+	 * to talk — scoping questions still need the longer hosted form.
+	 */
+	bookingHref,
+	/**
+	 * The same page as `bookingHref` with the query parameter Microsoft ships in its own
+	 * embed snippet, which lets the framed page run its MSAL sign-in flow so a visitor
+	 * already signed in to Microsoft 365 gets their details prefilled. It is only
+	 * meaningful inside the iframe, so links elsewhere use the bare `bookingHref`.
+	 * Derived rather than typed out twice so the two cannot drift to different mailboxes.
+	 */
+	bookingEmbedSrc: `${bookingHref}?ismsaljsauthenabled`,
 	securityEmail: 'noc@h2technologiesllc.com',
 	/** Sales mailbox used by the promotional banner's primary call to action. */
 	salesEmail: 'sales@h2technologiesllc.com',
@@ -35,7 +57,7 @@ export const site = {
  * alone for changes that do not alter what a visitor reads. Resource articles carry their own
  * `updatedAt` and do not use this value.
  */
-export const contentRevisedAt = '2026-09-03';
+export const contentRevisedAt = '2026-09-10';
 
 /**
  * Name, address, and phone details published on the site and in structured data.

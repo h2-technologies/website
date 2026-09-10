@@ -430,6 +430,9 @@ describe('security posture and public links', () => {
 		assert.match(csp, /(?:^|;)\s*upgrade-insecure-requests(?:;|$)/);
 		assert.deepEqual(cspDirective(csp, 'style-src'), ["'self'"]);
 		assert.deepEqual(cspDirective(csp, 'style-src-attr'), ["'unsafe-inline'"]);
+		// The booking embed on /contact is the only reason a third-party frame host is
+		// allowed at all; anything else appearing here would be an unreviewed widget.
+		assert.deepEqual(cspDirective(csp, 'frame-src'), ["'self'", 'https://outlook.office.com']);
 		assert.ok(scriptSources.includes("'self'"));
 		assert.ok(scriptSources.some((source) => source.startsWith("'nonce-")));
 		assert.ok(!scriptSources.includes("'unsafe-inline'"));
@@ -525,7 +528,7 @@ describe('security posture and public links', () => {
 		}
 	});
 
-	it('uses the hosted contact workflow without putting visitor data in this site URL', async () => {
+	it('offers booking and the hosted form without putting visitor data in this site URL', async () => {
 		const { html } = await getHtml('/contact');
 		const anchors = html.match(/<a\b[^>]*>/gi) ?? [];
 		const hostedLinks = anchors
@@ -542,6 +545,37 @@ describe('security posture and public links', () => {
 			assert.deepEqual([...link.searchParams.keys()].sort(), ['accountId', 'formId']);
 		}
 		assert.match(html, />\s*Open the Hosted Contact Form\s*</i);
+
+		// The booking embed is the other half of the contact page: a visitor can confirm a
+		// slot without anyone reading a message first. It is cross-origin, so the only
+		// things this page controls are the frame's source and its accessible name.
+		const frames = html.match(/<iframe\b[^>]*>/gi) ?? [];
+		const bookingFrames = frames.filter((frameTag) =>
+			attribute(frameTag, /^<iframe\b[^>]*>$/i, 'src')?.includes('outlook.office.com')
+		);
+
+		assert.equal(bookingFrames.length, 1, 'contact should embed exactly one booking calendar');
+		const bookingSrc = new URL(
+			attribute(bookingFrames[0], /^<iframe\b[^>]*>$/i, 'src').replaceAll('&amp;', '&')
+		);
+		assert.equal(bookingSrc.protocol, 'https:');
+		assert.equal(bookingSrc.hostname, 'outlook.office.com');
+		assert.match(bookingSrc.pathname, /^\/book\/[^/]+@h2technologiesllc\.com\/$/);
+		assert.ok(
+			attribute(bookingFrames[0], /^<iframe\b[^>]*>$/i, 'title'),
+			'the booking frame needs a title, which is all a screen reader gets for it'
+		);
+
+		// A blocked or failed frame is silent, so the page must still say where to go.
+		const bookingLinks = anchors
+			.map((anchorTag) => attribute(anchorTag, /^<a\b[^>]*>$/i, 'href'))
+			.filter((href) => href?.includes('outlook.office.com'));
+		assert.ok(bookingLinks.length >= 1, 'contact should link the booking page as a frame fallback');
+		for (const href of bookingLinks) {
+			const link = new URL(href.replaceAll('&amp;', '&'));
+			assert.equal(link.protocol, 'https:');
+			assert.equal(link.hostname, 'outlook.office.com');
+		}
 	});
 
 	it('does not contain production-blocking placeholder markers in tracked source', async () => {

@@ -66,6 +66,19 @@ async function loadPage(path, viewport = { width: 1280, height: 800 }) {
 			body: ''
 		})
 	);
+	// Microsoft Bookings is stubbed for the same reason as the tag manager above. This
+	// suite asserts a clean console and no page errors, and Playwright reports those for
+	// every frame in the page, so a live third-party embed would make the build depend on
+	// Microsoft's script staying quiet and on this machine having outbound network. The
+	// stub still exercises the parts this repository owns: the frame's src, its layout,
+	// and whether the Content-Security-Policy admits the host at all.
+	await page.route('https://outlook.office.com/**', (route) =>
+		route.fulfill({
+			status: 200,
+			contentType: 'text/html; charset=utf-8',
+			body: '<!doctype html><html lang="en"><title>Booking stub</title><p>Booking stub</p>'
+		})
+	);
 
 	page.on('console', (message) => {
 		if (message.type() === 'error') consoleErrors.push(message.text());
@@ -204,6 +217,32 @@ describe('real-browser production smoke', () => {
 			assert.equal(hostedUrl.protocol, 'https:');
 			assert.equal(hostedUrl.hostname, 'client-portal.app.intuit.com');
 			assert.deepEqual([...hostedUrl.searchParams.keys()].sort(), ['accountId', 'formId']);
+
+			const booking = contact.page.locator('iframe[src*="outlook.office.com"]');
+			await booking.waitFor({ state: 'visible' });
+			const bookingUrl = new URL(await booking.getAttribute('src'));
+			assert.equal(bookingUrl.protocol, 'https:');
+			assert.equal(bookingUrl.hostname, 'outlook.office.com');
+			assert.ok(await booking.getAttribute('title'), 'the booking frame needs an accessible name');
+
+			// The frame is lazy and sits below the fold on a phone, so it has to be scrolled
+			// to before it will load at all. Reading content from inside it is what proves
+			// the frame-src allowance admits this host: a CSP-blocked frame is an empty box
+			// that looks exactly like one that simply has not finished loading.
+			await booking.scrollIntoViewIfNeeded();
+			await contact.page
+				.frameLocator('iframe[src*="outlook.office.com"]')
+				.getByText('Booking stub')
+				.waitFor({ state: 'visible' });
+
+			const bookingFallback = contact.page.getByRole('link', {
+				name: 'Open the booking page directly',
+				exact: true
+			});
+			assert.equal(
+				new URL(await bookingFallback.getAttribute('href')).hostname,
+				'outlook.office.com'
+			);
 		} finally {
 			await contact.context.close();
 		}
