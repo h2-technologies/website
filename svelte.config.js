@@ -23,7 +23,10 @@ const config = {
 				'font-src': ['self'],
 				'form-action': ['self'],
 				'frame-ancestors': ['none'],
-				'frame-src': ['self'],
+				// Microsoft Bookings is embedded on /contact. Without this host the iframe is
+				// blocked and renders as an empty box with nothing in the page to explain why,
+				// so the visible fallback link on that page is what a blocked visitor gets.
+				'frame-src': ['self', 'https://outlook.office.com'],
 				'img-src': [
 					'self',
 					'data:',

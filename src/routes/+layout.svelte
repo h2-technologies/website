@@ -129,7 +129,7 @@
 					>
 					<a
 						class="inline-flex min-h-8 items-center py-1.5 hover:text-white"
-						href={site.contactHref}>Schedule a Free Consultation</a
+						href={site.bookingHref}>Schedule a Free Consultation</a
 					>
 					<a class="inline-flex min-h-8 items-center py-1.5 hover:text-white" href="/about"
 						>About H2 Technologies</a
