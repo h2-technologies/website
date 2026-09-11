@@ -85,6 +85,25 @@ async function getHtml(path) {
 	return { response, html: await response.text() };
 }
 
+/**
+ * Fetches a page the way an agent asking for markdown would, asserting the response is
+ * the markdown representation before handing back its body.
+ */
+async function getMarkdown(path, accept = 'text/markdown') {
+	const response = await fetch(`${server.baseUrl}${path}`, {
+		headers: { accept },
+		redirect: 'manual'
+	});
+
+	assertDirectSuccess(response, path);
+	assert.equal(
+		(response.headers.get('content-type') ?? '').toLowerCase(),
+		'text/markdown; charset=utf-8',
+		`${path} should be served as markdown when markdown is what was asked for`
+	);
+	return { response, markdown: await response.text() };
+}
+
 before(async () => {
 	server = await startProductionServer();
 });
@@ -617,5 +636,186 @@ describe('security posture and public links', () => {
 			assert.doesNotMatch(source, /\b(?:TODO|FIXME)\b/i, relativePath);
 			assert.doesNotMatch(source, /lorem ipsum/i, relativePath);
 		}
+	});
+});
+describe('markdown content negotiation', () => {
+	it('offers every canonical page as markdown at its own URL', async () => {
+		for (const path of publicHtmlPaths) {
+			const { response, markdown } = await getMarkdown(path);
+
+			// The markup is the thing being removed, so its absence is the assertion. A
+			// surviving `div` or `script` would mean an agent is still reading layout.
+			assert.doesNotMatch(
+				markdown,
+				/<\/?(?:div|section|span|script|style|svg|a|p|h[1-6])\b/i,
+				`${path} markdown should carry no HTML`
+			);
+			assert.match(markdown, /^# \S/m, `${path} markdown should keep its heading`);
+			assert.ok(markdown.trim().length > 500, `${path} markdown should carry the page's content`);
+
+			// The site chrome repeats on all 41 pages and describes none of them.
+			assert.doesNotMatch(markdown, /Skip to content/i, `${path} should drop the skip link`);
+			assert.doesNotMatch(
+				markdown,
+				/All service areas\]\(\S+\)\s*$/,
+				`${path} should drop the footer`
+			);
+
+			assert.match(
+				response.headers.get('vary') ?? '',
+				/\bAccept\b/i,
+				`${path} markdown should vary on Accept`
+			);
+		}
+	});
+
+	it('keeps HTML the default for everything that did not ask for markdown', async () => {
+		const headers = [
+			// Chrome, Firefox, and Safari all accept markdown under a trailing wildcard.
+			'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+			'*/*',
+			'text/markdown;q=0.4, text/html;q=0.9'
+		];
+
+		for (const accept of headers) {
+			for (const path of ['/', '/services/bgp-consulting', '/resources/what-is-bgp']) {
+				const response = await fetch(`${server.baseUrl}${path}`, {
+					headers: { accept },
+					redirect: 'manual'
+				});
+
+				assertDirectSuccess(response, path);
+				assert.equal(
+					(response.headers.get('content-type') ?? '').toLowerCase(),
+					'text/html; charset=utf-8',
+					`${path} should stay HTML for ${accept}`
+				);
+				// Without this a shared cache can hand an agent's markdown to a browser, or
+				// the reverse, and both representations come from the same URL.
+				assert.match(
+					response.headers.get('vary') ?? '',
+					/\bAccept\b/i,
+					`${path} HTML should vary on Accept`
+				);
+			}
+		}
+	});
+
+	it('converts the parts of a page an agent would otherwise have to scrape', async () => {
+		const { markdown: service } = await getMarkdown('/services/bgp-consulting');
+		assert.match(service, /^# BGP Consulting for Public ASN and Resilient Routing$/m);
+		assert.match(service, /^## Who this is for$/m);
+		assert.match(service, /^- Organizations with a public ASN$/m);
+		// FAQ answers live in a `details` element, closed on the page and inline here.
+		assert.match(service, /\*\*Can H2 help with IPv6 BGP\?\*\*/);
+
+		// The routing policy is the densest page on the site: a table of validation
+		// methods and a framed PDF, both of which have a markdown equivalent.
+		const { markdown: routing } = await getMarkdown('/routing');
+		assert.match(routing, /^\| Requirement \| Description \|$/m);
+		assert.match(routing, /^\| --- \| --- \|$/m);
+		assert.match(routing, /^\| RPKI valid \| .+ \|$/m);
+		assert.match(
+			routing,
+			new RegExp(`\\[[^\\]]*PDF[^\\]]*\\]\\(${siteUrl}/bgp-routing-policy\\.pdf\\)`, 'i')
+		);
+
+		// A cross-origin frame is a document this site cannot convert, so it becomes the
+		// link a reader can follow instead of disappearing.
+		const { markdown: contact } = await getMarkdown('/contact');
+		assert.match(contact, /\[Book a meeting[^\]]*\]\(https:\/\/outlook\.office\.com\/book\//);
+	});
+
+	it('writes every link as the canonical absolute URL it resolves to', async () => {
+		for (const path of ['/', '/about', '/locations/it-services-ohio', '/resources/what-is-bgp']) {
+			const { markdown } = await getMarkdown(path);
+			const destinations = [...markdown.matchAll(/\]\(([^)\s]+)\)/g)].map((match) => match[1]);
+
+			assert.ok(destinations.length > 0, `${path} markdown should keep its links`);
+
+			for (const destination of destinations) {
+				// A markdown file is read detached from the request that produced it, so a
+				// root-relative href in one points nowhere.
+				assert.match(
+					destination,
+					/^(?:https:\/\/|mailto:|tel:)/,
+					`${path} link ${destination} should be absolute`
+				);
+			}
+
+			const internal = destinations.filter((destination) => {
+				try {
+					return new URL(destination).hostname.endsWith('h2technologiesllc.com');
+				} catch {
+					return false;
+				}
+			});
+
+			assert.ok(internal.length > 0, `${path} markdown should link back into the site`);
+			for (const destination of internal) {
+				assert.ok(
+					destination.startsWith(`${siteUrl}/`),
+					`${destination} should use the canonical origin the rest of the site publishes`
+				);
+			}
+		}
+	});
+
+	it('reports the size of both representations so a client can budget for the fetch', async () => {
+		const { response, markdown } = await getMarkdown('/services/enterprise-network-design');
+		const markdownTokens = Number(response.headers.get('x-markdown-tokens'));
+		const originalTokens = Number(response.headers.get('x-original-tokens'));
+
+		assert.ok(
+			Number.isInteger(markdownTokens) && markdownTokens > 0,
+			'x-markdown-tokens should be a count'
+		);
+		assert.ok(
+			Number.isInteger(originalTokens) && originalTokens > 0,
+			'x-original-tokens should be a count'
+		);
+		assert.ok(
+			markdownTokens < originalTokens,
+			'the point of the exercise is that the markdown is the smaller document'
+		);
+		assert.ok(
+			markdown.length < originalTokens * 4,
+			'the markdown should be smaller than the HTML it came from'
+		);
+	});
+
+	it('leaves the routes that are already machine-readable exactly as they were', async () => {
+		const untouched = [
+			['/robots.txt', /^text\/plain\b/i],
+			['/llms.txt', /^text\/plain\b/i],
+			['/.well-known/security.txt', /^text\/plain\b/i],
+			['/sitemap.xml', /^application\/xml\b/i]
+		];
+
+		for (const [path, expected] of untouched) {
+			const response = await fetch(`${server.baseUrl}${path}`, {
+				headers: { accept: 'text/markdown' },
+				redirect: 'manual'
+			});
+
+			assertDirectSuccess(response, path);
+			assert.match(
+				response.headers.get('content-type') ?? '',
+				expected,
+				`${path} is not a page and should not be converted`
+			);
+		}
+	});
+
+	it('answers an unknown URL with a 404 in the format that was asked for', async () => {
+		const response = await fetch(`${server.baseUrl}/this-page-does-not-exist`, {
+			headers: { accept: 'text/markdown' },
+			redirect: 'manual'
+		});
+		const markdown = await response.text();
+
+		assert.equal(response.status, 404);
+		assert.match(response.headers.get('content-type') ?? '', /^text\/markdown\b/i);
+		assert.match(markdown, /^# Page not found$/m);
 	});
 });
