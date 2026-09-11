@@ -64,7 +64,8 @@ The test suite exercises the built adapter-node application, including primary r
 - `src/lib/routing-policy.ts` is the HTML source of record for the AS17290 routing policy published at `/routing`. Keep it in step with `static/bgp-routing-policy.pdf`, which is the same policy in downloadable form.
 - `src/lib/site.ts` also carries the published name, address, and phone details (`nap`), the founder entity, and the `organizationProfiles` list used for `Organization.sameAs`. Empty values there are omitted from both the page and the schema graph rather than guessed, so anything published must match the Google Business Profile exactly.
 - `src/lib/components/Seo.svelte` supplies canonical, Open Graph, social, and structured-data metadata, including the shared `Organization`/`ProfessionalService`, `Person`, and `WebSite` nodes that page-level schema references by `@id`.
-- `src/hooks.server.ts` applies response security headers. The SvelteKit CSP is configured in `svelte.config.js`.
+- `src/hooks.server.ts` applies response security headers and serves the markdown representation of a page when one is negotiated. The SvelteKit CSP is configured in `svelte.config.js`.
+- `src/lib/server/markdown-negotiation.ts` decides, from the request's `Accept` header, which representation was asked for; `src/lib/server/html-to-markdown.ts` converts the rendered page. Both are dependency-free, and the production image keeps its zero runtime dependencies.
 - `@sveltejs/adapter-node` produces the deployable `build/` directory.
 - `server.js` wraps the generated handler with consistent static-asset security and cache headers.
 - The multi-stage Docker build copies only the adapter output and `server.js` wrapper into the runtime image and runs it as the unprivileged `node` user.
@@ -78,7 +79,20 @@ The canonical hostname has no `www` prefix, and public page URLs do not use trai
 - `/robots.txt` allows public crawling and references the canonical sitemap.
 - `/sitemap.xml` is generated from the static route list and the service, location, and resource data collections.
 - `/.well-known/security.txt` is the RFC 9116 contact document. Renew its `Expires` value before it lapses and confirm that the listed mailbox is monitored.
+- `/llms.txt` describes the site and its pages for assistants that fetch it, generated from the same route data as the sitemap.
 - Page metadata and schema are generated through the shared SEO component and route data.
+
+### Markdown for agents
+
+Every page answers at one URL in two formats. A request carrying `Accept: text/markdown` gets the page's text as `text/markdown; charset=utf-8`; everything else, browsers included, gets the HTML unchanged. Both responses send `Vary: Accept`, so a shared cache keeps the two apart.
+
+```bash
+curl -H 'Accept: text/markdown' https://h2technologiesllc.com/services/bgp-consulting
+```
+
+The markdown is converted from the page's own rendered HTML — its `<main>` landmark, minus the navigation, the footer, the icons, and the hydration payload — so there is no second copy of the content to keep in step, and a page added or reworded is negotiable the same day. Links are rewritten to canonical absolute URLs, because a markdown file is read long after the request that produced it. The response also carries `x-markdown-tokens` and `x-original-tokens`, rough estimates of each representation's length.
+
+Routes that are already machine-readable (`/robots.txt`, `/llms.txt`, `/sitemap.xml`, `/.well-known/security.txt`) are not converted; they are not HTML pages.
 
 Location routes come in two kinds, and the distinction is what keeps them from competing for the same query. A `service` page covers one capability across Ohio; a `place` page covers one community across capabilities. Give every new page genuinely local detail rather than templated copy reused under a different town name.
 
