@@ -20,6 +20,10 @@ export const prerender = false;
  * `sitemap.xml`, so this file cannot advertise a URL that 404s or drift as pages
  * are added. It links to the same pages a person is served and summarises them in
  * their own words — it is not a place to put text that visitors cannot see.
+ *
+ * It is also where the markdown representation is advertised. Content negotiation is
+ * invisible by design — a client that never sends `Accept: text/markdown` has no way to
+ * learn that it would have worked — and this file is the one an assistant fetches first.
  */
 const link = (path: string, name: string, note: string) =>
 	`- [${name}](${absoluteUrl(path)}): ${note}`;
@@ -38,6 +42,8 @@ const body = `# ${site.name}
 ${site.name} is an Ohio technology consultancy founded in ${site.foundingDate} by ${founder.name}, ${founder.jobTitle}. It works with businesses in ${nap.addressLocality}, ${nap.addressRegionName} and remotely across the United States. It operates the public autonomous system ${network.asn} and publishes that routing policy at ${absoluteUrl(network.policyPath)}.
 
 Areas served: ${site.areaServed.join('; ')}.
+
+Every page listed below is also published as markdown at the same URL. Request it with \`Accept: text/markdown\` and the response is the page's own text without the HTML layout, served as \`text/markdown\` with an \`x-markdown-tokens\` estimate of its length. Browsers, and anything that does not ask, keep getting HTML.
 
 ## Services
 
