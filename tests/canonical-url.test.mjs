@@ -73,6 +73,81 @@ describe('canonical URL normalization', () => {
 		}
 	});
 
+	it('refuses every spelling of an authority a URL parser would accept', () => {
+		// Clients resolve a `Location` with the WHATWG URL parser, which reads a backslash as
+		// a slash and strips ASCII tab, CR, and LF before parsing. So `/\host` and `/<tab>/host`
+		// both resolve to `https://host/` exactly as `//host` does, and neither is a run of
+		// repeated slashes for the collapse above to catch.
+		for (const target of [
+			'/\\evil.example.com/',
+			'/\\evil.example.com//',
+			'/\\\\evil.example.com/',
+			'/\\/evil.example.com/',
+			'//\\evil.example.com/',
+			'/\\@evil.example.com/',
+			'/\\evil.example.com/wire-money/',
+			'/\t//evil.example.com/',
+			'/\t/evil.example.com//',
+			'/\n//evil.example.com/',
+			'/\r//evil.example.com/'
+		]) {
+			assert.equal(
+				canonicalTarget(target),
+				null,
+				`${JSON.stringify(target)} must not be rewritten`
+			);
+		}
+	});
+
+	it('leaves a backslash outside the authority position alone', () => {
+		// The guard refuses a target whose *authority* a URL parser would read as another
+		// host. A backslash deeper in the path names no host, so it is carried through as
+		// written rather than rewritten or rejected.
+		assert.equal(canonicalTarget('/about/a\\b/'), '/about/a\\b');
+		assert.equal(
+			canonicalTarget('/resources/%5Cevil.example.com/'),
+			'/resources/%5Cevil.example.com'
+		);
+	});
+
+	it('never emits a location that resolves off-origin, whatever the spelling', () => {
+		// The invariant the two tests above are specific cases of: whatever this function
+		// returns is resolved against the site origin by the client, and must land back on it.
+		const origin = `https://${CANONICAL_HOST}`;
+
+		for (const target of [
+			'//evil.example.com/',
+			'////evil.example.com/',
+			'/\\evil.example.com/',
+			'/\\\\evil.example.com/',
+			'/\\/evil.example.com/',
+			'//\\evil.example.com/',
+			'/\\evil.example.com//',
+			'/%5C%5Cevil.example.com/',
+			'/%2F%2Fevil.example.com/',
+			'/\t//evil.example.com/',
+			// Normalizes to a same-origin path rather than being refused: the separator the
+			// parser would use is the one the collapse already removed, so what is left is an
+			// oddly spelled path on this host, not an authority.
+			'//\tevil.example.com//',
+			'/./\\/evil.example.com/',
+			'/..//evil.example.com/',
+			'//evil.example.com@' + CANONICAL_HOST + '/',
+			'/\\evil.example.com/?next=https://evil.example.com',
+			'/\\evil.example.com/#@evil.example.com'
+		]) {
+			const result = canonicalTarget(target);
+			if (result === null) continue;
+
+			assert.ok(result.startsWith('/'), `${target} -> ${result} should stay rooted`);
+			assert.equal(
+				new URL(result, origin).origin,
+				origin,
+				`${target} -> ${result} must resolve back to the site origin`
+			);
+		}
+	});
+
 	it('declines to rewrite targets it does not own', () => {
 		assert.equal(canonicalTarget('https://h2technologiesllc.com/about/'), null);
 		assert.equal(canonicalTarget('h2technologiesllc.com:443'), null);

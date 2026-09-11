@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { connect } from 'node:net';
-import { readFile } from 'node:fs/promises';
+import { readFile, rm, writeFile } from 'node:fs/promises';
 import { after, before, describe, it } from 'node:test';
 import {
 	crawlablePaths,
@@ -71,6 +71,28 @@ function assertDirectSuccess(response, path) {
 	assert.equal(response.headers.get('location'), null, `${path} should not redirect`);
 }
 
+// Writes a request straight to the socket, so a test can send a `Host` header or a request
+// target that `fetch` would rewrite or refuse (a raw backslash, an absolute-form target).
+function sendRaw(target, hostHeader) {
+	return new Promise((resolve, reject) => {
+		const url = new URL(server.baseUrl);
+		const socket = connect({ host: url.hostname, port: Number(url.port) }, () => {
+			socket.write(`GET ${target} HTTP/1.1\r\nHost: ${hostHeader}\r\nConnection: close\r\n\r\n`);
+		});
+		let raw = '';
+		socket.setEncoding('utf8');
+		socket.on('data', (chunk) => (raw += chunk));
+		socket.on('error', reject);
+		socket.on('end', () => {
+			const [head] = raw.split('\r\n\r\n', 1);
+			resolve({
+				status: Number(head.split(' ')[1]),
+				location: head.match(/^location:\s*(.+)$/im)?.[1]?.trim()
+			});
+		});
+	});
+}
+
 async function getHtml(path) {
 	const response = await fetchWithoutRedirect(server.baseUrl, path);
 	assertDirectSuccess(response, path);
@@ -85,12 +107,25 @@ async function getHtml(path) {
 	return { response, html: await response.text() };
 }
 
+// A file type the browser executes as a document in this origin, planted in the built client
+// directory so the served-from-disk header policy can be asserted against a real response.
+// `static/` holds no such file today, which is the whole reason to test the rule rather than
+// the inventory: the point is that adding one later cannot quietly become a stored-XSS
+// primitive. The static handler indexes the directory when it boots, so this has to be in
+// place before the server starts, and it is removed again afterwards.
+const activeDocumentProbe = new URL('../build/client/__active-document-probe.svg', import.meta.url);
+
 before(async () => {
+	await writeFile(
+		activeDocumentProbe,
+		'<svg xmlns="http://www.w3.org/2000/svg"><script>globalThis.executed = true;</script></svg>'
+	);
 	server = await startProductionServer();
 });
 
 after(async () => {
 	await server?.close();
+	await rm(activeDocumentProbe, { force: true });
 });
 
 describe('crawler-facing production routes', () => {
@@ -322,6 +357,47 @@ describe('canonical URL enforcement', () => {
 		}
 	});
 
+	it('keeps redirects on the site origin for targets fetch cannot express', async () => {
+		// `fetch` normalizes a backslash to a slash before the request leaves the client, so
+		// the test above can never put `/\host` on the wire and the payload has to be written
+		// to the socket by hand. A client that does send it raw — a crawler, link checker, or
+		// uptime monitor built on `http.request` — then resolves whatever comes back with the
+		// WHATWG parser, which reads `/\host` as an authority and leaves the site.
+		for (const target of [
+			'/\\evil.example.com/',
+			'/\\evil.example.com//',
+			'/\\\\evil.example.com/',
+			'/\\/evil.example.com/',
+			'//\\evil.example.com/',
+			'/\\evil.example.com/wire-money/',
+			'/\\evil.example.com//?next=1'
+		]) {
+			for (const host of [new URL(siteUrl).hostname, `www.${new URL(siteUrl).hostname}`]) {
+				const { location } = await sendRaw(target, host);
+				if (location === undefined) continue;
+
+				assert.equal(
+					new URL(location, siteUrl).origin,
+					siteUrl,
+					`${target} on ${host} must not redirect off-origin (got ${location})`
+				);
+			}
+		}
+	});
+
+	it('declines to rewrite a request target it cannot safely paste onto the origin', async () => {
+		// An absolute-form target carries its own authority. Concatenating it onto the
+		// canonical origin would emit `https://<site>http://host/path`, whose authority is
+		// neither this site nor the one that was asked for, so the host redirect stands down
+		// and leaves the target to the adapter.
+		const wwwHost = `www.${new URL(siteUrl).hostname}`;
+
+		for (const target of ['http://evil.example.com/pwn', 'https://evil.example.com/pwn']) {
+			const { location } = await sendRaw(target, wwwHost);
+			assert.equal(location, undefined, `${target} must not produce a Location at all`);
+		}
+	});
+
 	it('serves the canonical form with a matching self-referencing canonical tag', async () => {
 		for (const path of publicHtmlPaths) {
 			const { html } = await getHtml(path);
@@ -480,6 +556,33 @@ describe('security posture and public links', () => {
 			),
 			null,
 			'the same-origin routing PDF must remain embeddable'
+		);
+	});
+
+	it('denies script to a file served from disk that the browser runs as a document', async () => {
+		// `adapter-node` mounts its static handler ahead of the SvelteKit handler, so a file
+		// answered from disk never reaches `src/hooks.server.ts` and never receives the page
+		// CSP. `nosniff` does not help for an SVG: `image/svg+xml` is the correct type and the
+		// browser is right to execute what is inside it. The policy has to come from
+		// `server.js`, which is the only layer every response passes through.
+		const response = await fetchWithoutRedirect(server.baseUrl, '/__active-document-probe.svg');
+		assertDirectSuccess(response, '/__active-document-probe.svg');
+		assert.match(response.headers.get('content-type') ?? '', /^image\/svg\+xml\b/i);
+
+		const csp = response.headers.get('content-security-policy');
+		assert.ok(csp, 'a disk-served active document must carry a CSP of its own');
+		assert.deepEqual(cspDirective(csp, 'default-src'), ["'none'"]);
+		assert.deepEqual(cspDirective(csp, 'base-uri'), ["'none'"]);
+		assert.deepEqual(cspDirective(csp, 'frame-ancestors'), ["'self'"]);
+
+		// The rule keys off the request path, not the response, so a SvelteKit-rendered page
+		// that happens to sit at an asset-looking URL keeps the full page policy instead of
+		// the locked-down one, which would strip its own styles and hydration script.
+		const rendered = await fetchWithoutRedirect(server.baseUrl, '/not-a-real-file.svg');
+		assert.equal(rendered.status, 404);
+		assert.deepEqual(
+			cspDirective(rendered.headers.get('content-security-policy') ?? '', 'default-src'),
+			["'self'"]
 		);
 	});
 

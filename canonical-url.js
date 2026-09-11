@@ -12,7 +12,9 @@
  * string are preserved byte for byte so redirects never rewrite a URL's meaning.
  *
  * @param {string | undefined} requestTarget the origin-form request target, e.g. `/about/?a=1`
- * @returns {string | null} the canonical target to redirect to, or `null` if already canonical
+ * @returns {string | null} the canonical target to redirect to, or `null` when the request is
+ *   served where it landed — either because it is already canonical, or because it is a target
+ *   this function refuses to rewrite (see the authority guard below)
  */
 export function canonicalTarget(requestTarget) {
 	const target = requestTarget && requestTarget.length > 0 ? requestTarget : '/';
@@ -41,14 +43,36 @@ export function canonicalTarget(requestTarget) {
 		return null;
 	}
 
-	// Defense in depth: a `Location` starting with `//` is protocol-relative and would send
-	// the visitor to another origin. Collapsing repeated slashes already prevents this, so
-	// treat any survivor as a request we refuse to redirect rather than one we rewrite.
-	if (!normalized.startsWith('/') || normalized.startsWith('//')) {
+	if (!normalized.startsWith('/')) {
 		return null;
 	}
 
-	return `${normalized}${suffix}`;
+	const result = `${normalized}${suffix}`;
+
+	// Defense in depth: a `Location` that names an authority sends the visitor to another
+	// origin entirely, and collapsing repeated slashes is not by itself enough to prevent it.
+	//
+	// The check is made by construction rather than by pattern, because the spellings that
+	// reach an authority are not all `//`. Clients resolve a `Location` with the WHATWG URL
+	// parser, which treats a backslash as a slash (`/\host` is `//host`) and strips ASCII
+	// tab, CR, and LF from the input before parsing at all (`/<tab>/host` is also `//host`).
+	// Each of those survives the slash collapse above untouched — a backslash is not a run of
+	// repeated slashes, and neither is a tab — so a guard written as a character test has to
+	// enumerate the whole set correctly and stay correct as the URL standard moves. Resolving
+	// the result the way the client will is the same question asked directly.
+	//
+	// The resolved URL is only ever inspected. What is returned is the original string, so
+	// percent-encoding and the query survive byte for byte rather than being re-serialized.
+	const origin = `https://${CANONICAL_HOST}`;
+	try {
+		if (new URL(result, origin).origin !== origin) {
+			return null;
+		}
+	} catch {
+		return null;
+	}
+
+	return result;
 }
 
 /**
