@@ -38,6 +38,24 @@ function linkHref(html, rel) {
 	return matchingTag?.match(/\bhref="([^"]*)"/i)?.[1];
 }
 
+/**
+ * Parses an RFC 8288 `Link` field into `{ target, rel, type }` entries.
+ *
+ * However many header lines the field arrived on, a client reads it as one
+ * comma-separated list, and that is what this returns. Every target the site sends is a
+ * URL with no comma in it, so the angle brackets are enough to find the boundaries.
+ */
+function parseLinkHeader(value) {
+	return [...(value ?? '').matchAll(/<([^>]*)>((?:\s*;\s*[^,]+)*)/g)].map(
+		([, target, rawParameters]) => {
+			const parameters = [...rawParameters.matchAll(/;\s*([^=;\s]+)\s*=\s*"?([^";]*)"?/g)].map(
+				([, name, parameterValue]) => [name.toLowerCase(), parameterValue.trim()]
+			);
+			return { target, ...Object.fromEntries(parameters) };
+		}
+	);
+}
+
 function allMatches(html, expression) {
 	return [...html.matchAll(expression)].map((match) => match[1]);
 }
@@ -273,6 +291,84 @@ describe('crawler-facing production routes', () => {
 			['en']
 		);
 		assert.ok(contacts.every((contact) => /^(?:mailto:|https:\/\/)/.test(contact)));
+	});
+
+	it('advertises the machine-readable resources in Link headers on every page', async () => {
+		for (const path of ['/', '/about', '/services/bgp-consulting', '/resources/what-is-bgp']) {
+			const { response } = await getHtml(path);
+			const header = response.headers.get('link') ?? '';
+			const links = parseLinkHeader(header);
+			const targets = (rel) => links.filter((link) => link.rel === rel).map((link) => link.target);
+
+			// The canonical policy, stated in the response head rather than only in the
+			// document, so a client that reads the headers alone still learns it.
+			assert.deepEqual(targets('canonical'), [`${siteUrl}${path}`], `${path} rel=canonical`);
+
+			// Content negotiation is otherwise undiscoverable: the markdown twin has no URL
+			// of its own to be listed anywhere, so the page has to say it exists.
+			const markdown = links.filter(
+				(link) => link.rel === 'alternate' && link.type === 'text/markdown'
+			);
+			assert.deepEqual(
+				markdown.map((link) => link.target),
+				[`${siteUrl}${path}`],
+				`${path} should advertise its markdown representation`
+			);
+
+			// The two relation types an agent looks for to find the site's own description
+			// of itself. Registered with IANA, and used for what they were registered for.
+			assert.deepEqual(targets('service-doc'), [`${siteUrl}/llms.txt`], `${path} rel=service-doc`);
+			assert.deepEqual(targets('index'), [`${siteUrl}/sitemap.xml`], `${path} rel=index`);
+
+			// Prepended rather than appended: SvelteKit's preload hints run to well over a
+			// kilobyte, and the stable relations belong in front of them. Both survive.
+			assert.ok(
+				header.startsWith(`<${siteUrl}${path}>; rel="canonical"`),
+				`${path} should lead with the discovery links`
+			);
+			assert.ok(
+				links.some((link) => link.rel === 'preload' || link.rel === 'modulepreload'),
+				`${path} should keep the preload hints it already had`
+			);
+		}
+	});
+
+	it('points a lost client at the map without calling a 404 canonical', async () => {
+		const response = await fetchWithoutRedirect(server.baseUrl, '/this-page-does-not-exist');
+		const links = parseLinkHeader(response.headers.get('link'));
+
+		assert.equal(response.status, 404);
+
+		// The error page is `noindex` and answers under whatever URL was mistyped. Naming
+		// that URL canonical would contradict the page and hand a crawler a 404 to index.
+		assert.deepEqual(
+			links.filter((link) => link.rel === 'canonical'),
+			[],
+			'a 404 should not claim a canonical URL'
+		);
+
+		// The site-wide links stay: this is the response that most needs them.
+		assert.deepEqual(
+			links.filter((link) => ['service-doc', 'index'].includes(link.rel)).map((l) => l.target),
+			[`${siteUrl}/llms.txt`, `${siteUrl}/sitemap.xml`],
+			'a 404 should still point at the site map'
+		);
+	});
+
+	it('serves every resource it advertises in a Link header', async () => {
+		const { response } = await getHtml('/');
+		const advertised = parseLinkHeader(response.headers.get('link'))
+			.filter((link) => ['service-doc', 'index'].includes(link.rel))
+			.map((link) => new URL(link.target));
+
+		assert.equal(advertised.length, 2, 'the homepage should advertise both site resources');
+
+		for (const target of advertised) {
+			assert.equal(target.origin, siteUrl, `${target} should be a canonical absolute URL`);
+
+			const advertisedResponse = await fetchWithoutRedirect(server.baseUrl, target.pathname);
+			assertDirectSuccess(advertisedResponse, `advertised resource ${target}`);
+		}
 	});
 });
 
@@ -758,6 +854,34 @@ describe('markdown content negotiation', () => {
 					`${destination} should use the canonical origin the rest of the site publishes`
 				);
 			}
+		}
+	});
+
+	it('carries the discovery links into the markdown representation', async () => {
+		for (const path of ['/', '/services/bgp-consulting']) {
+			const { response } = await getMarkdown(path);
+			const links = parseLinkHeader(response.headers.get('link'));
+			const targets = (rel) => links.filter((link) => link.rel === rel).map((link) => link.target);
+
+			// Markdown has no `<head>`. These headers are the only place the canonical URL and
+			// the rest of the site appear in what an agent asking for markdown is handed.
+			assert.deepEqual(targets('canonical'), [`${siteUrl}${path}`], `${path} rel=canonical`);
+			assert.deepEqual(targets('service-doc'), [`${siteUrl}/llms.txt`], `${path} rel=service-doc`);
+			assert.deepEqual(targets('index'), [`${siteUrl}/sitemap.xml`], `${path} rel=index`);
+
+			// The alternate points the other way here: this response is the markdown, so the
+			// representation on offer at the same URL is the HTML.
+			assert.deepEqual(
+				links.filter((link) => link.rel === 'alternate').map((link) => [link.target, link.type]),
+				[[`${siteUrl}${path}`, 'text/html']],
+				`${path} markdown should offer the HTML representation`
+			);
+
+			// The preload hints describe a document this client is not receiving.
+			assert.ok(
+				!links.some((link) => link.rel === 'preload' || link.rel === 'modulepreload'),
+				`${path} markdown should not carry the HTML preload hints`
+			);
 		}
 	});
 

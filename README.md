@@ -64,8 +64,9 @@ The test suite exercises the built adapter-node application, including primary r
 - `src/lib/routing-policy.ts` is the HTML source of record for the AS17290 routing policy published at `/routing`. Keep it in step with `static/bgp-routing-policy.pdf`, which is the same policy in downloadable form.
 - `src/lib/site.ts` also carries the published name, address, and phone details (`nap`), the founder entity, and the `organizationProfiles` list used for `Organization.sameAs`. Empty values there are omitted from both the page and the schema graph rather than guessed, so anything published must match the Google Business Profile exactly.
 - `src/lib/components/Seo.svelte` supplies canonical, Open Graph, social, and structured-data metadata, including the shared `Organization`/`ProfessionalService`, `Person`, and `WebSite` nodes that page-level schema references by `@id`.
-- `src/hooks.server.ts` applies response security headers and serves the markdown representation of a page when one is negotiated. The SvelteKit CSP is configured in `svelte.config.js`.
+- `src/hooks.server.ts` applies response security headers, attaches the discovery `Link` headers, and serves the markdown representation of a page when one is negotiated. The SvelteKit CSP is configured in `svelte.config.js`.
 - `src/lib/server/markdown-negotiation.ts` decides, from the request's `Accept` header, which representation was asked for; `src/lib/server/html-to-markdown.ts` converts the rendered page. Both are dependency-free, and the production image keeps its zero runtime dependencies.
+- `src/lib/server/discovery-links.ts` builds the `Link` header values every page carries. Add a relation there only for a resource the site actually publishes.
 - `@sveltejs/adapter-node` produces the deployable `build/` directory.
 - `server.js` wraps the generated handler with consistent static-asset security and cache headers.
 - The multi-stage Docker build copies only the adapter output and `server.js` wrapper into the runtime image and runs it as the unprivileged `node` user.
@@ -82,6 +83,25 @@ The canonical hostname has no `www` prefix, and public page URLs do not use trai
 - `/llms.txt` describes the site and its pages for assistants that fetch it, generated from the same route data as the sitemap.
 - Page metadata and schema are generated through the shared SEO component and route data.
 
+### Link headers for agent discovery
+
+Every page answers with `Link` response headers (RFC 8288) naming the site's machine-readable resources, so a client that reads only the response head — a `HEAD` request, a crawler deciding whether to spend the fetch, or an agent that negotiated markdown and so received no `<head>` at all — still finds them.
+
+```bash
+curl -sSI https://h2technologiesllc.com/ | grep -i '^link'
+```
+
+| Relation      | Target                        | What it says                                             |
+| ------------- | ----------------------------- | -------------------------------------------------------- |
+| `canonical`   | the page's own canonical URL  | the one address this page answers at                     |
+| `alternate`   | the same URL, `text/markdown` | the markdown representation, which has no URL of its own |
+| `service-doc` | `/llms.txt`                   | the written map of the site (RFC 8631)                   |
+| `index`       | `/sitemap.xml`                | the complete list of canonical URLs                      |
+
+An error response carries the site-wide links but no `canonical` — the error page answers under whatever URL was mistyped and is marked `noindex`, so naming that URL canonical would contradict it. The discovery links are sent ahead of SvelteKit's per-build preload hints, which run to over a kilobyte in the same field; browsers apply those hints wherever in the field they appear. The markdown representation drops the preload hints entirely and keeps the four above, with the `alternate` pointing back at the HTML.
+
+Only relations registered with IANA are used, and only for resources the site publishes. There is no HTTP API behind these pages, so there is no `api-catalog` ([RFC 9727](https://www.rfc-editor.org/rfc/rfc9727#section-3)) and no `service-desc`. Publishing an API is the point at which those belong, pointing at a real catalog at `/.well-known/api-catalog`. Adding a relation means adding it to `src/lib/server/discovery-links.ts`; the production tests fetch every advertised target, so a link that 404s fails the build.
+
 ### Markdown for agents
 
 Every page answers at one URL in two formats. A request carrying `Accept: text/markdown` gets the page's text as `text/markdown; charset=utf-8`; everything else, browsers included, gets the HTML unchanged. Both responses send `Vary: Accept`, so a shared cache keeps the two apart.
@@ -92,7 +112,7 @@ curl -H 'Accept: text/markdown' https://h2technologiesllc.com/services/bgp-consu
 
 The markdown is converted from the page's own rendered HTML — its `<main>` landmark, minus the navigation, the footer, the icons, and the hydration payload — so there is no second copy of the content to keep in step, and a page added or reworded is negotiable the same day. Links are rewritten to canonical absolute URLs, because a markdown file is read long after the request that produced it. The response also carries `x-markdown-tokens` and `x-original-tokens`, rough estimates of each representation's length.
 
-Routes that are already machine-readable (`/robots.txt`, `/llms.txt`, `/sitemap.xml`, `/.well-known/security.txt`) are not converted; they are not HTML pages.
+Routes that are already machine-readable (`/robots.txt`, `/llms.txt`, `/sitemap.xml`, `/.well-known/security.txt`) are not converted, and carry no discovery links; they are not HTML pages, and they are the resources being pointed at.
 
 Location routes come in two kinds, and the distinction is what keeps them from competing for the same query. A `service` page covers one capability across Ohio; a `place` page covers one community across capabilities. Give every new page genuinely local detail rather than templated copy reused under a different town name.
 

@@ -24,6 +24,9 @@ export const prerender = false;
  * It is also where the markdown representation is advertised. Content negotiation is
  * invisible by design — a client that never sends `Accept: text/markdown` has no way to
  * learn that it would have worked — and this file is the one an assistant fetches first.
+ * Every page states the same thing in a `Link: <...>; rel="alternate"; type="text/markdown"`
+ * header, for a client that reads response heads rather than fetching this file; the two
+ * are different audiences, not a duplicate.
  */
 const link = (path: string, name: string, note: string) =>
 	`- [${name}](${absoluteUrl(path)}): ${note}`;
