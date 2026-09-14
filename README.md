@@ -63,6 +63,7 @@ The test suite exercises the built adapter-node application, including primary r
 - `src/lib/faqs.ts` holds the site-wide questions rendered at `/faq`; service- and location-specific questions stay with their own collection so each `FAQPage` block matches its page.
 - `src/lib/routing-policy.ts` is the HTML source of record for the AS17290 routing policy published at `/routing`. Keep it in step with `static/bgp-routing-policy.pdf`, which is the same policy in downloadable form.
 - `src/lib/site.ts` also carries the published name, address, and phone details (`nap`), the founder entity, and the `organizationProfiles` list used for `Organization.sameAs`. Empty values there are omitted from both the page and the schema graph rather than guessed, so anything published must match the Google Business Profile exactly.
+- `src/app.html` carries one blocking script: it hides an already-dismissed promotional banner before the first paint. Its SHA-256 is pinned in the `script-src` policy in `svelte.config.js`, and `tests/promo-banner.test.mjs` recomputes it — if that test fails, paste the hash it prints.
 - `src/lib/components/Seo.svelte` supplies canonical, Open Graph, social, and structured-data metadata, including the shared `Organization`/`ProfessionalService`, `Person`, and `WebSite` nodes that page-level schema references by `@id`.
 - `src/hooks.server.ts` applies response security headers, attaches the discovery `Link` headers, and serves the markdown representation of a page when one is negotiated. The SvelteKit CSP is configured in `svelte.config.js`.
 - `src/lib/server/markdown-negotiation.ts` decides, from the request's `Accept` header, which representation was asked for; `src/lib/server/html-to-markdown.ts` converts the rendered page. Both are dependency-free, and the production image keeps its zero runtime dependencies.
@@ -113,6 +114,18 @@ curl -H 'Accept: text/markdown' https://h2technologiesllc.com/services/bgp-consu
 The markdown is converted from the page's own rendered HTML — its `<main>` landmark, minus the navigation, the footer, the icons, and the hydration payload — so there is no second copy of the content to keep in step, and a page added or reworded is negotiable the same day. Links are rewritten to canonical absolute URLs, because a markdown file is read long after the request that produced it. The response also carries `x-markdown-tokens` and `x-original-tokens`, rough estimates of each representation's length.
 
 Routes that are already machine-readable (`/robots.txt`, `/llms.txt`, `/sitemap.xml`, `/.well-known/security.txt`) are not converted, and carry no discovery links; they are not HTML pages, and they are the resources being pointed at.
+
+### Edge caching
+
+Pages are cached by Cloudflare and replayed to visitors without reaching this server, which puts two requirements on the HTML.
+
+**Every visitor must get the same bytes.** A response shaped by one visitor's request is a response other visitors will be handed. Nothing in a page may depend on a cookie, and no page may send `Vary: Cookie` — Cloudflare honours `Vary` only for `Accept-Encoding`, so a cache-splitting header it ignores is worse than none at all. The promotional banner is the live example: whether the offer is _live_ is a clock decision and stays on the server, while whether _you_ dismissed it is per visitor and is applied in the browser, before paint, by the script in `src/app.html`.
+
+`Vary: Accept` is the one exception, and it is safe only because a Cache Rule is configured for that header. Without that rule Cloudflare stores whichever representation was requested first and serves markdown to browsers.
+
+**The Content Security Policy must survive being reused.** `csp.mode` is `hash`, not `auto`. A nonce is worth something only while it stays unpredictable, and a cached page freezes one response's nonce into a public constant that an injected script can quote. Hashes are derived from the scripts' own bytes and stay correct however often a stored response is replayed.
+
+Deploys purge the cache. The `deploy` job calls Cloudflare's purge endpoint once the container is healthy, using `CLOUDFLARE_ZONE_ID` and `CLOUDFLARE_PURGE_TOKEN` from the Production environment; the token needs only _Zone → Cache Purge → Purge_ on this zone. **Both secrets are required** — without them that step fails the job deliberately, because a deploy the edge keeps hidden behind stale HTML is not a finished deploy.
 
 Location routes come in two kinds, and the distinction is what keeps them from competing for the same query. A `service` page covers one capability across Ohio; a `place` page covers one community across capabilities. Give every new page genuinely local detail rather than templated copy reused under a different town name.
 

@@ -8,9 +8,13 @@
 	} from '$lib/promo';
 
 	/**
-	 * Whether the offer is live and undismissed, decided on the server in
-	 * `src/routes/+layout.server.ts`. This component never makes that call itself, so the
-	 * banner cannot be revived by editing a browser clock.
+	 * Whether the offer is still live, decided on the server in `src/routes/+layout.server.ts`.
+	 * This component never makes that call itself, so the banner cannot be revived by editing a
+	 * browser clock.
+	 *
+	 * Dismissal is not part of it. A previously dismissed banner is hidden before paint by the
+	 * blocking script in `src/app.html` and the `.promo-banner` rule in `src/app.css`, which
+	 * keeps the server-rendered HTML identical for every visitor and therefore cacheable.
 	 */
 	let { show = false }: { show?: boolean } = $props();
 
@@ -48,7 +52,7 @@
 {#if show && !dismissed && !expiredWhileOpen}
 	<aside
 		aria-label={promo.eyebrow}
-		class="relative border-b border-orange-800/60 bg-slate-950 px-6 py-4 text-white sm:px-8 lg:px-12"
+		class="promo-banner relative border-b border-orange-800/60 bg-slate-950 px-6 py-4 text-white sm:px-8 lg:px-12"
 	>
 		<div
 			class="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8"

@@ -61,3 +61,27 @@ jobs:
           "fetch('http://127.0.0.1:3002/').then((response) => {
           if (!response.ok) process.exit(1);
           }).catch(() => process.exit(1));"
+      # Pages are cached at the Cloudflare edge, so the container being new is not the same as
+      # visitors seeing the new build: without this, the edge keeps serving the previous HTML
+      # until its TTL lapses and the deploy is invisible for hours. This step failing means the
+      # deploy is incomplete, not that it is fine — so it fails loudly rather than skipping.
+      - name: Purge the Cloudflare cache
+        env:
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CF_PURGE_TOKEN: ${{ secrets.CLOUDFLARE_PURGE_TOKEN }}
+        run: |
+          if [ -z "$CF_ZONE_ID" ] || [ -z "$CF_PURGE_TOKEN" ]; then
+            echo "::error::CLOUDFLARE_ZONE_ID and CLOUDFLARE_PURGE_TOKEN are not set. The new build is running, but the edge will serve the previous one until its TTL expires. Add both secrets to the Production environment; the token needs only Zone -> Cache Purge -> Purge on this zone."
+            exit 1
+          fi
+          # Cloudflare answers a rejected purge with HTTP 200 and "success": false, so the
+          # body is what decides here; --fail alone would let a bad token look like a purge.
+          response=$(curl --silent --show-error --fail \
+            --request POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/purge_cache" \
+            --header "Authorization: Bearer $CF_PURGE_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+          case "$response" in
+            *'"success":true'*) echo "Cloudflare cache purged." ;;
+            *) echo "::error::Cloudflare rejected the purge: $response" ; exit 1 ;;
+          esac

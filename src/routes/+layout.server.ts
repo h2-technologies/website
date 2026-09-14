@@ -1,22 +1,26 @@
-import { PROMO_DISMISS_COOKIE, PROMO_DISMISS_VALUE, isPromoActive } from '$lib/promo';
+import { isPromoActive } from '$lib/promo';
 import type { LayoutServerLoad } from './$types';
 
 /**
- * Decides on the server whether the promotional banner is rendered at all.
+ * Decides whether the promotional banner is rendered at all.
  *
- * Every page is server-rendered by `adapter-node` with no prerendering and no ISR window, so
- * this runs on each request and the banner stops appearing the moment `PROMO_EXPIRATION`
- * passes — no redeploy, no content edit. Keeping the decision here rather than in the
- * component also means a browser clock cannot be used to resurrect an expired offer: the
- * markup simply is not in the response.
+ * The decision is made from the clock and nothing else, so every visitor receives byte-identical
+ * HTML for a given page. That is what makes the page cacheable at the edge: Cloudflare serves it
+ * without waiting on this server, and no visitor can be handed a response shaped by another
+ * visitor's state.
+ *
+ * The expiration check stays here rather than in the component. A browser clock wound backwards
+ * cannot revive the offer, because `isPromoActive()` runs on the server and an expired banner is
+ * simply absent from the markup — which is also why this load function still exists.
+ *
+ * Dismissal is the half that had to move. It is per visitor, so it is decided in the browser by
+ * the blocking script in `src/app.html`, before the banner is painted. Reading the dismissal
+ * cookie here would force `Vary: Cookie` onto every page, and a cache that cannot honour it —
+ * Cloudflare honours `Vary` only for `Accept-Encoding` — would serve one visitor's dismissed
+ * banner to the next, or pin the banner back for someone who closed it.
  */
-export const load: LayoutServerLoad = ({ cookies, setHeaders }) => {
-	// The response body differs for a visitor who dismissed the banner, so say so. HTML is not
-	// given a cache-control header by this application, but an upstream cache must not collapse
-	// the dismissed and undismissed variants onto one entry.
-	setHeaders({ vary: 'Cookie' });
-
+export const load: LayoutServerLoad = () => {
 	return {
-		showPromoBanner: isPromoActive() && cookies.get(PROMO_DISMISS_COOKIE) !== PROMO_DISMISS_VALUE
+		showPromoBanner: isPromoActive()
 	};
 };

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import AxeBuilder from '@axe-core/playwright';
 import { chromium } from 'playwright';
 import { after, before, describe, it } from 'node:test';
@@ -50,11 +51,19 @@ const accessibilityPaths = [
 	'/this-page-does-not-exist'
 ];
 
+// Read from source rather than restated, for the same reason `tests/promo-banner.test.mjs`
+// does it: a rename in `src/lib/promo.ts` should break this test loudly, not quietly stop
+// exercising the dismissal path.
+const promoSource = await readFile(new URL('../src/lib/promo.ts', import.meta.url), 'utf8');
+const dismissCookie = promoSource.match(/PROMO_DISMISS_COOKIE = '([^']+)'/)?.[1];
+const dismissValue = promoSource.match(/PROMO_DISMISS_VALUE = '([^']+)'/)?.[1];
+
 let browser;
 let server;
 
-async function loadPage(path, viewport = { width: 1280, height: 800 }) {
+async function loadPage(path, viewport = { width: 1280, height: 800 }, cookies = []) {
 	const context = await browser.newContext({ viewport });
+	if (cookies.length) await context.addCookies(cookies);
 	const page = await context.newPage();
 	const consoleErrors = [];
 	const pageErrors = [];
@@ -105,6 +114,44 @@ after(async () => {
 });
 
 describe('real-browser production smoke', () => {
+	it('never paints a banner the visitor already dismissed', async () => {
+		const fresh = await loadPage('/');
+		const bannersWhenLive = await fresh.page.locator('.promo-banner').count();
+		const visibleWhenLive =
+			bannersWhenLive > 0 && (await fresh.page.locator('.promo-banner').isVisible());
+		await fresh.context.close();
+
+		if (bannersWhenLive === 0) return; // The offer has expired; there is nothing to dismiss.
+		assert.ok(
+			visibleWhenLive,
+			'a live offer should be visible to a visitor who has not dismissed it'
+		);
+
+		const { context, page, consoleErrors, pageErrors } = await loadPage('/', undefined, [
+			{ name: dismissCookie, value: dismissValue, url: server.baseUrl }
+		]);
+
+		// The server sends this visitor the same HTML as everyone else — that is what makes the
+		// page cacheable — so the banner element is present and must be hidden by the blocking
+		// script in `src/app.html`, which runs before the element is even parsed.
+		assert.equal(await page.locator('.promo-banner').count(), 1, 'the markup is sent regardless');
+		assert.equal(
+			await page.locator('.promo-banner').isVisible(),
+			false,
+			'a dismissed banner must not be visible'
+		);
+		assert.ok(
+			await page.evaluate(() => document.documentElement.hasAttribute('data-promo-dismissed')),
+			'the pre-paint script should have marked the document'
+		);
+
+		// A Content-Security-Policy that refused the pre-paint script would surface here, and the
+		// banner would stay visible above rather than failing silently.
+		assert.deepEqual(consoleErrors, [], 'the dismissal path should log nothing');
+		assert.deepEqual(pageErrors, [], 'the dismissal path should throw nothing');
+		await context.close();
+	});
+
 	it('keeps representative pages usable without overflow or browser errors', async () => {
 		for (const scenario of responsiveScenarios) {
 			const { context, page, response, consoleErrors, pageErrors, requestedPaths } = await loadPage(
