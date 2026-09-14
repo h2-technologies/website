@@ -55,10 +55,13 @@ jobs:
         run: |
           docker compose build --pull
           docker compose up --detach --wait --remove-orphans
+      # The same endpoint the image's HEALTHCHECK probes, deliberately: a deploy that
+      # verified `/` would pass while `/health` was broken, and the container would then go
+      # unhealthy minutes later with the job already green.
       - name: Verify container-local readiness
         run: >-
           docker compose exec -T website node -e
-          "fetch('http://127.0.0.1:3002/').then((response) => {
+          "fetch('http://127.0.0.1:3002/health').then((response) => {
           if (!response.ok) process.exit(1);
           }).catch(() => process.exit(1));"
       # Pages are cached at the Cloudflare edge, so the container being new is not the same as
