@@ -1,3 +1,4 @@
+import { AI_CATALOG_PATH } from '$lib/agent-discovery';
 import { absoluteUrl } from '$lib/site';
 
 export const prerender = false;
@@ -64,6 +65,10 @@ const trainingAgents = [
 
 const group = (agents: string[]) => `${agents.map((a) => `User-agent: ${a}`).join('\n')}\nAllow: /`;
 
+// `Agentmap` is the Agentic Resource Discovery equivalent of `Sitemap`: a pointer to
+// `/.well-known/ai-catalog.json` for a client that reads robots.txt before it reads
+// anything else. It is an extension directive, so a parser that has not heard of it skips
+// the line, which is what every parser did with `Sitemap` for years.
 const body = `${group(retrievalAgents)}
 
 ${group(trainingAgents)}
@@ -71,6 +76,7 @@ ${group(trainingAgents)}
 User-agent: *
 Allow: /
 
+Agentmap: ${absoluteUrl(AI_CATALOG_PATH)}
 Sitemap: ${absoluteUrl('/sitemap.xml')}
 `;
 

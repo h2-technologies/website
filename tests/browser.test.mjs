@@ -61,9 +61,16 @@ const dismissValue = promoSource.match(/PROMO_DISMISS_VALUE = '([^']+)'/)?.[1];
 let browser;
 let server;
 
-async function loadPage(path, viewport = { width: 1280, height: 800 }, cookies = []) {
+async function loadPage(
+	path,
+	viewport = { width: 1280, height: 800 },
+	{ cookies, initScript } = {}
+) {
 	const context = await browser.newContext({ viewport });
-	if (cookies.length) await context.addCookies(cookies);
+	if (cookies?.length) await context.addCookies(cookies);
+	// Runs before any of the page's own scripts, which is the only place a browser API the
+	// page feature-tests for can be stood up.
+	if (initScript) await context.addInitScript(initScript);
 	const page = await context.newPage();
 	const consoleErrors = [];
 	const pageErrors = [];
@@ -127,9 +134,9 @@ describe('real-browser production smoke', () => {
 			'a live offer should be visible to a visitor who has not dismissed it'
 		);
 
-		const { context, page, consoleErrors, pageErrors } = await loadPage('/', undefined, [
-			{ name: dismissCookie, value: dismissValue, url: server.baseUrl }
-		]);
+		const { context, page, consoleErrors, pageErrors } = await loadPage('/', undefined, {
+			cookies: [{ name: dismissCookie, value: dismissValue, url: server.baseUrl }]
+		});
 
 		// The server sends this visitor the same HTML as everyone else — that is what makes the
 		// page cacheable — so the banner element is present and must be hidden by the blocking
@@ -332,6 +339,109 @@ describe('real-browser production smoke', () => {
 			} finally {
 				await context.close();
 			}
+		}
+	});
+});
+
+/**
+ * Stands in for a user agent that implements WebMCP, recording what the page offers.
+ *
+ * No browser ships this yet, so the alternative to a stub is asserting nothing: the site's
+ * registration is a feature test, and a browser without `navigator.modelContext` takes the
+ * branch that does nothing at all. Defining the object before the page's scripts run is
+ * what exercises the other branch.
+ */
+function webMcpStub() {
+	const tools = [];
+	Object.defineProperty(navigator, 'modelContext', {
+		configurable: true,
+		value: {
+			provideContext: (context) => {
+				tools.length = 0;
+				tools.push(...context.tools);
+			}
+		}
+	});
+	Object.defineProperty(window, '__webmcpTools', { value: tools });
+}
+
+describe('WebMCP tools', () => {
+	it("offers this site's own actions to a user agent that implements WebMCP", async () => {
+		const { context, page, consoleErrors, pageErrors } = await loadPage('/', undefined, {
+			initScript: webMcpStub
+		});
+
+		try {
+			await page.waitForFunction(() => window.__webmcpTools.length > 0);
+
+			const declared = await page.evaluate(() =>
+				window.__webmcpTools.map((tool) => ({
+					name: tool.name,
+					description: tool.description,
+					hasSchema: typeof tool.inputSchema === 'object',
+					executes: typeof tool.execute === 'function'
+				}))
+			);
+
+			assert.deepEqual(
+				declared.map((tool) => tool.name),
+				['list_pages', 'search_pages', 'read_page', 'get_contact_details', 'open_booking_page']
+			);
+			for (const tool of declared) {
+				assert.ok(tool.description.length > 30, `${tool.name} needs a usable description`);
+				assert.ok(tool.hasSchema, `${tool.name} needs an inputSchema`);
+				assert.ok(tool.executes, `${tool.name} needs an execute callback`);
+			}
+
+			assert.deepEqual(pageErrors, [], 'registering tools should not throw');
+			assert.deepEqual(consoleErrors, [], 'registering tools should not log errors');
+		} finally {
+			await context.close();
+		}
+	});
+
+	it('answers each read-only tool from the live site rather than a compiled-in copy', async () => {
+		const { context, page } = await loadPage('/', undefined, { initScript: webMcpStub });
+
+		try {
+			await page.waitForFunction(() => window.__webmcpTools.length > 0);
+
+			const call = (name, input) =>
+				page.evaluate(
+					async ([toolName, toolInput]) => {
+						const tool = window.__webmcpTools.find((candidate) => candidate.name === toolName);
+						const result = await tool.execute(toolInput);
+						return result.content[0].text;
+					},
+					[name, input]
+				);
+
+			// The page inventory is fetched from `/llms.txt` at call time, so it is the same
+			// answer the origin gives and it cannot drift as pages are added.
+			assert.match(await call('list_pages', { section: 'Guides' }), /\/resources\//);
+			assert.match(
+				await call('search_pages', { query: 'firewall' }),
+				/fortinet-firewall-consulting/
+			);
+			assert.match(
+				await call('search_pages', { query: 'zzzz no such thing' }),
+				/Nothing on this site/
+			);
+
+			// `read_page` negotiates markdown, so it returns the page text without the layout.
+			const faq = await call('read_page', { path: '/faq' });
+			assert.match(faq, /^#/m);
+			assert.doesNotMatch(faq, /Skip to content/);
+
+			// A model can pass any string here. This tool reads this site, not the web.
+			assert.match(
+				await call('read_page', { path: 'https://example.com/' }),
+				/only reads pages on/
+			);
+
+			assert.match(await call('get_contact_details', {}), /H2 Technologies LLC/);
+		} finally {
+			await context.close();
 		}
 	});
 });

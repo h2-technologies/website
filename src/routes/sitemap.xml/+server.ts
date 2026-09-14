@@ -1,26 +1,16 @@
 import { locations } from '$lib/locations';
+import { staticPagePaths } from '$lib/pages';
 import { posts } from '$lib/posts';
 import { services } from '$lib/services';
 import { absoluteUrl, contentRevisedAt } from '$lib/site';
 
 export const prerender = false;
 
-const staticPaths = [
-	'/',
-	'/about',
-	'/services',
-	'/locations',
-	'/resources',
-	'/faq',
-	'/contact',
-	'/routing'
-];
-
 // Every entry is derived from the same data that defines the routes themselves, so the sitemap
 // cannot list a URL that 404s. Paths are the slashless canonical form that `rel="canonical"`
 // and the `server.js` redirect both point at.
 const sitemapEntries: { path: string; lastmod: string }[] = [
-	...staticPaths.map((path) => ({ path, lastmod: contentRevisedAt })),
+	...staticPagePaths.map((path) => ({ path, lastmod: contentRevisedAt })),
 	...services.map((service) => ({
 		path: `/services/${service.slug}`,
 		lastmod: contentRevisedAt
