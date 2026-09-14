@@ -1,4 +1,5 @@
 import type { Handle } from '@sveltejs/kit';
+import { addDiscoveryLinks } from '$lib/server/discovery-links';
 import { htmlToMarkdown } from '$lib/server/html-to-markdown';
 import {
 	MARKDOWN_CONTENT_TYPE,
@@ -70,26 +71,39 @@ export const handle: Handle = async ({ event, resolve }) => {
 		response.headers.set('content-type', 'text/html; charset=utf-8');
 	}
 
+	// Everything below concerns pages: the two representations they answer in, and the
+	// links that point an agent at the rest of the site. A generated endpoint like
+	// `/sitemap.xml` or `/robots.txt` is already the machine-readable thing being pointed
+	// at, and leaves here with its headers as its route wrote them.
+	if (!response.headers.get('content-type')?.startsWith('text/html')) {
+		return response;
+	}
+
 	// Every page is available as HTML and as markdown at the same URL, so what a cache
 	// holds depends on `Accept` and has to say so. This is set on the HTML too, not only on
 	// the markdown, because the failure it prevents is the other direction: a cache that
 	// stored the HTML answering an agent's markdown request out of it.
-	if (response.headers.get('content-type')?.startsWith('text/html')) {
-		varyOn(response.headers, 'Accept');
-	}
+	varyOn(response.headers, 'Accept');
+
+	// Relative links, and the `Link` headers below, are resolved against the canonical URL
+	// rather than the requested one, the same rule `<link rel="canonical">` and
+	// `sitemap.xml` follow. A markdown file outlives the request that produced it — it gets
+	// saved, quoted, and passed on — so a link in it has to point at the address this site
+	// publishes, not at whichever host answered.
+	const canonical = absoluteUrl(event.url.pathname);
 
 	// A client that asked for markdown and would rather have it than HTML gets the page's
 	// own prose, with the layout markup, the icons, and the hydration payload left behind.
 	// Everything else — every browser, every crawler, anything that did not ask — is served
 	// the HTML unchanged.
-	if (negotiatesMarkdown(event.request, response)) {
-		// Relative links are resolved against the canonical URL rather than the requested one,
-		// the same rule `<link rel="canonical">` and `sitemap.xml` follow. A markdown file
-		// outlives the request that produced it — it gets saved, quoted, and passed on — so a
-		// link in it has to point at the address this site publishes, not at whichever host
-		// answered.
-		return await asMarkdown(response, new URL(absoluteUrl(event.url.pathname)));
-	}
+	const page = negotiatesMarkdown(event.request, response)
+		? await asMarkdown(response, new URL(canonical))
+		: response;
 
-	return response;
+	// Applied to both representations, and after the conversion rather than before it: the
+	// markdown response drops the `Link` header it inherited, because those preload hints
+	// describe a document the client is not receiving.
+	addDiscoveryLinks(page, canonical);
+
+	return page;
 };
