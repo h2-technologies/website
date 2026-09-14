@@ -542,6 +542,19 @@ describe('security posture and public links', () => {
 			'a page that is cached and replayed must not carry a per-response nonce'
 		);
 		assert.ok(!scriptSources.includes("'unsafe-inline'"));
+
+		// Cloudflare injects its Web Analytics beacon into every HTML response, from one host
+		// and reporting to another. Allowing the script host alone loads a beacon that is then
+		// blocked from sending anything, which looks like working analytics and is not, so the
+		// two are asserted together.
+		assert.ok(
+			scriptSources.includes('https://static.cloudflareinsights.com'),
+			'the Web Analytics beacon Cloudflare injects must be allowed to load'
+		);
+		assert.ok(
+			cspDirective(csp, 'connect-src').includes('https://cloudflareinsights.com'),
+			'the Web Analytics beacon must be allowed to report, or allowing it to load is moot'
+		);
 		assert.equal(response.headers.get('strict-transport-security'), 'max-age=31536000');
 		assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
 		assert.equal(response.headers.get('x-frame-options'), 'DENY');

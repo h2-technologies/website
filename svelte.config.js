@@ -23,11 +23,17 @@ const config = {
 			directives: {
 				'default-src': ['self'],
 				'base-uri': ['self'],
+				// `cloudflareinsights.com` is where the Web Analytics beacon reports; it is a
+				// different host from the one that serves the beacon, and allowing only the
+				// latter loads a script that then cannot say anything. Confirmed against the
+				// beacon's own source, which posts to `https://cloudflareinsights.com/cdn-cgi/rum`
+				// and falls back to the same path on this origin.
 				'connect-src': [
 					'self',
 					'https://*.analytics.google.com',
 					'https://*.google-analytics.com',
-					'https://www.googletagmanager.com'
+					'https://www.googletagmanager.com',
+					'https://cloudflareinsights.com'
 				],
 				'font-src': ['self'],
 				'form-action': ['self'],
@@ -45,6 +51,23 @@ const config = {
 				'manifest-src': ['self'],
 				'media-src': ['self'],
 				'object-src': ['none'],
+				// `static.cloudflareinsights.com` serves the Web Analytics beacon, which Cloudflare
+				// injects into every HTML response when the zone has it enabled. It is listed here
+				// rather than left blocked because the alternative is a script tag on every page
+				// that the browser refuses and the console reports forever.
+				//
+				// Cloudflare's other injection — the inline bootstrap for JavaScript Detections
+				// that sets `window.__CF$cv$params` — is deliberately *not* admitted, and cannot
+				// be. Its body carries per-request tokens, so no fixed hash covers it, and
+				// Cloudflare supports it only for nonce-based policies: it parses the CSP response
+				// header and adds the nonce to what it injects. This policy is hash-based
+				// precisely because the pages are cached at the edge, which would freeze one
+				// response's nonce into a public constant. Admitting it would take
+				// `'unsafe-inline'`, which is the one thing this directive exists to withhold — so
+				// JavaScript Detections should be turned off in Cloudflare instead of paid for in
+				// bytes on every response. The script it would load lives under
+				// `/cdn-cgi/challenge-platform/` and is already covered by `'self'`.
+				//
 				// The trailing hash is the blocking banner-dismissal script in `src/app.html`.
 				// SvelteKit hashes the scripts it generates itself, but not one written into the
 				// template, so that one is pinned here. `tests/promo-banner.test.mjs` recomputes it
@@ -52,6 +75,7 @@ const config = {
 				'script-src': [
 					'self',
 					'https://www.googletagmanager.com',
+					'https://static.cloudflareinsights.com',
 					'sha256-piB4tXbs0GTIFPOA92dnybJr6MEDqs622Pv+MewV438='
 				],
 				'style-src': ['self'],

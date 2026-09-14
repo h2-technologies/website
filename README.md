@@ -138,6 +138,16 @@ A rule narrower than the negotiator is the whole failure mode: a request the ori
 
 **The Content Security Policy must survive being reused.** `csp.mode` is `hash`, not `auto`. A nonce is worth something only while it stays unpredictable, and a cached page freezes one response's nonce into a public constant that an injected script can quote. Hashes are derived from the scripts' own bytes and stay correct however often a stored response is replayed.
 
+That choice decides what Cloudflare is allowed to inject. It adds three things to HTML responses, after the cache, and the policy treats them differently:
+
+| Injection                                     | Enabled by                | Status                                       |
+| --------------------------------------------- | ------------------------- | -------------------------------------------- |
+| `/cdn-cgi/scripts/…/email-decode.min.js`      | Email Address Obfuscation | Allowed by `'self'`                          |
+| `static.cloudflareinsights.com/beacon.min.js` | Web Analytics             | Allowed; reports to `cloudflareinsights.com` |
+| inline `window.__CF$cv$params`                | JavaScript Detections     | **Blocked, and cannot be allowed**           |
+
+The last one carries per-request tokens, so no fixed hash covers it, and Cloudflare admits it only for nonce-based policies — it parses the CSP response header and adds the nonce to what it injects. A nonce is the one thing a cached page cannot have. Allowing it would take `'unsafe-inline'`, which would retire the policy's main protection to run a bot-detection signal, so **JavaScript Detections should be turned off in Cloudflare**; left on, it costs about a kilobyte on every response to ship a script the browser refuses. The script it would load is under `/cdn-cgi/challenge-platform/` and is already covered by `'self'`, so only the inline bootstrap is the obstacle.
+
 Deploys purge the cache. The `deploy` job calls Cloudflare's purge endpoint once the container is healthy, using `CLOUDFLARE_ZONE_ID` and `CLOUDFLARE_PURGE_TOKEN` from the Production environment; the token needs only _Zone → Cache Purge → Purge_ on this zone. **Both secrets are required** — without them that step fails the job deliberately, because a deploy the edge keeps hidden behind stale HTML is not a finished deploy.
 
 ### Agent discovery
