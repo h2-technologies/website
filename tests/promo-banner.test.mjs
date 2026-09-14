@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { after, before, describe, it } from 'node:test';
 import { publicHtmlPaths, siteUrl, startProductionServer } from './site-fixture.mjs';
@@ -107,21 +108,70 @@ describe('promotional banner expiration', () => {
 		}
 	});
 
-	it('suppresses a dismissed banner on the server rather than hiding it after paint', async (t) => {
+	it('sends the same markup to a dismissed visitor as to a new one', async (t) => {
 		if (Date.now() >= Date.parse(expirationLiteral)) {
 			t.skip('the offer has expired; nothing is rendered to dismiss');
 			return;
 		}
 
-		const { response, html } = await getHtml('/', {
-			cookie: `${dismissCookie}=${dismissValue}`
-		});
+		const fresh = await getHtml('/');
+		const returning = await getHtml('/', { cookie: `${dismissCookie}=${dismissValue}` });
 
-		assert.equal(bannerCount(html), 0, 'a dismissed banner should not be sent at all');
-		assert.match(
-			response.headers.get('vary') ?? '',
+		// This is the cacheability contract, not a detail of the banner. The edge stores one
+		// response per URL and replays it to everyone, so a response shaped by one visitor's
+		// cookie is a response other visitors will be handed. Dismissal therefore happens in
+		// the browser, and the server sends everybody the same bytes.
+		assert.equal(returning.html, fresh.html, 'the dismissal cookie must not change the HTML');
+		assert.doesNotMatch(
+			returning.response.headers.get('vary') ?? '',
 			/\bCookie\b/i,
-			'responses that vary by the dismissal cookie must say so'
+			'a page must not claim to vary on a header the cache in front of it ignores'
+		);
+		assert.equal(bannerCount(fresh.html), 1, 'the banner is server-rendered for every visitor');
+	});
+
+	it('hides a dismissed banner before paint, from constants that cannot drift apart', async () => {
+		const appHtml = await readFile(new URL('../src/app.html', import.meta.url), 'utf8');
+		const appCss = await readFile(new URL('../src/app.css', import.meta.url), 'utf8');
+		const config = await readFile(new URL('../svelte.config.js', import.meta.url), 'utf8');
+		const inline = appHtml.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+
+		assert.ok(inline, 'src/app.html should carry the pre-paint dismissal script');
+
+		// The script runs before the bundler exists, so it cannot import `src/lib/promo.ts` and
+		// the cookie name is written out by hand. Asserting it against the exported constants is
+		// what stops a rename there from silently stranding this copy.
+		assert.ok(
+			inline.includes(`${dismissCookie}=${dismissValue}`),
+			'the pre-paint script must read the cookie and value promo.ts defines'
+		);
+		assert.match(inline, /data-promo-dismissed/, 'it should set the attribute the CSS keys on');
+		assert.match(
+			appCss,
+			/\[data-promo-dismissed\]\s+\.promo-banner/,
+			'src/app.css should hide the banner for that attribute'
+		);
+
+		// SvelteKit hashes the scripts it generates, but not one written into the template, so
+		// this one is pinned in the policy by hand. Recomputing it here is the guard against
+		// that pin going stale: reformat the script and this fails with the value to paste.
+		const hash = `sha256-${createHash('sha256').update(inline).digest('base64')}`;
+		assert.ok(
+			config.includes(hash),
+			`svelte.config.js must admit the pre-paint script — add '${hash}' to script-src`
+		);
+
+		const { response, html } = await getHtml('/');
+		assert.ok(
+			(response.headers.get('content-security-policy') ?? '').includes(hash),
+			'the served policy must admit the pre-paint script'
+		);
+
+		// "Before paint" is a claim about document order, so assert it there: the script has to
+		// reach the parser ahead of the element it hides, or the banner flashes on its way out.
+		assert.ok(
+			html.indexOf('data-promo-dismissed') < html.indexOf('class="promo-banner'),
+			'the pre-paint script must come before the banner element it hides'
 		);
 	});
 

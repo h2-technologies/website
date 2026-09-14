@@ -8,6 +8,17 @@
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/squareLogo.png" />
 		<link rel="manifest" href="%sveltekit.assets%/site.webmanifest" />
 		%sveltekit.head%
+
+		<!--
+			Hides an already-dismissed promotional banner before it is parsed, so it is never
+			painted. It runs here, not on the server, because the server's HTML is cached at the
+			edge and shared by every visitor — see "Edge caching" in README.md. The hash of this
+			script is pinned in svelte.config.js and rechecked by tests.
+		-->
+		<script>
+			if (/(?:^|;\s*)h2_promo_inventory_2026=dismissed(?:;|$)/.test(document.cookie))
+				document.documentElement.setAttribute('data-promo-dismissed', '');
+		</script>
 	</head>
 
 	<body data-sveltekit-preload-data="hover">

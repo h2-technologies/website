@@ -48,3 +48,14 @@
 		}
 	}
 }
+
+/*
+ * Deliberately outside `@layer base`: unlayered rules win over Tailwind's layers, so this
+ * cannot be undone by a utility class that happens to set `display` on the banner later.
+ *
+ * The attribute is set by the blocking script in `src/app.html` before the banner is parsed,
+ * which is what makes a dismissed banner invisible rather than briefly visible.
+ */
+[data-promo-dismissed] .promo-banner {
+	display: none;
+}

@@ -549,7 +549,15 @@ describe('security posture and public links', () => {
 		// allowed at all; anything else appearing here would be an unreviewed widget.
 		assert.deepEqual(cspDirective(csp, 'frame-src'), ["'self'", 'https://outlook.office.com']);
 		assert.ok(scriptSources.includes("'self'"));
-		assert.ok(scriptSources.some((source) => source.startsWith("'nonce-")));
+		// Hashes rather than nonces. A nonce is worth something only while it stays
+		// unpredictable, and these pages are cached at the edge and replayed to everyone, which
+		// freezes one response's nonce into a public constant that any injected script can
+		// quote. A hash is derived from the script's own bytes and survives being reused.
+		assert.ok(scriptSources.some((source) => source.startsWith("'sha256-")));
+		assert.ok(
+			!scriptSources.some((source) => source.startsWith("'nonce-")),
+			'a page that is cached and replayed must not carry a per-response nonce'
+		);
 		assert.ok(!scriptSources.includes("'unsafe-inline'"));
 		assert.equal(response.headers.get('strict-transport-security'), 'max-age=31536000');
 		assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
@@ -941,5 +949,37 @@ describe('markdown content negotiation', () => {
 		assert.equal(response.status, 404);
 		assert.match(response.headers.get('content-type') ?? '', /^text\/markdown\b/i);
 		assert.match(markdown, /^# Page not found$/m);
+	});
+});
+describe('edge cacheability', () => {
+	it('answers repeated requests with byte-identical HTML and an unchanged policy', async () => {
+		for (const path of ['/', '/faq', '/services/bgp-consulting']) {
+			const first = await getHtml(path);
+			const second = await getHtml(path);
+
+			// A cache stores one response and replays it. Anything that differs between two
+			// otherwise identical requests is something a visitor could be served from another
+			// visitor's response.
+			assert.equal(second.html, first.html, `${path} should render reproducibly`);
+			assert.equal(
+				second.response.headers.get('content-security-policy'),
+				first.response.headers.get('content-security-policy'),
+				`${path} should not mint a fresh policy per response`
+			);
+		}
+	});
+
+	it('does not vary pages on per-visitor state', async () => {
+		for (const path of publicHtmlPaths) {
+			const { response } = await getHtml(path);
+			const vary = response.headers.get('vary') ?? '';
+
+			// `Accept` stays: the page genuinely has two representations and the CDN is
+			// configured for that one header. `Cookie` is per visitor and unbounded, so no
+			// shared cache can key on it usefully — dropping it is what makes these pages
+			// cacheable at all, and the dismissal it used to carry now happens in the browser.
+			assert.match(vary, /\bAccept\b/i, `${path} should vary on Accept`);
+			assert.doesNotMatch(vary, /\bCookie\b/i, `${path} must not vary on Cookie`);
+		}
 	});
 });
