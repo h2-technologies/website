@@ -1,3 +1,10 @@
+import {
+	AGENT_SKILLS_INDEX_PATH,
+	AI_CATALOG_PATH,
+	API_CATALOG_PATH,
+	AUTH_PATH,
+	OPENAPI_PATH
+} from '$lib/agent-discovery';
 import { locations } from '$lib/locations';
 import { posts } from '$lib/posts';
 import { services } from '$lib/services';
@@ -26,7 +33,9 @@ export const prerender = false;
  * learn that it would have worked — and this file is the one an assistant fetches first.
  * Every page states the same thing in a `Link: <...>; rel="alternate"; type="text/markdown"`
  * header, for a client that reads response heads rather than fetching this file; the two
- * are different audiences, not a duplicate.
+ * are different audiences, not a duplicate. The `Machine-readable` section at the end
+ * follows from that: an assistant that only ever reads prose should still leave knowing
+ * the structured documents exist.
  */
 const link = (path: string, name: string, note: string) =>
 	`- [${name}](${absoluteUrl(path)}): ${note}`;
@@ -66,6 +75,14 @@ ${link('/about', 'About', `${founder.name} and how ${site.shortName} scopes tech
 ${link('/faq', 'Frequently asked questions', 'Pricing model, contracts, remote versus onsite work, and routing engagements.')}
 ${link('/routing', `${network.asn} routing policy`, 'RPKI, IRR, and LOA validation rules, and peering and transit onboarding requirements.')}
 ${link('/contact', 'Contact', 'Request a technology assessment.')}
+
+## Machine-readable
+
+${link(OPENAPI_PATH, 'OpenAPI description', 'Every public GET endpoint, the media types each answers with, and the slugs each collection route accepts.')}
+${link(API_CATALOG_PATH, 'API catalog', 'RFC 9727 link set naming this API and where its description, documentation, metadata, and status live.')}
+${link(AI_CATALOG_PATH, 'Capability manifest', 'Agentic Resource Discovery entries for each resource above, with the questions each one answers.')}
+${link(AGENT_SKILLS_INDEX_PATH, 'Agent skills', `Skills for reading this site, preparing an ${network.asn} peering request, and scoping an engagement.`)}
+${link(AUTH_PATH, 'Authentication policy', 'How agents authenticate here: they do not. Everything above is public and read-only.')}
 `;
 
 export function GET() {

@@ -1,11 +1,18 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import '../app.css';
 	import ContactDetails from '$lib/components/ContactDetails.svelte';
 	import PromoBanner from '$lib/components/PromoBanner.svelte';
 	import { footerLocations, footerServices, site } from '$lib/site';
+	import { provideSiteTools } from '$lib/webmcp';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
+
+	// WebMCP tools are offered from the layout so every page carries them, and on mount
+	// rather than during render because `navigator.modelContext` only exists in a browser.
+	// A user agent without WebMCP gets nothing and notices nothing.
+	onMount(() => provideSiteTools());
 </script>
 
 <svelte:head>

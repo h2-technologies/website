@@ -83,10 +83,68 @@ export const publicAssetPaths = [
 	'/bgp-routing-policy.pdf'
 ];
 
-// Everything a crawler can request and expect a 200 from.
-export const publicEndpointPaths = ['/sitemap.xml', '/robots.txt', '/.well-known/security.txt'];
+// Everything a crawler or an agent can request and expect a 200 from.
+export const publicEndpointPaths = [
+	'/sitemap.xml',
+	'/robots.txt',
+	'/llms.txt',
+	'/.well-known/security.txt',
+	'/.well-known/api-catalog',
+	'/.well-known/ai-catalog.json',
+	'/.well-known/agent-skills/index.json',
+	'/openapi.json',
+	'/auth.md',
+	'/health'
+];
 
-export const crawlablePaths = [...publicHtmlPaths, ...publicEndpointPaths, ...publicAssetPaths];
+// Skills are served one document per skill, and the index is what says which exist. The
+// names are repeated here rather than read from the index so a skill silently dropped from
+// the index fails a test instead of shrinking the thing the test checks.
+export const agentSkillNames = [
+	'h2-technologies-site',
+	'as17290-peering-request',
+	'h2-technologies-engagement'
+];
+
+export const agentSkillPaths = agentSkillNames.map(
+	(name) => `/.well-known/agent-skills/${name}/SKILL.md`
+);
+
+/** Documents that must be readable by a browser-based agent from any origin. */
+export const corsDiscoveryPaths = [
+	'/.well-known/api-catalog',
+	'/.well-known/ai-catalog.json',
+	'/.well-known/agent-skills/index.json',
+	'/openapi.json',
+	'/auth.md',
+	'/health',
+	...agentSkillPaths
+];
+
+export const crawlablePaths = [
+	...publicHtmlPaths,
+	...publicEndpointPaths,
+	...agentSkillPaths,
+	...publicAssetPaths
+];
+
+/**
+ * Parses an RFC 8288 `Link` field into `{ target, rel, type }` entries.
+ *
+ * However many header lines the field arrived on, a client reads it as one
+ * comma-separated list, and that is what this returns. Every target the site sends is a
+ * URL with no comma in it, so the angle brackets are enough to find the boundaries.
+ */
+export function parseLinkHeader(value) {
+	return [...(value ?? '').matchAll(/<([^>]*)>((?:\s*;\s*[^,]+)*)/g)].map(
+		([, target, rawParameters]) => {
+			const parameters = [...rawParameters.matchAll(/;\s*([^=;\s]+)\s*=\s*"?([^";]*)"?/g)].map(
+				([, name, parameterValue]) => [name.toLowerCase(), parameterValue.trim()]
+			);
+			return { target, ...Object.fromEntries(parameters) };
+		}
+	);
+}
 
 async function findOpenPort() {
 	return await new Promise((resolve, reject) => {

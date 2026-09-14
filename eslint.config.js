@@ -56,5 +56,14 @@ export default ts.config(
 				}
 			]
 		}
+	},
+	{
+		// Declaration files describe shapes, not behaviour. The parameter names inside a
+		// function type are documentation — nothing is ever bound to them — so the
+		// unused-variable check has nothing to report there but false positives.
+		files: ['**/*.d.ts'],
+		rules: {
+			'no-unused-vars': 'off'
+		}
 	}
 );

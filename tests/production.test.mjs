@@ -6,6 +6,7 @@ import {
 	crawlablePaths,
 	expectedSitemapUrls,
 	fetchWithoutRedirect,
+	parseLinkHeader,
 	publicAssetPaths,
 	publicHtmlPaths,
 	siteUrl,
@@ -36,24 +37,6 @@ function linkHref(html, rel) {
 		new RegExp(`<link\\b(?=[^>]*\\brel="${escapeRegex(rel)}")[^>]*>`, 'i')
 	)?.[0];
 	return matchingTag?.match(/\bhref="([^"]*)"/i)?.[1];
-}
-
-/**
- * Parses an RFC 8288 `Link` field into `{ target, rel, type }` entries.
- *
- * However many header lines the field arrived on, a client reads it as one
- * comma-separated list, and that is what this returns. Every target the site sends is a
- * URL with no comma in it, so the angle brackets are enough to find the boundaries.
- */
-function parseLinkHeader(value) {
-	return [...(value ?? '').matchAll(/<([^>]*)>((?:\s*;\s*[^,]+)*)/g)].map(
-		([, target, rawParameters]) => {
-			const parameters = [...rawParameters.matchAll(/;\s*([^=;\s]+)\s*=\s*"?([^";]*)"?/g)].map(
-				([, name, parameterValue]) => [name.toLowerCase(), parameterValue.trim()]
-			);
-			return { target, ...Object.fromEntries(parameters) };
-		}
-	);
 }
 
 function allMatches(html, expression) {

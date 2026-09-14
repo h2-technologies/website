@@ -11,10 +11,8 @@
  * handed.
  *
  * Each relation is registered with IANA and used for what it was registered for. Nothing
- * here advertises a resource this site does not publish: there is no HTTP API behind
- * these pages, so there is no `api-catalog` (RFC 9727) and no `service-desc`. If an API
- * is ever published, that is the point at which those belong, pointing at a real catalog
- * at `/.well-known/api-catalog` rather than at an empty one added in advance.
+ * here advertises a resource this site does not publish, which is the rule that decides
+ * what belongs in the list rather than how impressive the list looks.
  *
  *   canonical ..... the one URL this page answers at, per the canonical policy the
  *                   `<link rel="canonical">` tag and `sitemap.xml` already state. Sent
@@ -29,7 +27,33 @@
  *                   as documentation intended to be read rather than executed, which is
  *                   what that file is.
  *   index ......... `/sitemap.xml`, the complete list of canonical URLs.
+ *   api-catalog ... `/.well-known/api-catalog`, the RFC 9727 list of APIs this publisher
+ *                   offers. There is one, and it is this site: every page answers at one
+ *                   URL in two representations, over GET, with no key and no session.
+ *   service-desc .. `/openapi.json`, the same surface described for a machine.
+ *   service-meta .. `/.well-known/ai-catalog.json`, metadata about the service: which
+ *                   resources exist and what question each one answers.
+ *   describedby ... `/.well-known/agent-skills/index.json`, the skills published for
+ *                   working with this site.
+ *   status ........ `/health`, whether the origin is currently serving.
+ *
+ * The last five were deliberately absent until the documents behind them existed, on the
+ * principle that a relation pointing at nothing costs a client a fetch and a retry and
+ * teaches it that this site's headers are not worth following. They are here now because
+ * the documents are; see `src/lib/agent-discovery.ts`, which declares each path once and
+ * is where the routes serving them read it from too.
  */
+import {
+	AGENT_SKILLS_INDEX_PATH,
+	AI_CATALOG_PATH,
+	API_CATALOG_PATH,
+	HEALTH_CONTENT_TYPE,
+	HEALTH_PATH,
+	JSON_CONTENT_TYPE,
+	LINKSET_CONTENT_TYPE,
+	OPENAPI_CONTENT_TYPE,
+	OPENAPI_PATH
+} from '$lib/agent-discovery';
 import { absoluteUrl } from '$lib/site';
 
 /** A media type with no parameters, which is what the `type` link parameter takes. */
@@ -37,14 +61,18 @@ const HTML_TYPE = 'text/html';
 const MARKDOWN_TYPE = 'text/markdown';
 
 /**
- * The same on every page, so it is built once. `/llms.txt` and `/sitemap.xml` are the
- * only two resources here that describe the site as a whole; `/robots.txt` and
- * `/.well-known/security.txt` are found at their own well-known locations and have no
- * registered relation type to be advertised under.
+ * The same on every page, so it is built once. `/robots.txt` and
+ * `/.well-known/security.txt` are absent: both are found at their own well-known
+ * locations and neither has a registered relation type to be advertised under.
  */
 const siteLinks = [
 	`<${absoluteUrl('/llms.txt')}>; rel="service-doc"; type="text/plain"`,
-	`<${absoluteUrl('/sitemap.xml')}>; rel="index"; type="application/xml"`
+	`<${absoluteUrl('/sitemap.xml')}>; rel="index"; type="application/xml"`,
+	`<${absoluteUrl(API_CATALOG_PATH)}>; rel="api-catalog"; type="${LINKSET_CONTENT_TYPE}"`,
+	`<${absoluteUrl(OPENAPI_PATH)}>; rel="service-desc"; type="${OPENAPI_CONTENT_TYPE}"`,
+	`<${absoluteUrl(AI_CATALOG_PATH)}>; rel="service-meta"; type="${JSON_CONTENT_TYPE}"`,
+	`<${absoluteUrl(AGENT_SKILLS_INDEX_PATH)}>; rel="describedby"; type="${JSON_CONTENT_TYPE}"`,
+	`<${absoluteUrl(HEALTH_PATH)}>; rel="status"; type="${HEALTH_CONTENT_TYPE}"`
 ];
 
 /**

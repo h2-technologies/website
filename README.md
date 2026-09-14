@@ -52,7 +52,7 @@ pnpm test
 pnpm audit --audit-level high
 ```
 
-The test suite exercises the built adapter-node application, including primary routes, internal links and CTAs, responsive browser smoke checks, accessibility checks, metadata, `robots.txt`, `sitemap.xml`, and `security.txt`. Run `pnpm run build` before invoking `pnpm test` by itself.
+The test suite exercises the built adapter-node application, including primary routes, internal links and CTAs, responsive browser smoke checks, accessibility checks, metadata, `robots.txt`, `sitemap.xml`, `security.txt`, and the agent discovery documents. Run `pnpm run build` before invoking `pnpm test` by itself.
 
 `pnpm run format` rewrites supported files with Prettier; it is not a read-only check. `pnpm run lint` performs the read-only formatting and ESLint checks used for release validation.
 
@@ -92,16 +92,21 @@ Every page answers with `Link` response headers (RFC 8288) naming the site's mac
 curl -sSI https://h2technologiesllc.com/ | grep -i '^link'
 ```
 
-| Relation      | Target                        | What it says                                             |
-| ------------- | ----------------------------- | -------------------------------------------------------- |
-| `canonical`   | the page's own canonical URL  | the one address this page answers at                     |
-| `alternate`   | the same URL, `text/markdown` | the markdown representation, which has no URL of its own |
-| `service-doc` | `/llms.txt`                   | the written map of the site (RFC 8631)                   |
-| `index`       | `/sitemap.xml`                | the complete list of canonical URLs                      |
+| Relation       | Target                                 | What it says                                             |
+| -------------- | -------------------------------------- | -------------------------------------------------------- |
+| `canonical`    | the page's own canonical URL           | the one address this page answers at                     |
+| `alternate`    | the same URL, `text/markdown`          | the markdown representation, which has no URL of its own |
+| `service-doc`  | `/llms.txt`                            | the written map of the site (RFC 8631)                   |
+| `index`        | `/sitemap.xml`                         | the complete list of canonical URLs                      |
+| `api-catalog`  | `/.well-known/api-catalog`             | the APIs this publisher offers (RFC 9727)                |
+| `service-desc` | `/openapi.json`                        | the same surface described for a machine (RFC 8631)      |
+| `service-meta` | `/.well-known/ai-catalog.json`         | metadata about the service (RFC 8631)                    |
+| `describedby`  | `/.well-known/agent-skills/index.json` | skills published for working with this site              |
+| `status`       | `/health`                              | whether the origin is currently serving (RFC 8631)       |
 
-An error response carries the site-wide links but no `canonical` — the error page answers under whatever URL was mistyped and is marked `noindex`, so naming that URL canonical would contradict it. The discovery links are sent ahead of SvelteKit's per-build preload hints, which run to over a kilobyte in the same field; browsers apply those hints wherever in the field they appear. The markdown representation drops the preload hints entirely and keeps the four above, with the `alternate` pointing back at the HTML.
+An error response carries the site-wide links but no `canonical` — the error page answers under whatever URL was mistyped and is marked `noindex`, so naming that URL canonical would contradict it. The discovery links are sent ahead of SvelteKit's per-build preload hints, which run to over a kilobyte in the same field; browsers apply those hints wherever in the field they appear. The markdown representation drops the preload hints entirely and keeps the rest, with the `alternate` pointing back at the HTML.
 
-Only relations registered with IANA are used, and only for resources the site publishes. There is no HTTP API behind these pages, so there is no `api-catalog` ([RFC 9727](https://www.rfc-editor.org/rfc/rfc9727#section-3)) and no `service-desc`. Publishing an API is the point at which those belong, pointing at a real catalog at `/.well-known/api-catalog`. Adding a relation means adding it to `src/lib/server/discovery-links.ts`; the production tests fetch every advertised target, so a link that 404s fails the build.
+Only relations registered with IANA are used, and only for resources the site publishes. The last five in the table were deliberately absent until the documents behind them existed — see [Agent discovery](#agent-discovery) — because a relation pointing at nothing costs a client a fetch and a retry and teaches it that this site's headers are not worth following. Adding a relation means adding it to `src/lib/server/discovery-links.ts`, which reads its paths and media types from `src/lib/agent-discovery.ts`; the production tests fetch every advertised target, so a link that 404s fails the build.
 
 ### Markdown for agents
 
@@ -126,6 +131,25 @@ Pages are cached by Cloudflare and replayed to visitors without reaching this se
 **The Content Security Policy must survive being reused.** `csp.mode` is `hash`, not `auto`. A nonce is worth something only while it stays unpredictable, and a cached page freezes one response's nonce into a public constant that an injected script can quote. Hashes are derived from the scripts' own bytes and stay correct however often a stored response is replayed.
 
 Deploys purge the cache. The `deploy` job calls Cloudflare's purge endpoint once the container is healthy, using `CLOUDFLARE_ZONE_ID` and `CLOUDFLARE_PURGE_TOKEN` from the Production environment; the token needs only _Zone → Cache Purge → Purge_ on this zone. **Both secrets are required** — without them that step fails the job deliberately, because a deploy the edge keeps hidden behind stale HTML is not a finished deploy.
+
+### Agent discovery
+
+Beyond the pages themselves, the site publishes a machine-readable description of what it offers, so an agent can find the right page without crawling for it:
+
+- `/openapi.json` — OpenAPI 3.1 for every public GET endpoint, with the slugs each collection route accepts.
+- `/.well-known/api-catalog` — the RFC 9727 catalog naming this API and where its description, documentation, metadata, and status live.
+- `/.well-known/ai-catalog.json` — the Agentic Resource Discovery manifest, also advertised by an `Agentmap:` line in `robots.txt` and a `<link rel="ai-catalog">` in the page head.
+- `/.well-known/agent-skills/index.json` — published skills, each with a SHA-256 digest of the SKILL.md it points at. Digest and document are produced from the same string in `src/lib/server/agent-skills.ts`, so they cannot disagree.
+- `/auth.md` — how agents authenticate here, which is that they do not.
+- `/health` — `application/health+json`, and the target of the Docker health check.
+
+Every page names all of them in its `Link` headers, described above.
+
+In the browser, `src/lib/webmcp.ts` offers the same capabilities as WebMCP tools when `navigator.modelContext` exists. Page inventory comes from `/llms.txt` at call time rather than from a copy in the bundle, so the tools answer the same thing the origin does and the 100 KB of page collections stays out of every page load.
+
+Each document's path, media type, and purpose is declared once in `src/lib/agent-discovery.ts`, and the routes, `src/lib/server/discovery-links.ts`, and `/llms.txt` all read from there. Adding a document there puts it in the catalog, the manifest, the `Link` headers, and `llms.txt` together.
+
+`docs/agent-discovery.md` covers the rest: the DNS-AID records to publish in Cloudflare, which are operational infrastructure rather than repository content, and why the OAuth discovery documents and the MCP Server Card are deliberately absent. The short version is that this origin has no authorization server, no protected resource, and no MCP server, and a discovery document that names one would send agents into a flow that cannot complete.
 
 Location routes come in two kinds, and the distinction is what keeps them from competing for the same query. A `service` page covers one capability across Ohio; a `place` page covers one community across capabilities. Give every new page genuinely local detail rather than templated copy reused under a different town name.
 
@@ -154,7 +178,7 @@ Compose publishes the service as `127.0.0.1:3002:3002`; it is intentionally not 
 Verify application readiness from inside the container, without relying on public DNS, TLS, Cloudflare, or the reverse proxy:
 
 ```bash
-docker compose exec -T website node -e "fetch('http://127.0.0.1:3002/').then((response) => { if (!response.ok) process.exit(1); }).catch(() => process.exit(1));"
+docker compose exec -T website node -e "fetch('http://127.0.0.1:3002/health').then((response) => { if (!response.ok) process.exit(1); }).catch(() => process.exit(1));"
 ```
 
 The image also defines an equivalent Docker health check. Useful diagnostics are:
