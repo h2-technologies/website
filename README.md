@@ -110,7 +110,7 @@ Only relations registered with IANA are used, and only for resources the site pu
 
 ### Markdown for agents
 
-Every page answers at one URL in two formats. A request carrying `Accept: text/markdown` gets the page's text as `text/markdown; charset=utf-8`; everything else, browsers included, gets the HTML unchanged. Both responses send `Vary: Accept`, so a shared cache keeps the two apart.
+Every page answers at one URL in two formats. A request carrying `Accept: text/markdown` gets the page's text as `text/markdown; charset=utf-8`; everything else, browsers included, gets the HTML unchanged. Both responses send `Vary: Accept`; the markdown additionally sends `Cache-Control: private, no-store`, because `Vary` is advisory in practice and a shared cache that ignores it would serve markdown to browsers. See [Edge caching](#edge-caching).
 
 ```bash
 curl -H 'Accept: text/markdown' https://h2technologiesllc.com/services/bgp-consulting
@@ -126,7 +126,15 @@ Pages are cached by Cloudflare and replayed to visitors without reaching this se
 
 **Every visitor must get the same bytes.** A response shaped by one visitor's request is a response other visitors will be handed. Nothing in a page may depend on a cookie, and no page may send `Vary: Cookie` — Cloudflare honours `Vary` only for `Accept-Encoding`, so a cache-splitting header it ignores is worse than none at all. The promotional banner is the live example: whether the offer is _live_ is a clock decision and stays on the server, while whether _you_ dismissed it is per visitor and is applied in the browser, before paint, by the script in `src/app.html`.
 
-`Vary: Accept` is the one exception, and it is safe only because a Cache Rule is configured for that header. Without that rule Cloudflare stores whichever representation was requested first and serves markdown to browsers.
+`Vary: Accept` is the one exception, and it is not load-bearing: Cloudflare ignores it. What keeps the two representations apart is a Cache Rule that bypasses the cache for markdown requests, and the markdown's own `Cache-Control: private, no-store`. The HTML carries no `Cache-Control` at all, which is what leaves it cacheable.
+
+Both are needed, because they fail in different places. The rule has to recognise every spelling the negotiator honours — `text/x-markdown` and any capitalisation, not just the literal `text/markdown` — so it matches case-insensitively on the substring:
+
+```
+any(lower(http.request.headers["accept"][*])[*] contains "markdown")
+```
+
+A rule narrower than the negotiator is the whole failure mode: a request the origin answers in markdown but the rule does not bypass is stored, and then served to browsers as the page. `no-store` is the second line, and the one that still holds if the rule is edited, scoped to the wrong hostname, or removed.
 
 **The Content Security Policy must survive being reused.** `csp.mode` is `hash`, not `auto`. A nonce is worth something only while it stays unpredictable, and a cached page freezes one response's nonce into a public constant that an injected script can quote. Hashes are derived from the scripts' own bytes and stay correct however often a stored response is replayed.
 

@@ -756,6 +756,48 @@ describe('markdown content negotiation', () => {
 		}
 	});
 
+	// Every spelling of "markdown" the negotiator honours, including the two that a CDN
+	// rule matching the literal `text/markdown` does not catch. In front of this site
+	// Cloudflare was matching exactly that literal, so a request for `text/x-markdown` or
+	// for `TEXT/MARKDOWN` was cached and then served to browsers as the page. The header
+	// asserted here is what makes that a misconfiguration rather than a defacement, so it
+	// is pinned against the same inputs that reached the origin unprotected.
+	it('forbids a shared cache from storing any spelling of the markdown request', async () => {
+		for (const accept of [
+			'text/markdown',
+			'text/x-markdown',
+			'TEXT/MARKDOWN',
+			'text/markdown;charset=utf-8',
+			'text/markdown, text/html;q=0.9'
+		]) {
+			const { response } = await getMarkdown('/about', accept);
+			const cacheControl = response.headers.get('cache-control') ?? '';
+
+			assert.match(
+				cacheControl,
+				/\bno-store\b/,
+				`markdown for "${accept}" must not be storable by a shared cache`
+			);
+		}
+	});
+
+	// The inverse, and the reason the header above is not simply set on every page: HTML
+	// is the representation the edge is meant to hold, and marking it no-store would send
+	// every visitor to the origin.
+	it('leaves the HTML storable so the edge can still serve it', async () => {
+		const response = await fetch(`${server.baseUrl}/about`, {
+			headers: { accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' }
+		});
+
+		assert.equal(response.headers.get('content-type'), 'text/html; charset=utf-8');
+		assert.doesNotMatch(
+			response.headers.get('cache-control') ?? '',
+			/\bno-store\b/,
+			'HTML must stay cacheable at the edge'
+		);
+		await response.text();
+	});
+
 	it('keeps HTML the default for everything that did not ask for markdown', async () => {
 		const headers = [
 			// Chrome, Firefox, and Safari all accept markdown under a trailing wildcard.

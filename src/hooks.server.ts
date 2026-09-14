@@ -29,6 +29,14 @@ const securityHeaders = {
  * client is not receiving. A page that converts to nothing at all — which no current
  * route does, but a future one might — falls back to the HTML it was given rather than
  * answering an agent with an empty file.
+ *
+ * The markdown is marked `no-store` because `Vary: Accept` is advisory in practice: a
+ * shared cache that ignores it and stores this response will serve markdown to the next
+ * browser that asks for the same URL, which is a defacement of the page rather than a
+ * stale copy of it. Cloudflare is one such cache — it honours `Vary` only for
+ * `Accept-Encoding` — so in front of this site the header is the difference between a
+ * CDN rule being the sole defence and being the second one. Conversion costs about a
+ * millisecond, so nothing is lost by regenerating it per request.
  */
 async function asMarkdown(response: Response, url: URL): Promise<Response> {
 	const html = await response.text();
@@ -42,6 +50,7 @@ async function asMarkdown(response: Response, url: URL): Promise<Response> {
 
 	if (markdown) {
 		headers.set('content-type', MARKDOWN_CONTENT_TYPE);
+		headers.set('cache-control', 'private, no-store');
 		headers.set('x-markdown-tokens', String(estimateTokens(markdown)));
 		headers.set('x-original-tokens', String(estimateTokens(html)));
 	}
