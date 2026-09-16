@@ -145,6 +145,44 @@ describe('crawler-facing production routes', () => {
 		}
 	});
 
+	it('uses only directives a robots.txt validator recognises', async () => {
+		const response = await fetchWithoutRedirect(server.baseUrl, '/robots.txt');
+		const body = await response.text();
+
+		// The directive names Lighthouse's `robots-txt` audit accepts. Anything else is
+		// reported as "Unknown directive", which surfaces as `robots.txt is not valid` on
+		// every page of every Lighthouse and PageSpeed Insights run — a site-wide red mark
+		// that reads like a crawl problem and is not one. An extension directive is still
+		// fine to publish, but it belongs behind a `#` until a real client reads it.
+		const recognisedDirectives = new Set([
+			'user-agent',
+			'disallow',
+			'allow',
+			'sitemap',
+			'crawl-delay',
+			'clean-param',
+			'host',
+			'request-rate',
+			'visit-time',
+			'noindex',
+			'content-signal'
+		]);
+
+		for (const [index, rawLine] of body.split(/\r\n|\r|\n/).entries()) {
+			const line = rawLine.split('#', 1)[0].trim();
+			if (line === '') continue;
+
+			const colon = line.indexOf(':');
+			assert.notEqual(colon, -1, `robots.txt line ${index + 1} is not a directive: ${rawLine}`);
+
+			const directive = line.slice(0, colon).trim().toLowerCase();
+			assert.ok(
+				recognisedDirectives.has(directive),
+				`robots.txt line ${index + 1} uses unrecognised directive "${directive}": ${rawLine}`
+			);
+		}
+	});
+
 	it('sends www requests to the apex host in a single hop', async () => {
 		// `fetch` cannot set `Host`, so the request is written to the socket directly.
 		const send = (target, hostHeader) =>
