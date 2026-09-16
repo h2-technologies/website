@@ -184,9 +184,17 @@ describe('ARD capability manifest', () => {
 		}
 	});
 
-	it('is discoverable from robots.txt and from the page itself', async () => {
+	it('is pointed at from robots.txt and from the page itself', async () => {
 		const robots = await (await fetchWithoutRedirect(server.baseUrl, '/robots.txt')).text();
-		assert.match(robots, new RegExp(`^Agentmap: ${siteUrl}/\\.well-known/ai-catalog\\.json$`, 'm'));
+
+		// Commented rather than live: `agentmap` is not on Lighthouse's directive safelist,
+		// so an active line here fails the `robots-txt` audit on every page. See the comment
+		// in `src/routes/robots.txt/+server.ts` for the trade. Asserted in its commented form
+		// so that uncommenting it is a deliberate edit to this test as well.
+		assert.match(
+			robots,
+			new RegExp(`^# Agentmap: ${siteUrl}/\\.well-known/ai-catalog\\.json$`, 'm')
+		);
 
 		const home = await (await fetchWithoutRedirect(server.baseUrl, '/')).text();
 		assert.match(home, /<link rel="ai-catalog" href="\/\.well-known\/ai-catalog\.json"\s*\/?>/);

@@ -67,8 +67,23 @@ const group = (agents: string[]) => `${agents.map((a) => `User-agent: ${a}`).joi
 
 // `Agentmap` is the Agentic Resource Discovery equivalent of `Sitemap`: a pointer to
 // `/.well-known/ai-catalog.json` for a client that reads robots.txt before it reads
-// anything else. It is an extension directive, so a parser that has not heard of it skips
-// the line, which is what every parser did with `Sitemap` for years.
+// anything else. It ships commented out, because the two sides of that trade are lopsided.
+//
+// What it buys is currently nothing. Agentic Resource Discovery is a proposal, no shipping
+// parser reads this line, and the catalog is already reachable three ways that clients do
+// implement: the RFC 8615 well-known path it sits on, the `Link: rel="service-meta"` header
+// on every response, and the `<link rel="ai-catalog">` in the page head.
+//
+// What it costs is a standing false alarm. `agentmap` is not on the directive safelist
+// Lighthouse checks, so an uncommented line here fails the `robots-txt` audit with
+// "Unknown directive" — one error, on every Lighthouse and PageSpeed Insights run, on
+// every page of the site. That error says nothing about crawling (this file has no
+// `Disallow`, and RFC 9309 requires a crawler to ignore lines it does not recognise), but
+// it is indistinguishable at a glance from one that does, and it costs a real
+// investigation every time someone reads a report and takes it seriously.
+//
+// Uncomment it when a client worth serving actually reads it. The audit error is the
+// price, and at that point it buys something.
 const body = `${group(retrievalAgents)}
 
 ${group(trainingAgents)}
@@ -76,7 +91,7 @@ ${group(trainingAgents)}
 User-agent: *
 Allow: /
 
-Agentmap: ${absoluteUrl(AI_CATALOG_PATH)}
+# Agentmap: ${absoluteUrl(AI_CATALOG_PATH)}
 Sitemap: ${absoluteUrl('/sitemap.xml')}
 `;
 
