@@ -37,6 +37,15 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      # Chromium was re-downloaded on every run. The key is the lockfile, so a
+      # Playwright bump still fetches a matching browser; `playwright install`
+      # is left in place and becomes a no-op on a hit, while `--with-deps`
+      # still reconciles the system packages, which are not cached.
+      - name: Cache the Playwright browser
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Install browser
         run: pnpm exec playwright install --with-deps chromium
       - name: Verify production build
