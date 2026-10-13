@@ -328,7 +328,7 @@ export const posts: Post[] = [
 	{
 		slug: 'website-redesign-checklist-small-business',
 		title: 'Website Redesign Checklist for Small Businesses',
-		seoTitle: 'Small Business Website Redesign Checklist | H2 Technologies LLC',
+		seoTitle: 'Small Business Website Redesign Checklist | H2 Technologies',
 		meta: 'A checklist for redesigning a business website with clearer messaging, SEO pages, conversion paths, speed, and accessibility.',
 		summary:
 			'A useful redesign improves clarity, trust, conversion paths, crawlability, accessibility, and speed. Visual polish is only one part of the work.',

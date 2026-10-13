@@ -184,13 +184,13 @@ describe('real-browser production smoke', () => {
 				assert.deepEqual(consoleErrors, [], `${scenario.label} should not log console errors`);
 				if (scenario.path === '/' && scenario.width < 640) {
 					assert.ok(
-						!requestedPaths.includes('/herobackground.jpg'),
+						!requestedPaths.includes('/herobackground.webp'),
 						`${scenario.label} should not download the desktop hero background`
 					);
 				}
 				if (scenario.path === '/' && scenario.width >= 640) {
 					assert.ok(
-						requestedPaths.includes('/herobackground.jpg'),
+						requestedPaths.includes('/herobackground.webp'),
 						`${scenario.label} should preserve the branded hero background`
 					);
 				}

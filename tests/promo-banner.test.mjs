@@ -169,10 +169,13 @@ describe('promotional banner expiration', () => {
 
 		// "Before paint" is a claim about document order, so assert it there: the script has to
 		// reach the parser ahead of the element it hides, or the banner flashes on its way out.
-		assert.ok(
-			html.indexOf('data-promo-dismissed') < html.indexOf('class="promo-banner'),
-			'the pre-paint script must come before the banner element it hides'
-		);
+		// Once the offer expires there is no banner element left to order against.
+		if (Date.now() < Date.parse(expirationLiteral)) {
+			assert.ok(
+				html.indexOf('data-promo-dismissed') < html.indexOf('class="promo-banner'),
+				'the pre-paint script must come before the banner element it hides'
+			);
+		}
 	});
 
 	it('leaves no banner and no reserved space anywhere once the offer has expired', async (t) => {

@@ -77,6 +77,7 @@ export const publicAssetPaths = [
 	'/squareLogo.png',
 	'/wideLogo.png',
 	'/herobackground.jpg',
+	'/herobackground.webp',
 	'/clients/bandit-machine.png',
 	'/analytics.js',
 	'/site.webmanifest',

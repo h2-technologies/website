@@ -54,7 +54,7 @@
 </script>
 
 <Seo
-	title="Contact H2 Technologies LLC | Book a Meeting or Talk to an Engineer"
+	title="Contact H2 Technologies | Book a Meeting with an Engineer"
 	description="Book a meeting with H2 Technologies in Ashland, Ohio, or request an assessment covering software, cybersecurity, networking, Google Workspace, or Fortinet."
 	{path}
 	schema={[contactPageSchema, contactPointSchema, bookingActionSchema, breadcrumbSchema]}
