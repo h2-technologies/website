@@ -57,7 +57,7 @@ export const site = {
  * alone for changes that do not alter what a visitor reads. Resource articles carry their own
  * `updatedAt` and do not use this value.
  */
-export const contentRevisedAt = '2026-09-10';
+export const contentRevisedAt = '2026-10-13';
 
 /**
  * Name, address, and phone details published on the site and in structured data.

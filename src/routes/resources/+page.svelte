@@ -41,7 +41,7 @@
 </script>
 
 <Seo
-	title="Technology Resources for Business Owners | H2 Technologies LLC"
+	title="Technology Guides for Business Owners | H2 Technologies"
 	description="Practical guides on firewalls, Google Workspace, Microsoft 365, BGP, IPv6, remote work, website redesigns, disaster recovery, and managed IT."
 	{path}
 	schema={[blogSchema, breadcrumbSchema]}

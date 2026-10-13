@@ -60,9 +60,23 @@
 	schema={[webPageSchema, featuredListSchema]}
 />
 
+<svelte:head>
+	<!-- The hero background is the desktop LCP element, but as a CSS background the browser
+	     only finds it after the stylesheet is parsed. Preloading it starts the fetch with the
+	     HTML; the media query matches the `sm:block` below, so phones still never download it. -->
+	<link
+		rel="preload"
+		as="image"
+		href="/herobackground.webp"
+		type="image/webp"
+		media="(min-width: 640px)"
+		fetchpriority="high"
+	/>
+</svelte:head>
+
 <section class="relative overflow-hidden bg-slate-950 text-white">
 	<div
-		class="absolute inset-0 hidden bg-[url(/herobackground.jpg)] bg-cover bg-center opacity-25 sm:block"
+		class="absolute inset-0 hidden bg-[url(/herobackground.webp)] bg-cover bg-center opacity-25 sm:block"
 	></div>
 	<div
 		class="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/76 to-slate-950"

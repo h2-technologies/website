@@ -5,6 +5,7 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import ServiceCard from '$lib/components/ServiceCard.svelte';
 	import { locationsForService } from '$lib/locations';
+	import { posts } from '$lib/posts';
 	import { services, type Service } from '$lib/services';
 	import { absoluteUrl, site } from '$lib/site';
 
@@ -17,6 +18,10 @@
 			.map((slug: string) => services.find((item) => item.slug === slug))
 			.filter(Boolean) as Service[]
 	);
+	// Guides already name the services they relate to; reading that list backwards links each
+	// service to its guides, so the pillar and its supporting articles point at each other
+	// instead of only one way, without a second hand-kept list that could drift.
+	const guides = $derived(posts.filter((post) => post.relatedServices.includes(service.slug)));
 	const path = $derived(`/services/${service.slug}`);
 	const serviceSchema = $derived({
 		'@type': 'Service',
@@ -171,6 +176,25 @@
 		</div>
 	</div>
 </section>
+
+{#if guides.length}
+	<section class="bg-white px-6 py-16 text-slate-900 sm:px-8 lg:px-12">
+		<div class="mx-auto max-w-7xl">
+			<h2 class="text-2xl font-semibold tracking-tight">Related guides</h2>
+			<ul class="mt-6 grid gap-4 md:grid-cols-2">
+				{#each guides as guide}
+					<li class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+						<a
+							class="font-semibold text-orange-800 underline decoration-orange-300 underline-offset-4 hover:text-orange-950"
+							href={`/resources/${guide.slug}`}>{guide.title}</a
+						>
+						<p class="mt-2 text-sm leading-6 text-slate-600">{guide.meta}</p>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	</section>
+{/if}
 
 {#if serviceAreas.length}
 	<section class="bg-white px-6 py-16 text-slate-900 sm:px-8 lg:px-12">
